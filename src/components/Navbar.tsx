@@ -1,10 +1,16 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ShoppingCart, Menu, X, Home, Apple, Users, Book } from "lucide-react";
+import { ShoppingCart, Menu, X, Home, Apple, Users, Book, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -12,6 +18,26 @@ const Navbar = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("Successfully logged out");
+    } catch (error: any) {
+      toast.error("Error logging out");
+    }
+  };
+
+  const handleLogin = () => {
+    navigate("/auth");
+    closeMenu();
+  };
+
+  const getUserInitials = () => {
+    if (!user) return "U";
+    const email = user.email || "";
+    return email.charAt(0).toUpperCase();
   };
 
   return (
@@ -45,11 +71,41 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Shopping Cart and Mobile Menu Button */}
-          <div className="flex items-center">
+          {/* Shopping Cart, Auth, and Mobile Menu Button */}
+          <div className="flex items-center space-x-2">
             <Link to="/cart" className="p-2 text-gray-700 hover:text-market-green transition-colors">
               <ShoppingCart className="h-6 w-6" />
             </Link>
+
+            {user ? (
+              <div className="flex items-center">
+                <Avatar className="h-8 w-8 hidden md:flex">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-market-green text-white">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleLogout} 
+                  className="hidden md:flex items-center ml-2"
+                >
+                  <LogOut className="mr-1 h-4 w-4" />
+                  <span>Logout</span>
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleLogin} 
+                className="hidden md:flex items-center"
+              >
+                <LogIn className="mr-1 h-4 w-4" />
+                <span>Login</span>
+              </Button>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -106,6 +162,29 @@ const Navbar = () => {
                 <span>Our Farmers</span>
               </div>
             </Link>
+            
+            {/* Authentication for Mobile */}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+              >
+                <div className="flex items-center">
+                  <LogOut className="mr-2 h-5 w-5" />
+                  <span>Logout</span>
+                </div>
+              </button>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+              >
+                <div className="flex items-center">
+                  <LogIn className="mr-2 h-5 w-5" />
+                  <span>Login</span>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       )}
