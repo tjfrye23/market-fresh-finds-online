@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          farmer_id: string
+          id: string
+          image: string | null
+          local: boolean | null
+          name: string
+          organic: boolean | null
+          price: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          farmer_id: string
+          id?: string
+          image?: string | null
+          local?: boolean | null
+          name: string
+          organic?: boolean | null
+          price: number
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          farmer_id?: string
+          id?: string
+          image?: string | null
+          local?: boolean | null
+          name?: string
+          organic?: boolean | null
+          price?: number
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -33,15 +78,43 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_initial_admin: {
+        Args: { admin_user_id: string }
+        Returns: undefined
+      }
+      has_role: {
+        Args: { required_role: Database["public"]["Enums"]["user_role"] }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "user" | "farmer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -156,6 +229,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["user", "farmer", "admin"],
+    },
   },
 } as const

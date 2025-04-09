@@ -1,6 +1,7 @@
-
 import { useState } from "react";
 import { ArrowDownAZ, ArrowUpAZ, Filter } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -9,96 +10,87 @@ import Footer from "@/components/Footer";
 const Shop = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [filterVisible, setFilterVisible] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [featuresFilter, setFeaturesFilter] = useState<{
+    organic: boolean;
+    local: boolean;
+    inSeason: boolean;
+  }>({
+    organic: false,
+    local: false,
+    inSeason: false,
+  });
+  const [priceRange, setPriceRange] = useState<string>("all");
   
-  // Sample products data
-  const products = [
-    {
-      id: "1",
-      name: "Organic Strawberries",
-      price: 4.99,
-      unit: "1 lb package",
-      image: "https://images.unsplash.com/photo-1518635017480-d9a4666b3a54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
-      organic: true,
-      local: true,
-      category: "fruits",
-    },
-    {
-      id: "2",
-      name: "Fresh Avocados",
-      price: 2.49,
-      unit: "Each",
-      image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80",
-      organic: false,
-      local: true,
-      category: "fruits",
-    },
-    {
-      id: "3",
-      name: "Organic Kale Bunch",
-      price: 3.29,
-      unit: "Bundle",
-      image: "https://images.unsplash.com/photo-1515471949468-fec1525563f3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      organic: true,
-      local: false,
-      category: "vegetables",
-    },
-    {
-      id: "4",
-      name: "Artisan Sourdough Bread",
-      price: 5.99,
-      unit: "16 oz loaf",
-      image: "https://images.unsplash.com/photo-1585478259715-4d3f6b5a0a7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
-      organic: false,
-      local: true,
-      category: "bakery",
-    },
-    {
-      id: "5",
-      name: "Cherry Tomatoes",
-      price: 3.99,
-      unit: "Pint",
-      image: "https://images.unsplash.com/photo-1494220394759-e0a001fe79a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      organic: true,
-      local: true,
-      category: "vegetables",
-    },
-    {
-      id: "6",
-      name: "Farm Fresh Eggs",
-      price: 6.49,
-      unit: "Dozen",
-      image: "https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80",
-      organic: true,
-      local: true,
-      category: "dairy-eggs",
-    },
-    {
-      id: "7",
-      name: "Organic Blueberries",
-      price: 5.99,
-      unit: "Pint",
-      image: "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      organic: true,
-      local: false,
-      category: "fruits",
-    },
-    {
-      id: "8",
-      name: "Artisan Goat Cheese",
-      price: 7.99,
-      unit: "8 oz package",
-      image: "https://images.unsplash.com/photo-1559561853-08451507cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2067&q=80",
-      organic: false,
-      local: true,
-      category: "dairy-eggs",
-    },
-  ];
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  // Filter and sort products
+      if (error) {
+        console.error("Error fetching products:", error);
+        return [];
+      }
+
+      return data || [];
+    },
+  });
+
+  const toggleFilter = () => {
+    setFilterVisible(!filterVisible);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter((prev) => {
+      if (category === "all") {
+        return [];
+      }
+      
+      if (prev.includes(category)) {
+        return prev.filter((c) => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  const handleFeatureChange = (feature: "organic" | "local" | "inSeason") => {
+    setFeaturesFilter((prev) => ({
+      ...prev,
+      [feature]: !prev[feature],
+    }));
+  };
+
+  const handlePriceRangeChange = (range: string) => {
+    setPriceRange(range);
+  };
+
   const getFilteredAndSortedProducts = () => {
     let result = [...products];
     
-    // Apply sorting
+    if (categoryFilter.length > 0) {
+      result = result.filter((product) => categoryFilter.includes(product.category));
+    }
+    
+    if (featuresFilter.organic) {
+      result = result.filter((product) => product.organic);
+    }
+    
+    if (featuresFilter.local) {
+      result = result.filter((product) => product.local);
+    }
+    
+    if (priceRange === "under5") {
+      result = result.filter((product) => product.price < 5);
+    } else if (priceRange === "5to10") {
+      result = result.filter((product) => product.price >= 5 && product.price <= 10);
+    } else if (priceRange === "over10") {
+      result = result.filter((product) => product.price > 10);
+    }
+    
     if (sortBy === "price-low") {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price-high") {
@@ -113,10 +105,6 @@ const Shop = () => {
   };
   
   const filteredProducts = getFilteredAndSortedProducts();
-
-  const toggleFilter = () => {
-    setFilterVisible(!filterVisible);
-  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -138,7 +126,9 @@ const Shop = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </button>
-              <p className="text-gray-600">Showing {filteredProducts.length} products</p>
+              <p className="text-gray-600">
+                {isLoading ? "Loading products..." : `Showing ${filteredProducts.length} products`}
+              </p>
             </div>
             
             <div className="flex items-center">
@@ -159,7 +149,6 @@ const Shop = () => {
           </div>
           
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar Filters - Hidden on mobile unless toggled */}
             <div className={`md:w-1/4 lg:w-1/5 ${filterVisible ? 'block' : 'hidden'} md:block`}>
               <div className="bg-white shadow-md rounded-lg p-6">
                 <h3 className="font-semibold text-lg mb-4">Categories</h3>
@@ -230,13 +219,32 @@ const Shop = () => {
               </div>
             </div>
             
-            {/* Products Grid */}
             <div className="md:w-3/4 lg:w-4/5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} {...product} />
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <p>Loading products...</p>
+                </div>
+              ) : filteredProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredProducts.map((product) => (
+                    <ProductCard 
+                      key={product.id}
+                      id={product.id}
+                      name={product.name}
+                      price={product.price}
+                      unit={product.unit}
+                      image={product.image || "https://via.placeholder.com/300x200?text=No+Image"}
+                      organic={product.organic}
+                      local={product.local}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gray-50 p-8 rounded-lg text-center">
+                  <h3 className="text-lg font-medium mb-2">No products found</h3>
+                  <p className="text-gray-500">Try adjusting your filters to find what you're looking for.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

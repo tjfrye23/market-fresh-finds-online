@@ -1,16 +1,41 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ShoppingCart, Menu, X, Home, Apple, Users, Book, LogIn, LogOut, User } from "lucide-react";
+import { ShoppingCart, Menu, X, Home, Apple, Users, Book, LogIn, LogOut, User, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const { data: userRole } = useQuery({
+    queryKey: ['userRole', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user role:', error);
+        return null;
+      }
+      
+      return data?.role;
+    },
+    enabled: !!user,
+  });
+
+  const isFarmer = userRole === 'farmer';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -69,6 +94,12 @@ const Navbar = () => {
               <Users className="mr-1 h-4 w-4" />
               <span>Our Farmers</span>
             </Link>
+            {isFarmer && (
+              <Link to="/manage-products" className="flex items-center text-market-green-dark hover:text-market-green transition-colors">
+                <Package className="mr-1 h-4 w-4" />
+                <span>Manage Products</span>
+              </Link>
+            )}
           </div>
 
           {/* Shopping Cart, Auth, and Mobile Menu Button */}
@@ -162,6 +193,19 @@ const Navbar = () => {
                 <span>Our Farmers</span>
               </div>
             </Link>
+            
+            {isFarmer && (
+              <Link
+                to="/manage-products"
+                className="block px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"
+                onClick={closeMenu}
+              >
+                <div className="flex items-center">
+                  <Package className="mr-2 h-5 w-5" />
+                  <span>Manage Products</span>
+                </div>
+              </Link>
+            )}
             
             {/* Authentication for Mobile */}
             {user ? (
