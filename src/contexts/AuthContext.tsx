@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 type AuthContextType = {
   session: Session | null;
@@ -56,6 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, fullName: string, role: string = 'user') => {
     setLoading(true);
+    console.log('Signing up with role:', role); // Debug log
+    
+    // First, create the user account
     const response = await supabase.auth.signUp({
       email,
       password,
@@ -69,18 +73,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // If signup is successful and we have a user, add their role to the user_roles table
     if (response.data.user && !response.error) {
+      const userId = response.data.user.id;
+      console.log('User created with ID:', userId); // Debug log
+      
       // Insert the role into user_roles table
       const { error: roleError } = await supabase
         .from('user_roles')
         .insert([{ 
-          user_id: response.data.user.id, 
+          user_id: userId, 
           role: role === 'farmer' ? 'farmer' : 'user' // Only allow 'farmer' or 'user' roles
         }]);
       
       if (roleError) {
         console.error('Error setting user role:', roleError);
+        toast.error('Account created but role assignment failed. Please contact support.');
         // We don't throw this error because the account was created successfully
         // But we log it for debugging purposes
+      } else {
+        console.log('User role set successfully to:', role); // Debug log
       }
     }
     
