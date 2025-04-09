@@ -14,3 +14,11 @@ To test the farmer functionality:
    VALUES ('[USER_ID]', 'farmer');
    ```
 4. Log in with the user account to access the "Manage Products" feature
+
+## Database Tables
+The application uses the following tables:
+- `user_roles`: Stores user roles (user, farmer, admin)
+- `products`: Stores product information added by farmers
+
+## TypeScript Types
+When working with Supabase queries, make sure to properly type the query results to avoid TypeScript errors.

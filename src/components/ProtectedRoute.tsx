@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
         return null;
       }
       
-      return data?.role;
+      return data?.role as 'user' | 'farmer' | 'admin' | null;
     },
     enabled: !!user,
   });

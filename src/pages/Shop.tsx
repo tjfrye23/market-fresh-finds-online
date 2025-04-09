@@ -7,6 +7,21 @@ import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  image: string | null;
+  description: string | null;
+  organic: boolean | null;
+  local: boolean | null;
+  category: string;
+  farmer_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const Shop = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [filterVisible, setFilterVisible] = useState(false);
@@ -22,7 +37,7 @@ const Shop = () => {
   });
   const [priceRange, setPriceRange] = useState<string>("all");
   
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["products"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -234,8 +249,8 @@ const Shop = () => {
                       price={product.price}
                       unit={product.unit}
                       image={product.image || "https://via.placeholder.com/300x200?text=No+Image"}
-                      organic={product.organic}
-                      local={product.local}
+                      organic={product.organic || false}
+                      local={product.local || false}
                     />
                   ))}
                 </div>

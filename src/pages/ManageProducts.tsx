@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,6 +37,21 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  image: string | null;
+  description: string | null;
+  organic: boolean | null;
+  local: boolean | null;
+  category: string;
+  farmer_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const productFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
@@ -66,10 +80,9 @@ const ManageProducts = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Fetch farmer's products
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ["farmerProducts", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -88,7 +101,6 @@ const ManageProducts = () => {
     enabled: !!user?.id,
   });
 
-  // Setup form with react-hook-form and zod validation
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
@@ -103,7 +115,6 @@ const ManageProducts = () => {
     },
   });
 
-  // Handle form submission
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
       const productData = {
@@ -114,13 +125,11 @@ const ManageProducts = () => {
 
       let response;
       if (editingProduct) {
-        // Update existing product
         response = await supabase
           .from("products")
           .update(productData)
           .eq("id", editingProduct.id);
       } else {
-        // Add new product
         response = await supabase.from("products").insert([productData]);
       }
 
@@ -159,7 +168,7 @@ const ManageProducts = () => {
     addProductMutation.mutate(values);
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: Product) => {
     setEditingProduct(product);
     form.reset({
       name: product.name,
@@ -436,7 +445,7 @@ const ManageProducts = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          ${parseFloat(product.price).toFixed(2)}
+                          ${parseFloat(product.price.toString()).toFixed(2)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

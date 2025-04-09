@@ -30,7 +30,7 @@ const Navbar = () => {
         return null;
       }
       
-      return data?.role;
+      return data?.role as 'user' | 'farmer' | 'admin' | null;
     },
     enabled: !!user,
   });
