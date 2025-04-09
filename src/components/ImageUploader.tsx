@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,22 +14,27 @@ interface ImageUploaderProps {
 const ImageUploader = ({ existingImageUrl, onImageUploaded, onImageRemoved }: ImageUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(existingImageUrl);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const validateFile = (file: File) => {
     // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
-      return;
+      return false;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be less than 5MB");
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const uploadFile = async (file: File) => {
+    if (!validateFile(file)) return;
 
     setIsUploading(true);
 
@@ -67,9 +72,50 @@ const ImageUploader = ({ existingImageUrl, onImageUploaded, onImageRemoved }: Im
     }
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    uploadFile(file);
+  };
+
   const handleRemoveImage = () => {
     setImagePreview(null);
     onImageRemoved();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDragging) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      uploadFile(file);
+    }
+  };
+
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -92,9 +138,15 @@ const ImageUploader = ({ existingImageUrl, onImageUploaded, onImageRemoved }: Im
           </Button>
         </div>
       ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center bg-gray-50">
+        <div 
+          className={`border-2 border-dashed ${isDragging ? 'border-primary bg-primary/5' : 'border-gray-300 bg-gray-50'} rounded-md p-6 flex flex-col items-center justify-center transition-colors`}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
           <div className="mb-3">
-            <Upload className="h-10 w-10 text-gray-400" />
+            <Upload className={`h-10 w-10 ${isDragging ? 'text-primary' : 'text-gray-400'}`} />
           </div>
           <p className="text-sm text-gray-500 mb-2">
             Drag and drop an image or click to browse
@@ -106,12 +158,13 @@ const ImageUploader = ({ existingImageUrl, onImageUploaded, onImageRemoved }: Im
             type="button"
             variant="outline"
             disabled={isUploading}
-            className="relative"
+            onClick={handleBrowseClick}
           >
             {isUploading ? "Uploading..." : "Choose File"}
             <input
+              ref={fileInputRef}
               type="file"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="hidden"
               accept="image/*"
               onChange={handleFileChange}
               disabled={isUploading}
