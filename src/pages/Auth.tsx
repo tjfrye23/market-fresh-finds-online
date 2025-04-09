@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 
 const Auth = () => {
@@ -13,6 +14,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [userRole, setUserRole] = useState('user');
   const [rememberMe, setRememberMe] = useState(false);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ const Auth = () => {
         if (error) throw error;
         toast.success('Successfully logged in!');
       } else {
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email, password, fullName, userRole);
         if (error) throw error;
         toast.success('Sign up successful! Please verify your email if required.');
       }
@@ -56,6 +58,7 @@ const Auth = () => {
     setEmail('');
     setPassword('');
     setFullName('');
+    setUserRole('user');
   };
 
   return (
@@ -80,18 +83,45 @@ const Auth = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             {!isLogin && (
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="John Doe"
-                  className="mt-1"
-                />
-              </div>
+              <>
+                <div>
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="John Doe"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>I am a:</Label>
+                  <RadioGroup 
+                    value={userRole} 
+                    onValueChange={setUserRole}
+                    className="grid grid-cols-1 gap-2 pt-2"
+                  >
+                    <div className="flex items-center space-x-2 border p-3 rounded-md">
+                      <RadioGroupItem value="user" id="user" />
+                      <Label htmlFor="user" className="cursor-pointer flex-grow">
+                        <span className="font-medium">Customer</span>
+                        <p className="text-sm text-gray-500">I want to shop for fresh local produce</p>
+                      </Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 border p-3 rounded-md">
+                      <RadioGroupItem value="farmer" id="farmer" />
+                      <Label htmlFor="farmer" className="cursor-pointer flex-grow">
+                        <span className="font-medium">Farmer</span>
+                        <p className="text-sm text-gray-500">I want to sell my produce in the marketplace</p>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </>
             )}
             
             <div>

@@ -11,7 +11,7 @@ type AuthContextType = {
     error: Error | null;
     data: { user: User | null; session: Session | null } | null;
   }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{
+  signUp: (email: string, password: string, fullName: string, role?: string) => Promise<{
     error: Error | null;
     data: { user: User | null; session: Session | null } | null;
   }>;
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return response;
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, role: string = 'user') => {
     setLoading(true);
     const response = await supabase.auth.signUp({
       email,
@@ -62,9 +62,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       options: {
         data: {
           full_name: fullName,
+          requested_role: role, // Store the requested role in user metadata
         },
       },
     });
+    
+    // If signup is successful and we have a user, add their role to the user_roles table
+    if (response.data.user && !response.error) {
+      // Insert the role into user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert([{ 
+          user_id: response.data.user.id, 
+          role: role === 'farmer' ? 'farmer' : 'user' // Only allow 'farmer' or 'user' roles
+        }]);
+      
+      if (roleError) {
+        console.error('Error setting user role:', roleError);
+        // We don't throw this error because the account was created successfully
+        // But we log it for debugging purposes
+      }
+    }
+    
     setLoading(false);
     return response;
   };
