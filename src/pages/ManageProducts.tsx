@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
+// Define TypeScript interface for Product based on the database schema
 interface Product {
   id: string;
   name: string;
@@ -52,6 +54,7 @@ interface Product {
   updated_at: string;
 }
 
+// Define the shape of the form values
 const productFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
@@ -117,10 +120,17 @@ const ManageProducts = () => {
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
+      // Convert form values to the product data structure expected by Supabase
       const productData = {
-        ...values,
-        price: parseFloat(values.price),
-        farmer_id: user?.id,
+        name: values.name,          // Required
+        price: parseFloat(values.price), // Required
+        unit: values.unit,          // Required
+        category: values.category,  // Required
+        description: values.description || null,
+        image: values.image || null,
+        organic: values.organic,
+        local: values.local,
+        farmer_id: user?.id         // Required
       };
 
       let response;
@@ -130,7 +140,9 @@ const ManageProducts = () => {
           .update(productData)
           .eq("id", editingProduct.id);
       } else {
-        response = await supabase.from("products").insert([productData]);
+        response = await supabase
+          .from("products")
+          .insert([productData]);
       }
 
       if (response.error) throw response.error;
