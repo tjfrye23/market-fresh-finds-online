@@ -23,7 +23,7 @@ const Navbar = () => {
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single
       
       if (error) {
         console.error('Error fetching user role:', error);

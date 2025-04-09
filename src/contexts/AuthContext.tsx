@@ -4,15 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { createClient } from '@supabase/supabase-js';
-
-// Create a separate service role client with the anon key
-// This still uses the same anon key but will help us organize the code better
-// for potential future use of service role client with admin privileges
-const serviceClient = createClient(
-  "https://dvmayyihnjcemfilupoz.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bWF5eWlobmpjZW1maWx1cG96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMzE5NDYsImV4cCI6MjA1OTgwNzk0Nn0.VUimGS6HuAd6ebD7qQEV0iQBckICxqSBM5Jh_i4WW-E"
-);
 
 type AuthContextType = {
   session: Session | null;
@@ -87,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('User created with ID:', userId); // Debug log
         
         // Insert the role directly through the public API
-        // The RLS policy we added should now allow this
+        // Now that we have proper RLS policies, this should work without fallbacks
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert([{ 
@@ -97,23 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (roleError) {
           console.error('Error setting user role:', roleError);
-          
-          // Try a fallback approach - insert using the service client
-          // This is an additional attempt to ensure the role is set
-          console.log('Attempting fallback role insertion...');
-          const { error: fallbackError } = await serviceClient
-            .from('user_roles')
-            .insert([{ 
-              user_id: userId, 
-              role: role === 'farmer' ? 'farmer' : 'user'
-            }]);
-            
-          if (fallbackError) {
-            console.error('Fallback role insertion also failed:', fallbackError);
-            toast.error('Account created but role assignment failed. Please contact support.');
-          } else {
-            console.log('User role set successfully via fallback to:', role);
-          }
+          toast.error('Account created but role assignment failed. Please contact support.');
         } else {
           console.log('User role set successfully to:', role); // Debug log
         }
