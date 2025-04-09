@@ -1,12 +1,195 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { Link } from "react-router-dom";
+import { ArrowRight, CalendarDays, LeafyGreen, MapPin, Truck } from "lucide-react";
+import ProductCard from "@/components/ProductCard";
+import CategoryCard from "@/components/CategoryCard";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const Index = () => {
+  // Sample featured products
+  const featuredProducts = [
+    {
+      id: "1",
+      name: "Organic Strawberries",
+      price: 4.99,
+      unit: "1 lb package",
+      image: "https://images.unsplash.com/photo-1518635017480-d9a4666b3a54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+      organic: true,
+      local: true,
+    },
+    {
+      id: "2",
+      name: "Fresh Avocados",
+      price: 2.49,
+      unit: "Each",
+      image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80",
+      organic: false,
+      local: true,
+    },
+    {
+      id: "3",
+      name: "Organic Kale Bunch",
+      price: 3.29,
+      unit: "Bundle",
+      image: "https://images.unsplash.com/photo-1515471949468-fec1525563f3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      organic: true,
+      local: false,
+    },
+    {
+      id: "4",
+      name: "Artisan Sourdough Bread",
+      price: 5.99,
+      unit: "16 oz loaf",
+      image: "https://images.unsplash.com/photo-1585478259715-4d3f6b5a0a7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+      organic: false,
+      local: true,
+    },
+  ];
+
+  // Sample categories
+  const categories = [
+    {
+      name: "Fruits",
+      image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      slug: "fruits",
+    },
+    {
+      name: "Vegetables",
+      image: "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+      slug: "vegetables",
+    },
+    {
+      name: "Dairy & Eggs",
+      image: "https://images.unsplash.com/photo-1630688231126-dd36840bf2be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      slug: "dairy-eggs",
+    },
+    {
+      name: "Bakery",
+      image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      slug: "bakery",
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        {/* Hero Section */}
+        <section className="hero-section py-16 md:py-24">
+          <div className="container mx-auto px-4 flex flex-col items-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white text-center leading-tight mb-6">
+              Fresh from Our Fields<br />to Your Table
+            </h1>
+            <p className="text-white text-lg md:text-xl max-w-2xl text-center mb-8">
+              Your local source for farm-fresh produce, artisanal products, and community connection.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/shop" className="btn-primary">
+                Shop Now
+              </Link>
+              <Link to="/farmers" className="btn-secondary">
+                Meet Our Farmers
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Products Section */}
+        <section className="py-16 bg-market-gray-light">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="section-title">Featured Products</h2>
+              <Link to="/shop" className="text-market-green-dark hover:text-market-green flex items-center transition-colors">
+                View All <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Shop By Category Section */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="section-title text-center mb-12">Shop By Category</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {categories.map((category, index) => (
+                <CategoryCard key={index} {...category} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Market Features Section */}
+        <section className="py-16 bg-market-brown-light/20">
+          <div className="container mx-auto px-4">
+            <h2 className="section-title text-center mb-12">Why Shop With Us</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <LeafyGreen className="text-market-green h-8 w-8" />
+                </div>
+                <h3 className="font-display text-xl font-semibold mb-2">Fresh & Organic</h3>
+                <p className="text-gray-600">Locally sourced produce harvested at peak freshness for maximum flavor and nutrition.</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="text-market-green h-8 w-8" />
+                </div>
+                <h3 className="font-display text-xl font-semibold mb-2">Support Local</h3>
+                <p className="text-gray-600">Every purchase directly supports local farmers and strengthens our community.</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CalendarDays className="text-market-green h-8 w-8" />
+                </div>
+                <h3 className="font-display text-xl font-semibold mb-2">Seasonal Variety</h3>
+                <p className="text-gray-600">Experience the best of each season with our rotating selection of seasonal goods.</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck className="text-market-green h-8 w-8" />
+                </div>
+                <h3 className="font-display text-xl font-semibold mb-2">Convenient Delivery</h3>
+                <p className="text-gray-600">Can't make it to the market? We offer local delivery for your convenience.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Newsletter Section */}
+        <section className="py-16 bg-market-green text-white">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Stay Connected</h2>
+            <p className="mb-8 max-w-2xl mx-auto">
+              Subscribe to our newsletter for seasonal recipes, market updates, and exclusive offers.
+            </p>
+            <div className="max-w-md mx-auto">
+              <form className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  className="px-4 py-3 rounded-md flex-grow text-gray-900 focus:outline-none focus:ring-2 focus:ring-market-yellow"
+                />
+                <button
+                  type="submit"
+                  className="btn-secondary whitespace-nowrap"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 };

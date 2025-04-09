@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,15 +53,27 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				market: {
+					green: {
+						light: '#8CC63F',
+						DEFAULT: '#5A8F29',
+						dark: '#3A5D1B'
+					},
+					brown: {
+						light: '#D2B48C',
+						DEFAULT: '#A67C52',
+						dark: '#5D4037'
+					},
+					yellow: {
+						light: '#FFF176',
+						DEFAULT: '#F9A825',
+						dark: '#F57F17'
+					},
+					gray: {
+						light: '#F5F5F5',
+						DEFAULT: '#EEEEEE',
+						dark: '#9E9E9E'
+					}
 				}
 			},
 			borderRadius: {
@@ -89,6 +102,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif'],
+				display: ['"Playfair Display"', 'serif']
 			}
 		}
 	},
