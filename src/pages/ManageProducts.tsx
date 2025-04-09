@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -75,6 +76,21 @@ const CATEGORIES = [
   { value: "bakery", label: "Bakery" },
   { value: "meat", label: "Meat" },
   { value: "prepared-foods", label: "Prepared Foods" },
+];
+
+const UNITS = [
+  { value: "lb", label: "Pound (lb)" },
+  { value: "oz", label: "Ounce (oz)" },
+  { value: "kg", label: "Kilogram (kg)" },
+  { value: "g", label: "Gram (g)" },
+  { value: "each", label: "Each" },
+  { value: "bunch", label: "Bunch" },
+  { value: "dozen", label: "Dozen" },
+  { value: "pint", label: "Pint" },
+  { value: "quart", label: "Quart" },
+  { value: "gallon", label: "Gallon" },
+  { value: "package", label: "Package" },
+  { value: "box", label: "Box" },
 ];
 
 const ManageProducts = () => {
@@ -298,9 +314,27 @@ const ManageProducts = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Unit</FormLabel>
-                            <FormControl>
-                              <Input placeholder="E.g., lb, each, dozen" {...field} />
-                            </FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a unit" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {UNITS.map((unit) => (
+                                  <SelectItem
+                                    key={unit.value}
+                                    value={unit.value}
+                                  >
+                                    {unit.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
