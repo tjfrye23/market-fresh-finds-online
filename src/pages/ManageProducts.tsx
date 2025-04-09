@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,8 +36,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import ImageUploader from "@/components/ImageUploader";
 
-// Define TypeScript interface for Product based on the database schema
 interface Product {
   id: string;
   name: string;
@@ -54,7 +53,6 @@ interface Product {
   updated_at: string;
 }
 
-// Define the shape of the form values
 const productFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
@@ -120,17 +118,16 @@ const ManageProducts = () => {
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
-      // Convert form values to the product data structure expected by Supabase
       const productData = {
-        name: values.name,          // Required
-        price: parseFloat(values.price), // Required
-        unit: values.unit,          // Required
-        category: values.category,  // Required
+        name: values.name,
+        price: parseFloat(values.price),
+        unit: values.unit,
+        category: values.category,
         description: values.description || null,
         image: values.image || null,
         organic: values.organic,
         local: values.local,
-        farmer_id: user?.id         // Required
+        farmer_id: user?.id
       };
 
       let response;
@@ -244,6 +241,24 @@ const ManageProducts = () => {
                   >
                     <FormField
                       control={form.control}
+                      name="image"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Product Image</FormLabel>
+                          <FormControl>
+                            <ImageUploader
+                              existingImageUrl={field.value || null}
+                              onImageUploaded={(url) => field.onChange(url)}
+                              onImageRemoved={() => field.onChange("")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
@@ -335,20 +350,6 @@ const ManageProducts = () => {
                               placeholder="Describe your product..."
                               {...field}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="image"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Image URL (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://example.com/image.jpg" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
