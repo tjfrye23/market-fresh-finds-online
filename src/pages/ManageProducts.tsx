@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageUploader from "@/components/ImageUploader";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Product {
   id: string;
@@ -250,57 +250,23 @@ const ManageProducts = () => {
                   </DialogTitle>
                 </DialogHeader>
 
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={form.control}
-                      name="image"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Image</FormLabel>
-                          <FormControl>
-                            <ImageUploader
-                              existingImageUrl={field.value || null}
-                              onImageUploaded={(url) => field.onChange(url)}
-                              onImageRemoved={() => field.onChange("")}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="E.g., Organic Strawberries" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
+                <ScrollArea className="h-[60vh] pr-4">
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-4"
+                    >
                       <FormField
                         control={form.control}
-                        name="price"
+                        name="image"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Price</FormLabel>
+                            <FormLabel>Product Image</FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                placeholder="0.00"
-                                {...field}
+                              <ImageUploader
+                                existingImageUrl={field.value || null}
+                                onImageUploaded={(url) => field.onChange(url)}
+                                onImageRemoved={() => field.onChange("")}
                               />
                             </FormControl>
                             <FormMessage />
@@ -310,10 +276,78 @@ const ManageProducts = () => {
 
                       <FormField
                         control={form.control}
-                        name="unit"
+                        name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Unit</FormLabel>
+                            <FormLabel>Product Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="E.g., Organic Strawberries" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="price"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Price</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  placeholder="0.00"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="unit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Unit</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a unit" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {UNITS.map((unit) => (
+                                    <SelectItem
+                                      key={unit.value}
+                                      value={unit.value}
+                                    >
+                                      {unit.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
@@ -321,16 +355,16 @@ const ManageProducts = () => {
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a unit" />
+                                  <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {UNITS.map((unit) => (
+                                {CATEGORIES.map((category) => (
                                   <SelectItem
-                                    key={unit.value}
-                                    value={unit.value}
+                                    key={category.value}
+                                    value={category.value}
                                   >
-                                    {unit.label}
+                                    {category.label}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -339,105 +373,73 @@ const ManageProducts = () => {
                           </FormItem>
                         )}
                       />
-                    </div>
 
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CATEGORIES.map((category) => (
-                                <SelectItem
-                                  key={category.value}
-                                  value={category.value}
-                                >
-                                  {category.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Describe your product..."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="organic"
+                        name="description"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                          <FormItem>
+                            <FormLabel>Description (Optional)</FormLabel>
                             <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                              <Textarea
+                                placeholder="Describe your product..."
+                                {...field}
                               />
                             </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Organic</FormLabel>
-                            </div>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
 
-                      <FormField
-                        control={form.control}
-                        name="local"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Locally Sourced</FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="organic"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Organic</FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
 
-                    <div className="flex justify-end gap-2 pt-2">
-                      <Button variant="outline" type="button" onClick={resetForm}>
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={addProductMutation.isPending}>
-                        {addProductMutation.isPending ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
+                        <FormField
+                          control={form.control}
+                          name="local"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>Locally Sourced</FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-2 pt-2">
+                        <Button variant="outline" type="button" onClick={resetForm}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={addProductMutation.isPending}>
+                          {addProductMutation.isPending ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </ScrollArea>
               </DialogContent>
             </Dialog>
           </div>
