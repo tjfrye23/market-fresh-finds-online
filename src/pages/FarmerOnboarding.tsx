@@ -1,24 +1,21 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import PageHeader from "@/components/PageHeader";
+import { useNavigate } from "react-router-dom";
 
-interface FarmerOnboardingProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const FarmerOnboarding = ({ isOpen, onClose }: FarmerOnboardingProps) => {
+const FarmerOnboarding = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [farmName, setFarmName] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +38,7 @@ const FarmerOnboarding = ({ isOpen, onClose }: FarmerOnboardingProps) => {
       if (error) throw error;
       
       toast.success("Sign up successful! Please verify your email if required.");
-      onClose();
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "An error occurred during registration");
     } finally {
@@ -50,16 +47,14 @@ const FarmerOnboarding = ({ isOpen, onClose }: FarmerOnboardingProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-display">Join as a Farmer</DialogTitle>
-          <DialogDescription>
-            Create your farmer account to start selling your fresh produce on Market Fresh
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+    <div className="container mx-auto px-4 py-8">
+      <PageHeader 
+        title="Become a Farmer" 
+        description="Create your farmer account to start selling your fresh produce on Market Fresh" 
+      />
+      
+      <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>
             <Input
@@ -106,26 +101,27 @@ const FarmerOnboarding = ({ isOpen, onClose }: FarmerOnboardingProps) => {
             />
           </div>
           
-          <DialogFooter className="pt-4">
+          <div className="pt-4 flex space-x-4">
             <Button 
               variant="outline" 
-              onClick={onClose} 
+              onClick={() => navigate("/")} 
               type="button"
               disabled={loading}
+              className="w-1/2"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              className="bg-market-green hover:bg-market-green-dark"
+              className="bg-market-green hover:bg-market-green-dark w-1/2"
               disabled={loading}
             >
               {loading ? "Creating account..." : "Create Farmer Account"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
