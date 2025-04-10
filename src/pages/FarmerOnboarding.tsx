@@ -49,8 +49,8 @@ const FarmerOnboarding = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <PageHeader 
-        title="Become a Farmer" 
-        description="Create your farmer account to start selling your fresh produce on Market Fresh" 
+        title="Become a Vendor" 
+        description="Create your vendor account to start selling your fresh produce on Market Fresh" 
       />
       
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
@@ -116,7 +116,7 @@ const FarmerOnboarding = () => {
               className="bg-market-green hover:bg-market-green-dark w-1/2"
               disabled={loading}
             >
-              {loading ? "Creating account..." : "Create Farmer Account"}
+              {loading ? "Creating account..." : "Create Vendor Account"}
             </Button>
           </div>
         </form>

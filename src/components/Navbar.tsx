@@ -149,7 +149,7 @@ const Navbar = () => {
                   className="bg-market-green hover:bg-market-green-dark items-center"
                 >
                   <Wheat className="mr-1 h-4 w-4" />
-                  <span>Join as Farmer</span>
+                  <span>Join as a Vendor</span>
                 </Button>
               </div>
             )}
@@ -251,7 +251,7 @@ const Navbar = () => {
                 >
                   <div className="flex items-center">
                     <Wheat className="mr-2 h-5 w-5" />
-                    <span>Join as Farmer</span>
+                    <span>Join as a Vendor</span>
                   </div>
                 </button>
               </>
