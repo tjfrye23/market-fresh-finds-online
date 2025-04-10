@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,7 +62,6 @@ const ProductForm = ({
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
-      // Only perform the database operation if we're editing an existing product
       if (editingProduct) {
         const productData = {
           name: values.name,
@@ -86,7 +84,6 @@ const ProductForm = ({
         return response.data;
       }
       
-      // If not editing, just return the values (they'll be handled by the parent)
       return values;
     },
     onSuccess: (_, variables) => {
@@ -156,13 +153,17 @@ const ProductForm = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder="0.00"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            className="pl-7"
+                            {...field}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
