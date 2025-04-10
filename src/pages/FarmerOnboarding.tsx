@@ -28,16 +28,17 @@ const FarmerOnboarding = () => {
     setLoading(true);
     
     try {
+      // Always set the role as "farmer" for users signing up through this page
       const { error } = await signUp(
         email, 
         password, 
         fullName, 
-        "farmer"
+        "farmer" // Explicitly set role to farmer
       );
       
       if (error) throw error;
       
-      toast.success("Sign up successful! Please verify your email if required.");
+      toast.success("Vendor account created! Please verify your email if required.");
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || "An error occurred during registration");
