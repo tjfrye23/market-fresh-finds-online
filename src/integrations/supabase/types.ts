@@ -99,6 +99,45 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_profiles: {
+        Row: {
+          created_at: string
+          description: string | null
+          farm_name: string
+          id: string
+          image_url: string | null
+          location: string | null
+          owner_name: string
+          specialty: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          farm_name: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          owner_name: string
+          specialty?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          farm_name?: string
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          owner_name?: string
+          specialty?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
