@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -105,17 +106,17 @@ const ProductForm = ({
   };
 
   return (
-    <div className="max-h-[70vh] overflow-y-auto pr-4">
+    <div className="overflow-visible px-1">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
+          className="space-y-6"
         >
           <FormField
             control={form.control}
             name="image"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="rounded-md overflow-visible">
                 <FormLabel>Product Image</FormLabel>
                 <FormControl>
                   <ImageUploader
@@ -133,7 +134,7 @@ const ProductForm = ({
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="rounded-md overflow-visible">
                 <FormLabel>Product Name</FormLabel>
                 <FormControl>
                   <Input placeholder="E.g., Organic Strawberries" {...field} />
@@ -143,7 +144,7 @@ const ProductForm = ({
             )}
           />
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 rounded-md overflow-visible">
             <FormLabel>Price per Unit</FormLabel>
             <div className="flex items-center gap-2">
               <div className="flex-1">
@@ -151,7 +152,7 @@ const ProductForm = ({
                   control={form.control}
                   name="price"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="rounded-md overflow-visible">
                       <FormControl>
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -178,7 +179,7 @@ const ProductForm = ({
                   control={form.control}
                   name="unit"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="rounded-md overflow-visible">
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -212,7 +213,7 @@ const ProductForm = ({
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="rounded-md overflow-visible">
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -244,7 +245,7 @@ const ProductForm = ({
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="rounded-md overflow-visible">
                 <FormLabel>Description (Optional)</FormLabel>
                 <FormControl>
                   <Textarea
@@ -262,7 +263,7 @@ const ProductForm = ({
               control={form.control}
               name="organic"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2 rounded-md overflow-visible">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -280,7 +281,7 @@ const ProductForm = ({
               control={form.control}
               name="local"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2 rounded-md overflow-visible">
                   <FormControl>
                     <Checkbox
                       checked={field.value}

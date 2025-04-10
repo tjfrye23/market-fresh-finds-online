@@ -131,11 +131,11 @@ const AddProducts = () => {
           </div>
 
           {showForm ? (
-            <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+            <div className="bg-white shadow-md rounded-lg p-6 mb-8 overflow-hidden">
               <h2 className="text-xl font-semibold mb-4">
                 {currentProduct ? "Edit Product" : "Add New Product"}
               </h2>
-              <div className="max-h-[80vh]">
+              <div className="overflow-visible">
                 <ProductForm
                   editingProduct={null}
                   initialValues={currentProduct || undefined}
