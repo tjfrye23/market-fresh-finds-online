@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
@@ -39,6 +40,7 @@ const Farmers = () => {
     },
   });
 
+  // Update sample farmers to use the correct property names that match FarmerCardProps
   const sampleFarmers = [
     {
       id: "1",
@@ -58,34 +60,34 @@ const Farmers = () => {
     },
     {
       id: "3",
-      name: "Sarah Johnson",
-      farmName: "Hill & Dale Dairy",
+      owner_name: "Sarah Johnson",
+      farm_name: "Hill & Dale Dairy",
       location: "Oakridge, CA",
-      image: "https://images.unsplash.com/photo-1573497019236-61f323985466?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      image_url: "https://images.unsplash.com/photo-1573497019236-61f323985466?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Artisanal Cheeses & Dairy Products",
     },
     {
       id: "4",
-      name: "James Wilson",
-      farmName: "Willow Creek Bakery",
+      owner_name: "James Wilson",
+      farm_name: "Willow Creek Bakery",
       location: "Pinegrove, CA",
-      image: "https://images.unsplash.com/photo-1591688442527-894307a5226d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      image_url: "https://images.unsplash.com/photo-1591688442527-894307a5226d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Sourdough Breads & Pastries",
     },
     {
       id: "5",
-      name: "David Sanchez",
-      farmName: "Sunrise Poultry",
+      owner_name: "David Sanchez",
+      farm_name: "Sunrise Poultry",
       location: "Clearwater, CA",
-      image: "https://images.unsplash.com/photo-1569880153113-76e33fc52d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      image_url: "https://images.unsplash.com/photo-1569880153113-76e33fc52d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Free-Range Eggs & Poultry",
     },
     {
       id: "6",
-      name: "Amanda Taylor",
-      farmName: "Sweet Bee Apiary",
+      owner_name: "Amanda Taylor",
+      farm_name: "Sweet Bee Apiary",
       location: "Sunnyside, CA",
-      image: "https://images.unsplash.com/photo-1533323905636-7f0bfa0ba5ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+      image_url: "https://images.unsplash.com/photo-1533323905636-7f0bfa0ba5ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
       specialty: "Honey & Bee Products",
     },
   ];
