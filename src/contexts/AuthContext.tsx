@@ -91,6 +91,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           toast.error('Account created but role assignment failed. Please contact support.');
         } else {
           console.log('User role set successfully to:', role); // Debug log
+          
+          // Show specific message for farmers
+          if (role === 'farmer') {
+            toast.success('Farmer account created! You can now manage your products after logging in.');
+          }
         }
       }
       
