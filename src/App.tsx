@@ -26,7 +26,7 @@ const AppContent = () => (
     <Route path="/auth" element={<Auth />} />
     <Route path="/farmer-onboarding" element={<FarmerOnboarding />} />
     <Route path="/manage-products" element={
-      <ProtectedRoute requiredRole="farmer">
+      <ProtectedRoute requiredRole="vendor">
         <ManageProducts />
       </ProtectedRoute>
     } />

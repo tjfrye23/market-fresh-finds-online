@@ -81,10 +81,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Now that we have proper RLS policies, this should work without fallbacks
         const { error: roleError } = await supabase
           .from('user_roles')
-          .insert([{ 
+          .insert({
             user_id: userId, 
             role: role === 'vendor' ? 'vendor' : 'user' // Only allow 'vendor' or 'user' roles
-          }]);
+          });
         
         if (roleError) {
           console.error('Error setting user role:', roleError);
