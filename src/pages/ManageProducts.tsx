@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -225,7 +226,7 @@ const ManageProducts = () => {
       <Navbar />
       <main className="flex-grow">
         <PageHeader
-          title="Manage Your Products"
+          title="Manage Your Shop"
           description="Add and manage your products for the marketplace"
           image="https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
         />

@@ -78,7 +78,7 @@ const MobileMenu = ({
           >
             <div className="flex items-center">
               <Package className="mr-2 h-5 w-5" />
-              <span>Manage Products</span>
+              <span>Manage Your Shop</span>
             </div>
           </Link>
         )}

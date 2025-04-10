@@ -17,7 +17,7 @@ const DesktopNavLinks = ({ isVendor }: DesktopNavLinksProps) => {
         <NavbarLink
           to="/manage-products"
           icon={Package}
-          label="Manage Products"
+          label="Manage Your Shop"
           isHighlighted
         />
       )}
