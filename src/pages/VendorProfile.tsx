@@ -12,7 +12,8 @@ import PageHeader from "@/components/PageHeader";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ImageUploader from "@/components/ImageUploader";
-import { Loader2 } from "lucide-react";
+import { Loader2, Edit, Save, X } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface VendorProfile {
   id?: string;
@@ -30,6 +31,7 @@ const VendorProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<VendorProfile>({
     farm_name: "",
     owner_name: "",
@@ -124,12 +126,39 @@ const VendorProfile = () => {
         
         toast.success("Vendor profile updated successfully!");
       }
+      setIsEditing(false);
     } catch (error: any) {
       console.error("Error saving vendor profile:", error.message);
       toast.error("Failed to save vendor profile");
     } finally {
       setSaving(false);
     }
+  };
+
+  const startEditing = () => {
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    // Reload the profile data to revert changes
+    if (!isNewProfile && user) {
+      setLoading(true);
+      supabase
+        .from("vendor_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            toast.error("Could not reload your profile");
+            console.error(error);
+          } else if (data) {
+            setProfile(data);
+          }
+          setLoading(false);
+        });
+    }
+    setIsEditing(false);
   };
 
   if (loading) {
@@ -156,111 +185,173 @@ const VendorProfile = () => {
         
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <Label htmlFor="farm_name" className="text-base">
-                  Farm/Business Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="farm_name"
-                  name="farm_name"
-                  value={profile.farm_name}
-                  onChange={handleChange}
-                  placeholder="Your farm or business name"
-                  required
-                />
+            {isNewProfile || isEditing ? (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-4">
+                  <Label htmlFor="farm_name" className="text-base">
+                    Farm/Business Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="farm_name"
+                    name="farm_name"
+                    value={profile.farm_name}
+                    onChange={handleChange}
+                    placeholder="Your farm or business name"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <Label htmlFor="owner_name" className="text-base">
+                    Owner Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="owner_name"
+                    name="owner_name"
+                    value={profile.owner_name}
+                    onChange={handleChange}
+                    placeholder="Your full name"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <Label htmlFor="location" className="text-base">
+                    Location
+                  </Label>
+                  <Input
+                    id="location"
+                    name="location"
+                    value={profile.location || ""}
+                    onChange={handleChange}
+                    placeholder="City, State"
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <Label htmlFor="specialty" className="text-base">
+                    Specialty
+                  </Label>
+                  <Input
+                    id="specialty"
+                    name="specialty"
+                    value={profile.specialty || ""}
+                    onChange={handleChange}
+                    placeholder="E.g., Organic Vegetables, Artisanal Cheeses, etc."
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <Label htmlFor="description" className="text-base">
+                    About Your Farm/Business
+                  </Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    value={profile.description || ""}
+                    onChange={handleChange}
+                    placeholder="Tell customers about your farm, your growing practices, your story..."
+                    rows={5}
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <Label className="text-base">
+                    Farm/Business Image
+                  </Label>
+                  <ImageUploader
+                    existingImageUrl={profile.image_url}
+                    onImageUploaded={handleImageUploaded}
+                    onImageRemoved={handleImageRemoved}
+                  />
+                </div>
+                
+                <div className="pt-4 flex space-x-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={isNewProfile ? () => navigate("/manage-products") : cancelEditing} 
+                    type="button"
+                    className="w-1/2"
+                  >
+                    {isNewProfile ? "Cancel" : (
+                      <>
+                        <X className="mr-2" />
+                        Cancel Editing
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-market-green hover:bg-market-green-dark w-1/2"
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2" />
+                        {isNewProfile ? "Create Profile" : "Save Changes"}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              // View mode display
+              <div className="space-y-8">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-2xl font-bold text-market-green-dark">{profile.farm_name}</h2>
+                    <p className="text-lg text-gray-700">Owned by {profile.owner_name}</p>
+                    {profile.location && <p className="text-gray-600 mt-1">{profile.location}</p>}
+                  </div>
+                  <Button 
+                    onClick={startEditing} 
+                    className="bg-market-green hover:bg-market-green-dark"
+                  >
+                    <Edit className="mr-2" />
+                    Edit Profile
+                  </Button>
+                </div>
+
+                {profile.image_url && (
+                  <div className="rounded-lg overflow-hidden shadow-md h-64 w-full">
+                    <img 
+                      src={profile.image_url} 
+                      alt={profile.farm_name}
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                )}
+
+                {profile.specialty && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-market-green-dark">Specialty</h3>
+                    <p className="text-gray-700">{profile.specialty}</p>
+                  </div>
+                )}
+
+                {profile.description && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-market-green-dark">About Us</h3>
+                    <p className="text-gray-700 whitespace-pre-line">{profile.description}</p>
+                  </div>
+                )}
+
+                <div className="pt-6">
+                  <Button 
+                    onClick={() => navigate("/manage-products")} 
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                  >
+                    Manage Your Products
+                  </Button>
+                </div>
               </div>
-              
-              <div className="space-y-4">
-                <Label htmlFor="owner_name" className="text-base">
-                  Owner Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="owner_name"
-                  name="owner_name"
-                  value={profile.owner_name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <Label htmlFor="location" className="text-base">
-                  Location
-                </Label>
-                <Input
-                  id="location"
-                  name="location"
-                  value={profile.location || ""}
-                  onChange={handleChange}
-                  placeholder="City, State"
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <Label htmlFor="specialty" className="text-base">
-                  Specialty
-                </Label>
-                <Input
-                  id="specialty"
-                  name="specialty"
-                  value={profile.specialty || ""}
-                  onChange={handleChange}
-                  placeholder="E.g., Organic Vegetables, Artisanal Cheeses, etc."
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <Label htmlFor="description" className="text-base">
-                  About Your Farm/Business
-                </Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={profile.description || ""}
-                  onChange={handleChange}
-                  placeholder="Tell customers about your farm, your growing practices, your story..."
-                  rows={5}
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <Label className="text-base">
-                  Farm/Business Image
-                </Label>
-                <ImageUploader
-                  existingImageUrl={profile.image_url}
-                  onImageUploaded={handleImageUploaded}
-                  onImageRemoved={handleImageRemoved}
-                />
-              </div>
-              
-              <div className="pt-4 flex space-x-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate("/manage-products")} 
-                  type="button"
-                  className="w-1/2"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-market-green hover:bg-market-green-dark w-1/2"
-                  disabled={saving}
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    isNewProfile ? "Create Profile" : "Update Profile"
-                  )}
-                </Button>
-              </div>
-            </form>
+            )}
           </div>
         </div>
       </main>

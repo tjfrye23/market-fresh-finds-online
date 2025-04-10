@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
@@ -40,7 +39,6 @@ const Farmers = () => {
     },
   });
 
-  // Sample data as fallback
   const sampleFarmers = [
     {
       id: "1",
@@ -52,10 +50,10 @@ const Farmers = () => {
     },
     {
       id: "2",
-      name: "Michael Chen",
-      farmName: "Green Valley Farm",
+      owner_name: "Michael Chen",
+      farm_name: "Green Valley Farm",
       location: "Riverdale, CA",
-      image: "https://images.unsplash.com/photo-1621916805571-ed8f78673a0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2087&q=80",
+      image_url: "https://images.unsplash.com/photo-1621916805571-ed8f78673a0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2087&q=80",
       specialty: "Heirloom Vegetables",
     },
     {
@@ -161,7 +159,7 @@ const Farmers = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" 
+                  src="https://images.unsplash.com/photo-1459262566483-35e108d93f67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" 
                   alt="Farmer in field"
                   className="w-full h-full object-cover"
                 />
