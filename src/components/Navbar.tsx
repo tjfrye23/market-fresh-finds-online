@@ -1,13 +1,14 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ShoppingCart, Menu, X, Home, Apple, Users, Book, LogIn, LogOut, User, Package, Wheat } from "lucide-react";
+import { ShoppingCart, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import DesktopNavLinks from "./navbar/DesktopNavLinks";
+import UserActions from "./navbar/UserActions";
+import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -59,8 +60,8 @@ const Navbar = () => {
     closeMenu();
   };
 
-  const navigateToFarmerOnboarding = () => {
-    navigate("/farmer-onboarding");
+  const navigateToVendorOnboarding = () => {
+    navigate("/vendor-onboarding");
     closeMenu();
   };
 
@@ -82,30 +83,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            <Link to="/" className="flex items-center text-gray-700 hover:text-market-green transition-colors">
-              <Home className="mr-1 h-4 w-4" />
-              <span>Home</span>
-            </Link>
-            <Link to="/shop" className="flex items-center text-gray-700 hover:text-market-green transition-colors">
-              <Apple className="mr-1 h-4 w-4" />
-              <span>Shop</span>
-            </Link>
-            <Link to="/about" className="flex items-center text-gray-700 hover:text-market-green transition-colors">
-              <Book className="mr-1 h-4 w-4" />
-              <span>About Us</span>
-            </Link>
-            <Link to="/farmers" className="flex items-center text-gray-700 hover:text-market-green transition-colors">
-              <Users className="mr-1 h-4 w-4" />
-              <span>Our Vendors</span>
-            </Link>
-            {isVendor && (
-              <Link to="/manage-products" className="flex items-center text-market-green-dark hover:text-market-green transition-colors">
-                <Package className="mr-1 h-4 w-4" />
-                <span>Manage Products</span>
-              </Link>
-            )}
-          </div>
+          <DesktopNavLinks isVendor={isVendor} />
 
           {/* Shopping Cart, Auth, and Mobile Menu Button */}
           <div className="flex items-center space-x-2">
@@ -113,46 +91,13 @@ const Navbar = () => {
               <ShoppingCart className="h-6 w-6" />
             </Link>
 
-            {user ? (
-              <div className="flex items-center">
-                <Avatar className="h-8 w-8 hidden md:flex">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="bg-market-green text-white">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleLogout} 
-                  className="hidden md:flex items-center ml-2"
-                >
-                  <LogOut className="mr-1 h-4 w-4" />
-                  <span>Logout</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="hidden md:flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleLogin} 
-                  className="items-center"
-                >
-                  <LogIn className="mr-1 h-4 w-4" />
-                  <span>Login</span>
-                </Button>
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  onClick={navigateToFarmerOnboarding}
-                  className="bg-market-green hover:bg-market-green-dark items-center"
-                >
-                  <Wheat className="mr-1 h-4 w-4" />
-                  <span>Join as a Vendor</span>
-                </Button>
-              </div>
-            )}
+            <UserActions 
+              user={user}
+              getUserInitials={getUserInitials}
+              handleLogin={handleLogin}
+              handleLogout={handleLogout}
+              navigateToVendorOnboarding={navigateToVendorOnboarding}
+            />
 
             {/* Mobile Menu Button */}
             <button
@@ -166,99 +111,15 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white">
-          <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
-            <Link
-              to="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-              onClick={closeMenu}
-            >
-              <div className="flex items-center">
-                <Home className="mr-2 h-5 w-5" />
-                <span>Home</span>
-              </div>
-            </Link>
-            <Link
-              to="/shop"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-              onClick={closeMenu}
-            >
-              <div className="flex items-center">
-                <Apple className="mr-2 h-5 w-5" />
-                <span>Shop</span>
-              </div>
-            </Link>
-            <Link
-              to="/about"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-              onClick={closeMenu}
-            >
-              <div className="flex items-center">
-                <Book className="mr-2 h-5 w-5" />
-                <span>About Us</span>
-              </div>
-            </Link>
-            <Link
-              to="/farmers"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-              onClick={closeMenu}
-            >
-              <div className="flex items-center">
-                <Users className="mr-2 h-5 w-5" />
-                <span>Our Vendors</span>
-              </div>
-            </Link>
-            
-            {isVendor && (
-              <Link
-                to="/manage-products"
-                className="block px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"
-                onClick={closeMenu}
-              >
-                <div className="flex items-center">
-                  <Package className="mr-2 h-5 w-5" />
-                  <span>Manage Products</span>
-                </div>
-              </Link>
-            )}
-            
-            {/* Authentication for Mobile */}
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-              >
-                <div className="flex items-center">
-                  <LogOut className="mr-2 h-5 w-5" />
-                  <span>Logout</span>
-                </div>
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={handleLogin}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-                >
-                  <div className="flex items-center">
-                    <LogIn className="mr-2 h-5 w-5" />
-                    <span>Login</span>
-                  </div>
-                </button>
-                <button
-                  onClick={navigateToFarmerOnboarding}
-                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-market-green hover:text-market-green-dark hover:bg-gray-50"
-                >
-                  <div className="flex items-center">
-                    <Wheat className="mr-2 h-5 w-5" />
-                    <span>Join as a Vendor</span>
-                  </div>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <MobileMenu 
+        isOpen={isMenuOpen}
+        isVendor={isVendor}
+        isLoggedIn={!!user}
+        onClose={closeMenu}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+        onVendorSignup={navigateToVendorOnboarding}
+      />
     </nav>
   );
 };
