@@ -41,7 +41,7 @@ const ProductDialog = ({
       <DialogTrigger asChild>
         <Button onClick={handleAddNewClick}>
           <Plus className="mr-2 h-4 w-4" />
-          Add New Product
+          Add New Products
         </Button>
       </DialogTrigger>
       {editingProduct && (
