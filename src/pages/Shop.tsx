@@ -6,21 +6,7 @@ import PageHeader from "@/components/PageHeader";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  unit: string;
-  image: string | null;
-  description: string | null;
-  organic: boolean | null;
-  local: boolean | null;
-  category: string;
-  farmer_id: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Product } from "@/components/product/types";
 
 const Shop = () => {
   const [sortBy, setSortBy] = useState("featured");
@@ -248,7 +234,7 @@ const Shop = () => {
                       name={product.name}
                       price={product.price}
                       unit={product.unit}
-                      image={product.image || "https://via.placeholder.com/300x200?text=No+Image"}
+                      image={product.image || "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"}
                       organic={product.organic || false}
                       local={product.local || false}
                     />
