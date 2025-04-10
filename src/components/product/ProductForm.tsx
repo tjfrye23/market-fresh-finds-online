@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Form,
   FormControl,
@@ -108,7 +108,7 @@ const ProductForm = ({
   };
 
   return (
-    <ScrollArea className="max-h-[60vh] pr-4">
+    <div className="max-h-[70vh] overflow-y-auto pr-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -297,7 +297,7 @@ const ProductForm = ({
           </div>
         </form>
       </Form>
-    </ScrollArea>
+    </div>
   );
 };
 

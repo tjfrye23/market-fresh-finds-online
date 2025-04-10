@@ -135,16 +135,18 @@ const AddProducts = () => {
               <h2 className="text-xl font-semibold mb-4">
                 {currentProduct ? "Edit Product" : "Add New Product"}
               </h2>
-              <ProductForm
-                editingProduct={null}
-                initialValues={currentProduct || undefined}
-                onSuccess={handleProductSubmit}
-                onCancel={() => {
-                  setShowForm(false);
-                  setCurrentProduct(null);
-                }}
-                submitButtonText="Add to Queue"
-              />
+              <div className="max-h-[80vh]">
+                <ProductForm
+                  editingProduct={null}
+                  initialValues={currentProduct || undefined}
+                  onSuccess={handleProductSubmit}
+                  onCancel={() => {
+                    setShowForm(false);
+                    setCurrentProduct(null);
+                  }}
+                  submitButtonText="Add to Queue"
+                />
+              </div>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
