@@ -77,21 +77,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userId = response.data.user.id;
         console.log('User created with ID:', userId); // Debug log
         
+        // Update: Handle the role conversion - in database "farmer" is used instead of "vendor"
+        const dbRole = role === 'vendor' ? 'farmer' : role;
+        
         // Insert the role directly through the public API
-        // Now that we have proper RLS policies, this should work without fallbacks
-        // Use type assertion to tell TypeScript that 'vendor' is a valid role
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({
             user_id: userId, 
-            role: role === 'vendor' ? 'vendor' : 'user' // Only allow 'vendor' or 'user' roles
-          } as any); // Using 'as any' to bypass type checking temporarily
+            role: dbRole // Use 'farmer' in database when 'vendor' is requested
+          });
         
         if (roleError) {
           console.error('Error setting user role:', roleError);
           toast.error('Account created but role assignment failed. Please contact support.');
         } else {
-          console.log('User role set successfully to:', role); // Debug log
+          console.log('User role set successfully to:', dbRole); // Debug log
           
           // Show specific message for vendors
           if (role === 'vendor') {

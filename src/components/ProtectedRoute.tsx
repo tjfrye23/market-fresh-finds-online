@@ -29,7 +29,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
         return null;
       }
       
-      return data?.role as 'user' | 'vendor' | 'admin' | null; // Updated to use 'vendor' instead of 'farmer'
+      // Convert 'farmer' database role to 'vendor' in the UI
+      if (data?.role === 'farmer') {
+        return 'vendor';
+      }
+      
+      return data?.role as 'user' | 'vendor' | 'admin' | null;
     },
     enabled: !!user,
   });
