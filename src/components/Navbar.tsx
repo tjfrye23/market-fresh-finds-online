@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ShoppingCart, Menu, X } from "lucide-react";
@@ -29,11 +28,6 @@ const Navbar = () => {
       if (error) {
         console.error('Error fetching user role:', error);
         return null;
-      }
-      
-      // Convert 'farmer' database role to 'vendor' in the UI
-      if (data?.role === 'farmer') {
-        return 'vendor';
       }
       
       return data?.role as 'user' | 'vendor' | 'admin' | null;
@@ -80,17 +74,14 @@ const Navbar = () => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Brand */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center" onClick={closeMenu}>
               <span className="text-market-green-dark font-display text-2xl font-bold">Market Fresh</span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <DesktopNavLinks isVendor={isVendor} />
 
-          {/* Shopping Cart, Auth, and Mobile Menu Button */}
           <div className="flex items-center space-x-2">
             <Link to="/cart" className="p-2 text-gray-700 hover:text-market-green transition-colors">
               <ShoppingCart className="h-6 w-6" />
@@ -104,7 +95,6 @@ const Navbar = () => {
               navigateToVendorOnboarding={navigateToVendorOnboarding}
             />
 
-            {/* Mobile Menu Button */}
             <button
               onClick={toggleMenu}
               className="ml-2 p-2 rounded-md text-gray-700 md:hidden focus:outline-none"
@@ -115,7 +105,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <MobileMenu 
         isOpen={isMenuOpen}
         isVendor={isVendor}

@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'user' | 'vendor' | 'admin'; // Updated to use 'vendor' instead of 'farmer'
+  requiredRole?: 'user' | 'vendor' | 'admin';
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
@@ -27,11 +27,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
       if (error) {
         console.error('Error fetching user role:', error);
         return null;
-      }
-      
-      // Convert 'farmer' database role to 'vendor' in the UI
-      if (data?.role === 'farmer') {
-        return 'vendor';
       }
       
       return data?.role as 'user' | 'vendor' | 'admin' | null;
