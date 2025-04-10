@@ -1,14 +1,13 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, Wheat } from "lucide-react";
+import { LogIn, Wheat } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
 interface UserActionsProps {
   user: User | null;
   getUserInitials: () => string;
   handleLogin: () => void;
-  handleLogout: () => void;
   navigateToVendorOnboarding: () => void;
 }
 
@@ -16,7 +15,6 @@ const UserActions = ({
   user,
   getUserInitials,
   handleLogin,
-  handleLogout,
   navigateToVendorOnboarding
 }: UserActionsProps) => {
   if (user) {
@@ -28,15 +26,6 @@ const UserActions = ({
             {getUserInitials()}
           </AvatarFallback>
         </Avatar>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleLogout} 
-          className="hidden md:flex items-center ml-2"
-        >
-          <LogOut className="mr-1 h-4 w-4" />
-          <span>Logout</span>
-        </Button>
       </div>
     );
   }

@@ -1,7 +1,6 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -90,7 +89,6 @@ const Navbar = () => {
               user={user}
               getUserInitials={getUserInitials}
               handleLogin={handleLogin}
-              handleLogout={handleLogout}
               navigateToVendorOnboarding={navigateToVendorOnboarding}
             />
 
