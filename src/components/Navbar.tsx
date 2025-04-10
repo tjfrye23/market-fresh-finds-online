@@ -6,12 +6,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import DesktopNavLinks from "./navbar/DesktopNavLinks";
 import UserActions from "./navbar/UserActions";
-import MobileMenu from "./navbar/MobileMenu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import NavLinks from "./navbar/NavLinks";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -38,12 +42,8 @@ const Navbar = () => {
 
   const isVendor = userRole === 'vendor';
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   const closeMenu = () => {
-    setIsMenuOpen(false);
+    setIsOpen(false);
   };
 
   const handleLogout = async () => {
@@ -81,8 +81,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <DesktopNavLinks isVendor={isVendor} />
-
           <div className="flex items-center space-x-2">
             <Link to="/cart" className="p-2 text-gray-700 hover:text-market-green transition-colors">
               <ShoppingCart className="h-6 w-6" />
@@ -96,25 +94,26 @@ const Navbar = () => {
               navigateToVendorOnboarding={navigateToVendorOnboarding}
             />
 
-            <button
-              onClick={toggleMenu}
-              className="ml-2 p-2 rounded-md text-gray-700 md:hidden focus:outline-none"
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <button className="p-2 rounded-md text-gray-700 focus:outline-none">
+                  <Menu className="h-6 w-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent className="w-[300px] sm:w-[350px] pt-14">
+                <NavLinks 
+                  isVendor={isVendor} 
+                  isLoggedIn={!!user}
+                  onClose={() => setIsOpen(false)}
+                  onLogin={handleLogin}
+                  onLogout={handleLogout}
+                  onVendorSignup={navigateToVendorOnboarding}
+                />
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
-
-      <MobileMenu 
-        isOpen={isMenuOpen}
-        isVendor={isVendor}
-        isLoggedIn={!!user}
-        onClose={closeMenu}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-        onVendorSignup={navigateToVendorOnboarding}
-      />
     </nav>
   );
 };
