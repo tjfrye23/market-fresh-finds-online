@@ -113,9 +113,9 @@ const Auth = () => {
                     </div>
                     
                     <div className="flex items-center space-x-2 border p-3 rounded-md">
-                      <RadioGroupItem value="farmer" id="farmer" />
-                      <Label htmlFor="farmer" className="cursor-pointer flex-grow">
-                        <span className="font-medium">Farmer</span>
+                      <RadioGroupItem value="vendor" id="vendor" />
+                      <Label htmlFor="vendor" className="cursor-pointer flex-grow">
+                        <span className="font-medium">Vendor</span>
                         <p className="text-sm text-gray-500">I want to sell my produce in the marketplace</p>
                       </Label>
                     </div>

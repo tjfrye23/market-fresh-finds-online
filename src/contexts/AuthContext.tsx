@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .from('user_roles')
           .insert([{ 
             user_id: userId, 
-            role: role === 'farmer' ? 'farmer' : 'user' // Only allow 'farmer' or 'user' roles
+            role: role === 'vendor' ? 'vendor' : 'user' // Only allow 'vendor' or 'user' roles
           }]);
         
         if (roleError) {
@@ -92,9 +92,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           console.log('User role set successfully to:', role); // Debug log
           
-          // Show specific message for farmers
-          if (role === 'farmer') {
-            toast.success('Farmer account created! You can now manage your products after logging in.');
+          // Show specific message for vendors
+          if (role === 'vendor') {
+            toast.success('Vendor account created! You can now manage your products after logging in.');
           }
         }
       }

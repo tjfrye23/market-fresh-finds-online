@@ -30,12 +30,12 @@ const Navbar = () => {
         return null;
       }
       
-      return data?.role as 'user' | 'farmer' | 'admin' | null;
+      return data?.role as 'user' | 'vendor' | 'admin' | null;
     },
     enabled: !!user,
   });
 
-  const isFarmer = userRole === 'farmer';
+  const isVendor = userRole === 'vendor';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -97,9 +97,9 @@ const Navbar = () => {
             </Link>
             <Link to="/farmers" className="flex items-center text-gray-700 hover:text-market-green transition-colors">
               <Users className="mr-1 h-4 w-4" />
-              <span>Our Farmers</span>
+              <span>Our Vendors</span>
             </Link>
-            {isFarmer && (
+            {isVendor && (
               <Link to="/manage-products" className="flex items-center text-market-green-dark hover:text-market-green transition-colors">
                 <Package className="mr-1 h-4 w-4" />
                 <span>Manage Products</span>
@@ -206,11 +206,11 @@ const Navbar = () => {
             >
               <div className="flex items-center">
                 <Users className="mr-2 h-5 w-5" />
-                <span>Our Farmers</span>
+                <span>Our Vendors</span>
               </div>
             </Link>
             
-            {isFarmer && (
+            {isVendor && (
               <Link
                 to="/manage-products"
                 className="block px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"

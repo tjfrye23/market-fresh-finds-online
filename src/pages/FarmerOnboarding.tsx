@@ -28,12 +28,12 @@ const FarmerOnboarding = () => {
     setLoading(true);
     
     try {
-      // Always set the role as "farmer" for users signing up through this page
+      // Always set the role as "vendor" for users signing up through this page
       const { error } = await signUp(
         email, 
         password, 
         fullName, 
-        "farmer" // Explicitly set role to farmer
+        "vendor" // Explicitly set role to vendor
       );
       
       if (error) throw error;
