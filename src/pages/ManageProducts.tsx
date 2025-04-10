@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -7,11 +8,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
 import ProductList from "@/components/product/ProductList";
 import ProductDialog from "@/components/product/ProductDialog";
 import { Product } from "@/components/product/types";
-import { Plus } from "lucide-react";
 
 const ManageProducts = () => {
   const { user } = useAuth();
@@ -60,10 +59,6 @@ const ManageProducts = () => {
         <div className="page-container py-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Your Shop</h2>
-            <Button onClick={() => navigate("/add-products")}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add New Product
-            </Button>
             
             <ProductDialog 
               isOpen={isDialogOpen}
