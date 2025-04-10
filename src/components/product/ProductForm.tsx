@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -99,6 +98,7 @@ const ProductForm = ({
       onSuccess(variables);
     },
     onError: (error) => {
+      console.error("Form submission error:", error);
       toast.error(`Error: ${error.message}`);
     },
   });

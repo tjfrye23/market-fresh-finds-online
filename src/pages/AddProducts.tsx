@@ -48,6 +48,7 @@ const AddProducts = () => {
       navigate("/manage-products");
     },
     onError: (error) => {
+      console.error("Error saving products:", error);
       toast.error(`Error: ${error.message}`);
     },
   });
