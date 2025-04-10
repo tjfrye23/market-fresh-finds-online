@@ -32,17 +32,25 @@ import { Product, ProductFormValues } from "./types";
 
 interface ProductFormProps {
   editingProduct: Product | null;
-  onSuccess: () => void;
+  initialValues?: ProductFormValues;
+  onSuccess: (values: ProductFormValues) => void;
   onCancel: () => void;
+  submitButtonText?: string;
 }
 
-const ProductForm = ({ editingProduct, onSuccess, onCancel }: ProductFormProps) => {
+const ProductForm = ({ 
+  editingProduct, 
+  initialValues, 
+  onSuccess, 
+  onCancel, 
+  submitButtonText = "Save Product" 
+}: ProductFormProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: {
+    defaultValues: initialValues || {
       name: editingProduct?.name || "",
       price: editingProduct ? editingProduct.price.toString() : "",
       unit: editingProduct?.unit || "",
@@ -56,38 +64,39 @@ const ProductForm = ({ editingProduct, onSuccess, onCancel }: ProductFormProps) 
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
-      const productData = {
-        name: values.name,
-        price: parseFloat(values.price),
-        unit: values.unit,
-        category: values.category,
-        description: values.description || null,
-        image: values.image || null,
-        organic: values.organic,
-        local: values.local,
-        farmer_id: user?.id
-      };
-
-      let response;
+      // Only perform the database operation if we're editing an existing product
       if (editingProduct) {
-        response = await supabase
+        const productData = {
+          name: values.name,
+          price: parseFloat(values.price),
+          unit: values.unit,
+          category: values.category,
+          description: values.description || null,
+          image: values.image || null,
+          organic: values.organic,
+          local: values.local,
+          farmer_id: user?.id
+        };
+
+        const response = await supabase
           .from("products")
           .update(productData)
           .eq("id", editingProduct.id);
-      } else {
-        response = await supabase
-          .from("products")
-          .insert([productData]);
-      }
 
-      if (response.error) throw response.error;
-      return response.data;
+        if (response.error) throw response.error;
+        return response.data;
+      }
+      
+      // If not editing, just return the values (they'll be handled by the parent)
+      return values;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["farmerProducts"] });
-      toast.success(editingProduct ? "Product updated" : "Product added");
+    onSuccess: (_, variables) => {
+      if (editingProduct) {
+        queryClient.invalidateQueries({ queryKey: ["farmerProducts"] });
+        toast.success("Product updated");
+      }
       form.reset();
-      onSuccess();
+      onSuccess(variables);
     },
     onError: (error) => {
       toast.error(`Error: ${error.message}`);
@@ -99,7 +108,7 @@ const ProductForm = ({ editingProduct, onSuccess, onCancel }: ProductFormProps) 
   };
 
   return (
-    <ScrollArea className="h-[60vh] pr-4">
+    <ScrollArea className="max-h-[60vh] pr-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -283,7 +292,7 @@ const ProductForm = ({ editingProduct, onSuccess, onCancel }: ProductFormProps) 
               Cancel
             </Button>
             <Button type="submit" disabled={addProductMutation.isPending}>
-              {addProductMutation.isPending ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+              {addProductMutation.isPending ? "Saving..." : submitButtonText}
             </Button>
           </div>
         </form>

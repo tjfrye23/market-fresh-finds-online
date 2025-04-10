@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button";
 import ProductList from "@/components/product/ProductList";
 import ProductDialog from "@/components/product/ProductDialog";
 import { Product } from "@/components/product/types";
+import { Plus } from "lucide-react";
 
 const ManageProducts = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -58,6 +60,11 @@ const ManageProducts = () => {
         <div className="page-container py-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Your Shop</h2>
+            <Button onClick={() => navigate("/add-products")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Product
+            </Button>
+            
             <ProductDialog 
               isOpen={isDialogOpen}
               onOpenChange={setIsDialogOpen}

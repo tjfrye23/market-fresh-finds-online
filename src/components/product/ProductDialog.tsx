@@ -1,4 +1,5 @@
 
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ProductForm from "./ProductForm";
-import { Product } from "./types";
+import { Product, ProductFormValues } from "./types";
 
 interface ProductDialogProps {
   isOpen: boolean;
@@ -24,26 +25,39 @@ const ProductDialog = ({
   editingProduct, 
   onResetForm 
 }: ProductDialogProps) => {
+  const navigate = useNavigate();
+
+  const handleAddNewClick = () => {
+    onResetForm();
+    navigate("/add-products");
+  };
+
+  const handleSuccess = (values: ProductFormValues) => {
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button onClick={onResetForm}>
+        <Button onClick={handleAddNewClick}>
           <Plus className="mr-2 h-4 w-4" />
           Add New Product
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
-          <DialogTitle>
-            {editingProduct ? "Edit Product" : "Add New Product"}
-          </DialogTitle>
-        </DialogHeader>
-        <ProductForm 
-          editingProduct={editingProduct} 
-          onSuccess={() => onOpenChange(false)} 
-          onCancel={onResetForm} 
-        />
-      </DialogContent>
+      {editingProduct && (
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>
+              Edit Product
+            </DialogTitle>
+          </DialogHeader>
+          <ProductForm 
+            editingProduct={editingProduct} 
+            onSuccess={handleSuccess} 
+            onCancel={onResetForm} 
+          />
+        </DialogContent>
+      )}
     </Dialog>
   );
 };

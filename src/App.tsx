@@ -13,6 +13,7 @@ import Farmers from "./pages/Farmers";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ManageProducts from "./pages/ManageProducts";
+import AddProducts from "./pages/AddProducts";
 import VendorOnboarding from "./pages/VendorOnboarding";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,11 @@ const AppContent = () => (
     <Route path="/manage-products" element={
       <ProtectedRoute requiredRole="vendor">
         <ManageProducts />
+      </ProtectedRoute>
+    } />
+    <Route path="/add-products" element={
+      <ProtectedRoute requiredRole="vendor">
+        <AddProducts />
       </ProtectedRoute>
     } />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
