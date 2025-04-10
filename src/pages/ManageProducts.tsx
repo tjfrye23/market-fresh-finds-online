@@ -233,7 +233,7 @@ const ManageProducts = () => {
 
         <div className="page-container py-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Your Products</h2>
+            <h2 className="text-2xl font-semibold">Your Shop</h2>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => {
