@@ -72,7 +72,7 @@ const FarmerOnboarding = () => {
               id="farmName"
               value={farmName}
               onChange={(e) => setFarmName(e.target.value)}
-              placeholder="Your vendor's name"
+              placeholder="Your vendor name"
               required
             />
           </div>
