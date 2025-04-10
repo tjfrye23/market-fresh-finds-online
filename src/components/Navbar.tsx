@@ -30,7 +30,7 @@ const Navbar = () => {
         return null;
       }
       
-      return data?.role as 'user' | 'vendor' | 'admin' | null;
+      return data?.role as 'user' | 'vendor' | 'admin' | null; // Updated to use 'vendor' instead of 'farmer'
     },
     enabled: !!user,
   });

@@ -79,12 +79,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Insert the role directly through the public API
         // Now that we have proper RLS policies, this should work without fallbacks
+        // Use type assertion to tell TypeScript that 'vendor' is a valid role
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({
             user_id: userId, 
             role: role === 'vendor' ? 'vendor' : 'user' // Only allow 'vendor' or 'user' roles
-          });
+          } as any); // Using 'as any' to bypass type checking temporarily
         
         if (roleError) {
           console.error('Error setting user role:', roleError);

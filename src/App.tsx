@@ -13,7 +13,7 @@ import Farmers from "./pages/Farmers";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ManageProducts from "./pages/ManageProducts";
-import FarmerOnboarding from "./pages/FarmerOnboarding";
+import VendorOnboarding from "./pages/VendorOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +24,8 @@ const AppContent = () => (
     <Route path="/about" element={<About />} />
     <Route path="/farmers" element={<Farmers />} />
     <Route path="/auth" element={<Auth />} />
-    <Route path="/farmer-onboarding" element={<FarmerOnboarding />} />
+    <Route path="/farmer-onboarding" element={<VendorOnboarding />} />
+    <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
     <Route path="/manage-products" element={
       <ProtectedRoute requiredRole="vendor">
         <ManageProducts />

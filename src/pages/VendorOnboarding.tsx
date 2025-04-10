@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 import { useNavigate } from "react-router-dom";
 
-const FarmerOnboarding = () => {
+const VendorOnboarding = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -126,4 +126,4 @@ const FarmerOnboarding = () => {
   );
 };
 
-export default FarmerOnboarding;
+export default VendorOnboarding;

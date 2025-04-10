@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'user' | 'vendor' | 'admin';
+  requiredRole?: 'user' | 'vendor' | 'admin'; // Updated to use 'vendor' instead of 'farmer'
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
         return null;
       }
       
-      return data?.role as 'user' | 'vendor' | 'admin' | null;
+      return data?.role as 'user' | 'vendor' | 'admin' | null; // Updated to use 'vendor' instead of 'farmer'
     },
     enabled: !!user,
   });
