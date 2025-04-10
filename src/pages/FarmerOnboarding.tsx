@@ -67,12 +67,12 @@ const FarmerOnboarding = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="farmName">Farm Name</Label>
+            <Label htmlFor="farmName">Vendor Name</Label>
             <Input
               id="farmName"
               value={farmName}
               onChange={(e) => setFarmName(e.target.value)}
-              placeholder="Your farm's name"
+              placeholder="Your vendor's name"
               required
             />
           </div>
