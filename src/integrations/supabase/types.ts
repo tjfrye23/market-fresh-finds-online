@@ -14,7 +14,6 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
-          farmer_id: string
           id: string
           image: string | null
           local: boolean | null
@@ -23,12 +22,12 @@ export type Database = {
           price: number
           unit: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           category: string
           created_at?: string
           description?: string | null
-          farmer_id: string
           id?: string
           image?: string | null
           local?: boolean | null
@@ -37,12 +36,12 @@ export type Database = {
           price: number
           unit: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           category?: string
           created_at?: string
           description?: string | null
-          farmer_id?: string
           id?: string
           image?: string | null
           local?: boolean | null
@@ -51,6 +50,7 @@ export type Database = {
           price?: number
           unit?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

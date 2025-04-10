@@ -24,7 +24,7 @@ const ManageProducts = () => {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("farmer_id", user?.id)
+        .eq("user_id", user?.id)
         .order("created_at", { ascending: false });
 
       if (error) {

@@ -74,7 +74,7 @@ const ProductForm = ({
           image: values.image || null,
           organic: values.organic,
           local: values.local,
-          farmer_id: user?.id
+          user_id: user?.id
         };
 
         const response = await supabase

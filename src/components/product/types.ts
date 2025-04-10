@@ -12,7 +12,7 @@ export interface Product {
   organic: boolean | null;
   local: boolean | null;
   category: string;
-  farmer_id: string;
+  user_id: string;
   created_at: string;
   updated_at: string;
 }
