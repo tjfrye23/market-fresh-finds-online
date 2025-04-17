@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -21,6 +22,7 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -55,10 +57,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return response;
   };
 
-  const signUp = async (email: string, password: string, fullName: string, role: string = 'user') => {
+  const signUp = async (email: string, password: string, fullName: string, role: Database["public"]["Enums"]["user_role"] = 'user') => {
     setLoading(true);
     console.log('Signing up with role:', role); // Debug log
-    
+
     try {
       // First, create the user account
       const response = await supabase.auth.signUp({
@@ -71,33 +73,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           },
         },
       });
-      
+
       // If signup is successful and we have a user, add their role to the user_roles table
       if (response.data.user && !response.error) {
         const userId = response.data.user.id;
         console.log('User created with ID:', userId); // Debug log
-        
+
         // Use type assertion to tell TypeScript that 'vendor' is a valid role
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({
-            user_id: userId, 
-            role: role // Use role directly - assuming the database now accepts 'vendor'
-          } as any); // Using 'as any' to bypass type checking temporarily
-        
+            user_id: userId,
+            role: role
+          });
+
         if (roleError) {
           console.error('Error setting user role:', roleError);
           toast.error('Account created but role assignment failed. Please contact support.');
         } else {
           console.log('User role set successfully to:', role); // Debug log
-          
+
           // Show specific message for vendors
           if (role === 'vendor') {
             toast.success('Vendor account created! You can now manage your products after logging in.');
           }
         }
       }
-      
+
       setLoading(false);
       return response;
     } catch (error) {

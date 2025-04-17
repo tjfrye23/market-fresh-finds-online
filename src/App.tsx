@@ -9,7 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import About from "./pages/About";
-import Farmers from "./pages/Farmers";
+import Vendors from "./pages/Vendors";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ManageProducts from "./pages/ManageProducts";
@@ -25,12 +25,9 @@ const AppContent = () => (
     <Route path="/" element={<Index />} />
     <Route path="/shop" element={<Shop />} />
     <Route path="/about" element={<About />} />
-    <Route path="/farmers" element={<Farmers />} />
+    <Route path="/vendors" element={<Vendors />} />
     <Route path="/vendors/:id" element={<VendorDetail />} />
-    {/* Redirect old path to new path */}
-    <Route path="/farmers/:id" element={<Navigate to={(props) => `/vendors/${props.match.params.id}`} replace />} />
     <Route path="/auth" element={<Auth />} />
-    <Route path="/farmer-onboarding" element={<VendorOnboarding />} />
     <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
     <Route path="/vendor-profile" element={
       <ProtectedRoute requiredRole="vendor">

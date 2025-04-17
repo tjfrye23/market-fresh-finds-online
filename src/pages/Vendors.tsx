@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
-import FarmerCard from "@/components/FarmerCard";
+import VendorCard from "@/components/VendorCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,39 +13,39 @@ import { useQuery } from "@tanstack/react-query";
 
 interface Vendor {
   id: string;
-  farm_name: string;
+  vendor_name: string;
   owner_name: string;
   location: string | null;
   image_url: string | null;
   specialty: string | null;
 }
 
-const Farmers = () => {
+const Vendors = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const { data: vendors, isLoading } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('vendor_profiles')
-        .select('id, farm_name, owner_name, location, image_url, specialty');
-      
+        .select('id, vendor_name, owner_name, location, image_url, specialty');
+
       if (error) {
         console.error('Error fetching vendors:', error);
         throw error;
       }
-      
+
       return data as Vendor[];
     },
   });
 
-  // Update sample farmers to use the correct property names that match FarmerCardProps
-  const sampleFarmers = [
+  // Update sample vendors to use the correct property names that match VendorsCardProps
+  const sampleVendors = [
     {
       id: "1",
       owner_name: "Emma Rodriguez",
-      farm_name: "Sunshine Orchards",
+      vendor_name: "Sunshine Orchards",
       location: "Meadowville, CA",
       image_url: "https://images.unsplash.com/photo-1520052203542-d3095f1b6cf0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
       specialty: "Organic Fruits & Berries",
@@ -53,7 +53,7 @@ const Farmers = () => {
     {
       id: "2",
       owner_name: "Michael Chen",
-      farm_name: "Green Valley Farm",
+      vendor_name: "Green Valley Farm",
       location: "Riverdale, CA",
       image_url: "https://images.unsplash.com/photo-1621916805571-ed8f78673a0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2087&q=80",
       specialty: "Heirloom Vegetables",
@@ -61,7 +61,7 @@ const Farmers = () => {
     {
       id: "3",
       owner_name: "Sarah Johnson",
-      farm_name: "Hill & Dale Dairy",
+      vendor_name: "Hill & Dale Dairy",
       location: "Oakridge, CA",
       image_url: "https://images.unsplash.com/photo-1573497019236-61f323985466?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Artisanal Cheeses & Dairy Products",
@@ -69,7 +69,7 @@ const Farmers = () => {
     {
       id: "4",
       owner_name: "James Wilson",
-      farm_name: "Willow Creek Bakery",
+      vendor_name: "Willow Creek Bakery",
       location: "Pinegrove, CA",
       image_url: "https://images.unsplash.com/photo-1591688442527-894307a5226d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Sourdough Breads & Pastries",
@@ -77,7 +77,7 @@ const Farmers = () => {
     {
       id: "5",
       owner_name: "David Sanchez",
-      farm_name: "Sunrise Poultry",
+      vendor_name: "Sunrise Poultry",
       location: "Clearwater, CA",
       image_url: "https://images.unsplash.com/photo-1569880153113-76e33fc52d5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       specialty: "Free-Range Eggs & Poultry",
@@ -85,7 +85,7 @@ const Farmers = () => {
     {
       id: "6",
       owner_name: "Amanda Taylor",
-      farm_name: "Sweet Bee Apiary",
+      vendor_name: "Sweet Bee Apiary",
       location: "Sunnyside, CA",
       image_url: "https://images.unsplash.com/photo-1533323905636-7f0bfa0ba5ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
       specialty: "Honey & Bee Products",
@@ -104,8 +104,8 @@ const Farmers = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        <PageHeader 
-          title="Meet Our Farmers" 
+        <PageHeader
+          title="Meet Our Vendors"
           description="The passionate people behind our fresh, local products"
           image="https://images.unsplash.com/photo-1618982469792-bd2270c20228?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
         />
@@ -115,7 +115,7 @@ const Farmers = () => {
             <div className="max-w-3xl mx-auto text-center mb-12">
               <h2 className="text-3xl font-display font-bold text-market-green-dark mb-4">The Heart of Our Market</h2>
               <p className="text-lg text-gray-700">
-                Our farmers are the backbone of Market Fresh. Each one brings unique skills, knowledge, and passion to their craft, resulting in the exceptional quality and variety you'll find at our market. Get to know the people who grow your food!
+                Our vendors are the backbone of Market Fresh. Each one brings unique skills, knowledge, and passion to their craft, resulting in the exceptional quality and variety you'll find at our market. Get to know the people who grow your food!
               </p>
             </div>
 
@@ -128,11 +128,11 @@ const Farmers = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {(vendors && vendors.length > 0) ? (
                   vendors.map((vendor) => (
-                    <FarmerCard key={vendor.id} {...vendor} />
+                    <VendorCard key={vendor.id} {...vendor} />
                   ))
                 ) : (
-                  sampleFarmers.map((farmer) => (
-                    <FarmerCard key={farmer.id} {...farmer} />
+                  sampleVendors.map((farmer) => (
+                    <VendorCard key={farmer.id} {...farmer} />
                   ))
                 )}
               </div>
@@ -152,7 +152,7 @@ const Farmers = () => {
                   <li>Marketing support to help tell your story</li>
                   <li>A community of like-minded producers and customers</li>
                 </ul>
-                <Button 
+                <Button
                   className="bg-market-green hover:bg-market-green-dark"
                   onClick={handleVendorSignup}
                 >
@@ -160,8 +160,8 @@ const Farmers = () => {
                 </Button>
               </div>
               <div className="rounded-lg overflow-hidden shadow-xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1459262566483-35e108d93f67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" 
+                <img
+                  src="https://images.unsplash.com/photo-1459262566483-35e108d93f67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
                   alt="Farmer in field"
                   className="w-full h-full object-cover"
                 />
@@ -174,16 +174,16 @@ const Farmers = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-                    alt="Farm Tour" 
+                  <img
+                    src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Farm Tour"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-6">
                   <h3 className="font-display text-xl font-semibold mb-2">Farm Tours</h3>
                   <p className="text-gray-600 mb-4">
-                    See where your food is grown! Join our monthly farm tours and connect with our farmers on their home turf.
+                    See where your food is grown! Join our monthly farm tours and connect with our vendors on their home turf.
                   </p>
                   <Button className="bg-market-green hover:bg-market-green-dark w-full">See Schedule</Button>
                 </div>
@@ -191,9 +191,9 @@ const Farmers = () => {
 
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1505235687583-28b19bda290d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-                    alt="Cooking Workshops" 
+                  <img
+                    src="https://images.unsplash.com/photo-1505235687583-28b19bda290d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Cooking Workshops"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -208,9 +208,9 @@ const Farmers = () => {
 
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1464062566483-35e108d93f67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80" 
-                    alt="Seasonal Festivals" 
+                  <img
+                    src="https://images.unsplash.com/photo-1464062566483-35e108d93f67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80"
+                    alt="Seasonal Festivals"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -231,4 +231,4 @@ const Farmers = () => {
   );
 };
 
-export default Farmers;
+export default Vendors;
