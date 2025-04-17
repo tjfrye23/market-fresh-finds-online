@@ -1,165 +1,163 @@
-
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import PageHeader from "@/components/PageHeader";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import ImageUploader from "@/components/ImageUploader";
-import { Loader2, Edit, Save, X } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/integrations/supabase/client'
+import { toast } from 'sonner'
+import PageHeader from '@/components/PageHeader'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import ImageUploader from '@/components/ImageUploader'
+import { Loader2, Edit, Save, X } from 'lucide-react'
 
 interface VendorProfile {
-  id?: string;
-  user_id?: string;
-  farm_name: string;
-  owner_name: string;
-  location: string;
-  specialty: string;
-  description: string;
-  image_url: string | null;
+  id?: string
+  user_id?: string
+  vendor_name: string
+  owner_name: string
+  location: string
+  specialty: string
+  description: string
+  image_url: string | null
 }
 
 const VendorProfile = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [profile, setProfile] = useState<VendorProfile>({
-    farm_name: "",
-    owner_name: "",
-    location: "",
-    specialty: "",
-    description: "",
-    image_url: null
-  });
-  const [isNewProfile, setIsNewProfile] = useState(true);
+    vendor_name: '',
+    owner_name: '',
+    location: '',
+    specialty: '',
+    description: '',
+    image_url: null,
+  })
+  const [isNewProfile, setIsNewProfile] = useState(true)
 
   useEffect(() => {
     if (!user) {
-      navigate("/auth");
-      return;
+      navigate('/auth')
+      return
     }
 
     const fetchVendorProfile = async () => {
       try {
         const { data, error } = await supabase
-          .from("vendor_profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
+          .from('vendor_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle()
 
-        if (error) throw error;
+        if (error) throw error
 
         if (data) {
-          setProfile(data);
-          setIsNewProfile(false);
+          setProfile(data)
+          setIsNewProfile(false)
         }
-      } catch (error: any) {
-        console.error("Error fetching vendor profile:", error.message);
-        toast.error("Could not load your vendor profile");
+      } catch (error) {
+        console.error('Error fetching vendor profile:', error.message)
+        toast.error('Could not load your vendor profile')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchVendorProfile();
-  }, [user, navigate]);
+    fetchVendorProfile()
+  }, [user, navigate])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target
+    setProfile((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleImageUploaded = (imageUrl: string) => {
-    setProfile((prev) => ({ ...prev, image_url: imageUrl }));
-  };
+    setProfile((prev) => ({ ...prev, image_url: imageUrl }))
+  }
 
   const handleImageRemoved = () => {
-    setProfile((prev) => ({ ...prev, image_url: null }));
-  };
+    setProfile((prev) => ({ ...prev, image_url: null }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (!user) {
-      toast.error("You must be logged in to save your profile");
-      return;
+      toast.error('You must be logged in to save your profile')
+      return
     }
-    
-    if (!profile.farm_name || !profile.owner_name) {
-      toast.error("Please fill in all required fields");
-      return;
+
+    if (!profile.vendor_name || !profile.owner_name) {
+      toast.error('Please fill in all required fields')
+      return
     }
-    
-    setSaving(true);
-    
+
+    setSaving(true)
+
     try {
       if (isNewProfile) {
         // Insert new profile
-        const { error } = await supabase
-          .from("vendor_profiles")
-          .insert({
-            ...profile,
-            user_id: user.id,
-          });
-        
-        if (error) throw error;
-        
-        toast.success("Vendor profile created successfully!");
-        setIsNewProfile(false);
+        const { error } = await supabase.from('vendor_profiles').insert({
+          ...profile,
+          user_id: user.id,
+        })
+
+        if (error) throw error
+
+        toast.success('Vendor profile created successfully!')
+        setIsNewProfile(false)
       } else {
         // Update existing profile
         const { error } = await supabase
-          .from("vendor_profiles")
+          .from('vendor_profiles')
           .update(profile)
-          .eq("user_id", user.id);
-        
-        if (error) throw error;
-        
-        toast.success("Vendor profile updated successfully!");
+          .eq('user_id', user.id)
+
+        if (error) throw error
+
+        toast.success('Vendor profile updated successfully!')
       }
-      setIsEditing(false);
-    } catch (error: any) {
-      console.error("Error saving vendor profile:", error.message);
-      toast.error("Failed to save vendor profile");
+      setIsEditing(false)
+    } catch (error) {
+      console.error('Error saving vendor profile:', error.message)
+      toast.error('Failed to save vendor profile')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   const startEditing = () => {
-    setIsEditing(true);
-  };
+    setIsEditing(true)
+  }
 
   const cancelEditing = () => {
     // Reload the profile data to revert changes
     if (!isNewProfile && user) {
-      setLoading(true);
+      setLoading(true)
       supabase
-        .from("vendor_profiles")
-        .select("*")
-        .eq("user_id", user.id)
+        .from('vendor_profiles')
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle()
         .then(({ data, error }) => {
           if (error) {
-            toast.error("Could not reload your profile");
-            console.error(error);
+            toast.error('Could not reload your profile')
+            console.error(error)
           } else if (data) {
-            setProfile(data);
+            setProfile(data)
           }
-          setLoading(false);
-        });
+          setLoading(false)
+        })
     }
-    setIsEditing(false);
-  };
+    setIsEditing(false)
+  }
 
   if (loading) {
     return (
@@ -171,36 +169,40 @@ const VendorProfile = () => {
         </div>
         <Footer />
       </div>
-    );
+    )
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        <PageHeader 
-          title={isNewProfile ? "Create Your Vendor Profile" : "Manage Your Vendor Profile"} 
+        <PageHeader
+          title={
+            isNewProfile
+              ? 'Create Your Vendor Profile'
+              : 'Manage Your Vendor Profile'
+          }
           description="Share information about your farm and products with our customers"
         />
-        
+
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
             {isNewProfile || isEditing ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
-                  <Label htmlFor="farm_name" className="text-base">
+                  <Label htmlFor="vendor_name" className="text-base">
                     Farm/Business Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    id="farm_name"
-                    name="farm_name"
-                    value={profile.farm_name}
+                    id="vendor_name"
+                    name="vendor_name"
+                    value={profile.vendor_name}
                     onChange={handleChange}
                     placeholder="Your farm or business name"
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label htmlFor="owner_name" className="text-base">
                     Owner Name <span className="text-red-500">*</span>
@@ -214,7 +216,7 @@ const VendorProfile = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label htmlFor="location" className="text-base">
                     Location
@@ -222,12 +224,12 @@ const VendorProfile = () => {
                   <Input
                     id="location"
                     name="location"
-                    value={profile.location || ""}
+                    value={profile.location || ''}
                     onChange={handleChange}
                     placeholder="City, State"
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label htmlFor="specialty" className="text-base">
                     Specialty
@@ -235,12 +237,12 @@ const VendorProfile = () => {
                   <Input
                     id="specialty"
                     name="specialty"
-                    value={profile.specialty || ""}
+                    value={profile.specialty || ''}
                     onChange={handleChange}
                     placeholder="E.g., Organic Vegetables, Artisanal Cheeses, etc."
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label htmlFor="description" className="text-base">
                     About Your Farm/Business
@@ -248,40 +250,44 @@ const VendorProfile = () => {
                   <Textarea
                     id="description"
                     name="description"
-                    value={profile.description || ""}
+                    value={profile.description || ''}
                     onChange={handleChange}
                     placeholder="Tell customers about your farm, your growing practices, your story..."
                     rows={5}
                   />
                 </div>
-                
+
                 <div className="space-y-4">
-                  <Label className="text-base">
-                    Farm/Business Image
-                  </Label>
+                  <Label className="text-base">Farm/Business Image</Label>
                   <ImageUploader
                     existingImageUrl={profile.image_url}
                     onImageUploaded={handleImageUploaded}
                     onImageRemoved={handleImageRemoved}
                   />
                 </div>
-                
+
                 <div className="pt-4 flex space-x-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={isNewProfile ? () => navigate("/manage-products") : cancelEditing} 
+                  <Button
+                    variant="outline"
+                    onClick={
+                      isNewProfile
+                        ? () => navigate('/manage-products')
+                        : cancelEditing
+                    }
                     type="button"
                     className="w-1/2"
                   >
-                    {isNewProfile ? "Cancel" : (
+                    {isNewProfile ? (
+                      'Cancel'
+                    ) : (
                       <>
                         <X className="mr-2" />
                         Cancel Editing
                       </>
                     )}
                   </Button>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="bg-market-green hover:bg-market-green-dark w-1/2"
                     disabled={saving}
                   >
@@ -293,7 +299,7 @@ const VendorProfile = () => {
                     ) : (
                       <>
                         <Save className="mr-2" />
-                        {isNewProfile ? "Create Profile" : "Save Changes"}
+                        {isNewProfile ? 'Create Profile' : 'Save Changes'}
                       </>
                     )}
                   </Button>
@@ -304,12 +310,18 @@ const VendorProfile = () => {
               <div className="space-y-8">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-2xl font-bold text-market-green-dark">{profile.farm_name}</h2>
-                    <p className="text-lg text-gray-700">Owned by {profile.owner_name}</p>
-                    {profile.location && <p className="text-gray-600 mt-1">{profile.location}</p>}
+                    <h2 className="text-2xl font-bold text-market-green-dark">
+                      {profile.vendor_name}
+                    </h2>
+                    <p className="text-lg text-gray-700">
+                      Owned by {profile.owner_name}
+                    </p>
+                    {profile.location && (
+                      <p className="text-gray-600 mt-1">{profile.location}</p>
+                    )}
                   </div>
-                  <Button 
-                    onClick={startEditing} 
+                  <Button
+                    onClick={startEditing}
                     className="bg-market-green hover:bg-market-green-dark"
                   >
                     <Edit className="mr-2" />
@@ -319,31 +331,37 @@ const VendorProfile = () => {
 
                 {profile.image_url && (
                   <div className="rounded-lg overflow-hidden shadow-md h-64 w-full">
-                    <img 
-                      src={profile.image_url} 
-                      alt={profile.farm_name}
-                      className="w-full h-full object-cover" 
+                    <img
+                      src={profile.image_url}
+                      alt={profile.vendor_name}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 )}
 
                 {profile.specialty && (
                   <div>
-                    <h3 className="text-lg font-semibold text-market-green-dark">Specialty</h3>
+                    <h3 className="text-lg font-semibold text-market-green-dark">
+                      Specialty
+                    </h3>
                     <p className="text-gray-700">{profile.specialty}</p>
                   </div>
                 )}
 
                 {profile.description && (
                   <div>
-                    <h3 className="text-lg font-semibold text-market-green-dark">About Us</h3>
-                    <p className="text-gray-700 whitespace-pre-line">{profile.description}</p>
+                    <h3 className="text-lg font-semibold text-market-green-dark">
+                      About Us
+                    </h3>
+                    <p className="text-gray-700 whitespace-pre-line">
+                      {profile.description}
+                    </p>
                   </div>
                 )}
 
                 <div className="pt-6">
-                  <Button 
-                    onClick={() => navigate("/manage-products")} 
+                  <Button
+                    onClick={() => navigate('/manage-products')}
                     variant="outline"
                     className="w-full sm:w-auto"
                   >
@@ -357,7 +375,7 @@ const VendorProfile = () => {
       </main>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default VendorProfile;
+export default VendorProfile

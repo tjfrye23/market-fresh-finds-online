@@ -1,11 +1,10 @@
-
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   Form,
   FormControl,
@@ -13,53 +12,53 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import ImageUploader from "@/components/ImageUploader";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import ImageUploader from '@/components/ImageUploader'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { CATEGORIES, UNITS, productFormSchema } from "./productConstants";
-import { Product, ProductFormValues } from "./types";
+} from '@/components/ui/select'
+import { CATEGORIES, UNITS, productFormSchema } from './productConstants'
+import { Product, ProductFormValues } from './types'
 
 interface ProductFormProps {
-  editingProduct: Product | null;
-  initialValues?: ProductFormValues;
-  onSuccess: (values: ProductFormValues) => void;
-  onCancel: () => void;
-  submitButtonText?: string;
+  editingProduct: Product | null
+  initialValues?: ProductFormValues
+  onSuccess: (values: ProductFormValues) => void
+  onCancel: () => void
+  submitButtonText?: string
 }
 
-const ProductForm = ({ 
-  editingProduct, 
-  initialValues, 
-  onSuccess, 
-  onCancel, 
-  submitButtonText = "Save Product" 
+const ProductForm = ({
+  editingProduct,
+  initialValues,
+  onSuccess,
+  onCancel,
+  submitButtonText = 'Save Product',
 }: ProductFormProps) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: initialValues || {
-      name: editingProduct?.name || "",
-      price: editingProduct ? editingProduct.price.toString() : "",
-      unit: editingProduct?.unit || "",
-      category: editingProduct?.category || "",
-      description: editingProduct?.description || "",
-      image: editingProduct?.image || "",
+      name: editingProduct?.name || '',
+      price: editingProduct ? editingProduct.price.toString() : '',
+      unit: editingProduct?.unit || '',
+      category: editingProduct?.category || '',
+      description: editingProduct?.description || '',
+      image: editingProduct?.image || '',
       organic: editingProduct?.organic || false,
       local: editingProduct?.local || false,
     },
-  });
+  })
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
@@ -73,45 +72,42 @@ const ProductForm = ({
           image: values.image || null,
           organic: values.organic,
           local: values.local,
-          user_id: user?.id
-        };
+          user_id: user?.id,
+        }
 
         const response = await supabase
-          .from("products")
+          .from('products')
           .update(productData)
-          .eq("id", editingProduct.id);
+          .eq('id', editingProduct.id)
 
-        if (response.error) throw response.error;
-        return response.data;
+        if (response.error) throw response.error
+        return response.data
       }
-      
-      return values;
+
+      return values
     },
     onSuccess: (_, variables) => {
       if (editingProduct) {
-        queryClient.invalidateQueries({ queryKey: ["farmerProducts"] });
-        toast.success("Product updated");
+        queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
+        toast.success('Product updated')
       }
-      form.reset();
-      onSuccess(variables);
+      form.reset()
+      onSuccess(variables)
     },
     onError: (error) => {
-      console.error("Form submission error:", error);
-      toast.error(`Error: ${error.message}`);
+      console.error('Form submission error:', error)
+      toast.error(`Error: ${error.message}`)
     },
-  });
+  })
 
   const onSubmit = (values: ProductFormValues) => {
-    addProductMutation.mutate(values);
-  };
+    addProductMutation.mutate(values)
+  }
 
   return (
     <div className="overflow-visible px-1">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="image"
@@ -122,7 +118,7 @@ const ProductForm = ({
                   <ImageUploader
                     existingImageUrl={field.value || null}
                     onImageUploaded={(url) => field.onChange(url)}
-                    onImageRemoved={() => field.onChange("")}
+                    onImageRemoved={() => field.onChange('')}
                   />
                 </FormControl>
                 <FormMessage />
@@ -155,7 +151,9 @@ const ProductForm = ({
                     <FormItem className="rounded-md overflow-visible">
                       <FormControl>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            $
+                          </span>
                           <Input
                             type="number"
                             step="0.01"
@@ -171,9 +169,9 @@ const ProductForm = ({
                   )}
                 />
               </div>
-              
+
               <span className="text-sm font-medium">per</span>
-              
+
               <div className="flex-1">
                 <FormField
                   control={form.control}
@@ -192,10 +190,7 @@ const ProductForm = ({
                         </FormControl>
                         <SelectContent>
                           {UNITS.map((unit) => (
-                            <SelectItem
-                              key={unit.value}
-                              value={unit.value}
-                            >
+                            <SelectItem key={unit.value} value={unit.value}>
                               {unit.label}
                             </SelectItem>
                           ))}
@@ -227,10 +222,7 @@ const ProductForm = ({
                   </FormControl>
                   <SelectContent>
                     {CATEGORIES.map((category) => (
-                      <SelectItem
-                        key={category.value}
-                        value={category.value}
-                      >
+                      <SelectItem key={category.value} value={category.value}>
                         {category.label}
                       </SelectItem>
                     ))}
@@ -248,10 +240,7 @@ const ProductForm = ({
               <FormItem className="rounded-md overflow-visible">
                 <FormLabel>Description (Optional)</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Describe your product..."
-                    {...field}
-                  />
+                  <Textarea placeholder="Describe your product..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -301,13 +290,13 @@ const ProductForm = ({
               Cancel
             </Button>
             <Button type="submit" disabled={addProductMutation.isPending}>
-              {addProductMutation.isPending ? "Saving..." : submitButtonText}
+              {addProductMutation.isPending ? 'Saving...' : submitButtonText}
             </Button>
           </div>
         </form>
       </Form>
     </div>
-  );
-};
+  )
+}
 
-export default ProductForm;
+export default ProductForm

@@ -1,40 +1,39 @@
-
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import ProductForm from "./ProductForm";
-import { Product, ProductFormValues } from "./types";
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import ProductForm from './ProductForm'
+import { Product, ProductFormValues } from './types'
 
 interface ProductDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  editingProduct: Product | null;
-  onResetForm: () => void;
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  editingProduct: Product | null
+  onResetForm: () => void
 }
 
-const ProductDialog = ({ 
-  isOpen, 
-  onOpenChange, 
-  editingProduct, 
-  onResetForm 
+const ProductDialog = ({
+  isOpen,
+  onOpenChange,
+  editingProduct,
+  onResetForm,
 }: ProductDialogProps) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleAddNewClick = () => {
-    onResetForm();
-    navigate("/add-products");
-  };
+    onResetForm()
+    navigate('/add-products')
+  }
 
   const handleSuccess = (values: ProductFormValues) => {
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -47,19 +46,17 @@ const ProductDialog = ({
       {editingProduct && (
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>
-              Edit Product
-            </DialogTitle>
+            <DialogTitle>Edit Product</DialogTitle>
           </DialogHeader>
-          <ProductForm 
-            editingProduct={editingProduct} 
-            onSuccess={handleSuccess} 
-            onCancel={onResetForm} 
+          <ProductForm
+            editingProduct={editingProduct}
+            onSuccess={handleSuccess}
+            onCancel={onResetForm}
           />
         </DialogContent>
       )}
     </Dialog>
-  );
-};
+  )
+}
 
-export default ProductDialog;
+export default ProductDialog

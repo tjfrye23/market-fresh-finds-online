@@ -1,17 +1,22 @@
-
-import { Link } from "react-router-dom";
-import { 
-  Home, Apple, Book, Users, Wheat, Settings,
-  LogIn, LogOut
-} from "lucide-react";
+import { Link } from 'react-router-dom'
+import {
+  Home,
+  Apple,
+  Book,
+  Users,
+  Wheat,
+  Settings,
+  LogIn,
+  LogOut,
+} from 'lucide-react'
 
 interface NavLinksProps {
-  isVendor: boolean;
-  isLoggedIn: boolean;
-  onClose: () => void;
-  onLogin: () => void;
-  onLogout: () => void;
-  onVendorSignup: () => void;
+  isVendor: boolean
+  isLoggedIn: boolean
+  onClose: () => void
+  onLogin: () => void
+  onLogout: () => void
+  onVendorSignup: () => void
 }
 
 const NavLinks = ({
@@ -20,7 +25,7 @@ const NavLinks = ({
   onClose,
   onLogin,
   onLogout,
-  onVendorSignup
+  onVendorSignup,
 }: NavLinksProps) => {
   return (
     <div className="py-4 space-y-4">
@@ -33,7 +38,7 @@ const NavLinks = ({
           <Home className="mr-2 h-5 w-5" />
           <span>Home</span>
         </Link>
-        
+
         <Link
           to="/shop"
           className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
@@ -42,7 +47,7 @@ const NavLinks = ({
           <Apple className="mr-2 h-5 w-5" />
           <span>Shop</span>
         </Link>
-        
+
         <Link
           to="/about"
           className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
@@ -51,16 +56,16 @@ const NavLinks = ({
           <Book className="mr-2 h-5 w-5" />
           <span>About Us</span>
         </Link>
-        
+
         <Link
-          to="/farmers"
+          to="/vendors"
           className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
           onClick={onClose}
         >
           <Users className="mr-2 h-5 w-5" />
           <span>Our Vendors</span>
         </Link>
-        
+
         {isVendor && (
           <Link
             to="/vendor-profile"
@@ -72,13 +77,13 @@ const NavLinks = ({
           </Link>
         )}
       </div>
-      
+
       <div className="pt-2 border-t border-gray-200">
         {isLoggedIn ? (
           <button
             onClick={() => {
-              onLogout();
-              onClose();
+              onLogout()
+              onClose()
             }}
             className="w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
           >
@@ -89,19 +94,19 @@ const NavLinks = ({
           <>
             <button
               onClick={() => {
-                onLogin();
-                onClose();
+                onLogin()
+                onClose()
               }}
               className="w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
             >
               <LogIn className="mr-2 h-5 w-5" />
               <span>Login</span>
             </button>
-            
+
             <button
               onClick={() => {
-                onVendorSignup();
-                onClose();
+                onVendorSignup()
+                onClose()
               }}
               className="w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-market-green hover:text-market-green-dark hover:bg-gray-50"
             >
@@ -112,7 +117,7 @@ const NavLinks = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NavLinks;
+export default NavLinks

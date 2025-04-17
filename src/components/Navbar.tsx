@@ -1,74 +1,70 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { ShoppingCart, Menu } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import UserActions from "./navbar/UserActions";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import NavLinks from "./navbar/NavLinks";
+import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { ShoppingCart, Menu } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/integrations/supabase/client'
+import UserActions from './navbar/UserActions'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import NavLinks from './navbar/NavLinks'
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false)
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
 
   const { data: userRole } = useQuery({
     queryKey: ['userRole', user?.id],
     queryFn: async () => {
-      if (!user) return null;
-      
+      if (!user) return null
+
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .maybeSingle();
-      
+        .maybeSingle()
+
       if (error) {
-        console.error('Error fetching user role:', error);
-        return null;
+        console.error('Error fetching user role:', error)
+        return null
       }
-      
-      return data?.role as 'user' | 'vendor' | 'admin' | null;
+
+      return data?.role as 'user' | 'vendor' | 'admin' | null
     },
     enabled: !!user,
-  });
+  })
 
-  const isVendor = userRole === 'vendor';
+  const isVendor = userRole === 'vendor'
 
   const closeMenu = () => {
-    setIsOpen(false);
-  };
+    setIsOpen(false)
+  }
 
   const handleLogout = async () => {
     try {
-      await signOut();
-      toast.success("Successfully logged out");
-    } catch (error: any) {
-      toast.error("Error logging out");
+      await signOut()
+      toast.success('Successfully logged out')
+    } catch (error) {
+      toast.error('Error logging out')
     }
-  };
+  }
 
   const handleLogin = () => {
-    navigate("/auth");
-    closeMenu();
-  };
+    navigate('/auth')
+    closeMenu()
+  }
 
   const navigateToVendorOnboarding = () => {
-    navigate("/vendor-onboarding");
-    closeMenu();
-  };
+    navigate('/vendor-onboarding')
+    closeMenu()
+  }
 
   const getUserInitials = () => {
-    if (!user) return "U";
-    const email = user.email || "";
-    return email.charAt(0).toUpperCase();
-  };
+    if (!user) return 'U'
+    const email = user.email || ''
+    return email.charAt(0).toUpperCase()
+  }
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -76,16 +72,21 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center" onClick={closeMenu}>
-              <span className="text-market-green-dark font-display text-2xl font-bold">Market Fresh</span>
+              <span className="text-market-green-dark font-display text-2xl font-bold">
+                Market Fresh
+              </span>
             </Link>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Link to="/cart" className="p-2 text-gray-700 hover:text-market-green transition-colors">
+            <Link
+              to="/cart"
+              className="p-2 text-gray-700 hover:text-market-green transition-colors"
+            >
               <ShoppingCart className="h-6 w-6" />
             </Link>
 
-            <UserActions 
+            <UserActions
               user={user}
               getUserInitials={getUserInitials}
               handleLogin={handleLogin}
@@ -99,8 +100,8 @@ const Navbar = () => {
                 </button>
               </SheetTrigger>
               <SheetContent className="w-[300px] sm:w-[350px] pt-14">
-                <NavLinks 
-                  isVendor={isVendor} 
+                <NavLinks
+                  isVendor={isVendor}
                   isLoggedIn={!!user}
                   onClose={() => setIsOpen(false)}
                   onLogin={handleLogin}
@@ -113,7 +114,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

@@ -1,59 +1,60 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import PageHeader from "@/components/PageHeader";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
+import PageHeader from '@/components/PageHeader'
+import { useNavigate } from 'react-router-dom'
 
 const VendorOnboarding = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [farmName, setFarmName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [farmName, setFarmName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { signUp } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (!email || !password || !fullName || !farmName) {
-      toast.error("Please fill in all required fields");
-      return;
+      toast.error('Please fill in all required fields')
+      return
     }
-    
-    setLoading(true);
-    
+
+    setLoading(true)
+
     try {
       // Always set the role as "vendor" for users signing up through this page
       const { error } = await signUp(
-        email, 
-        password, 
-        fullName, 
-        "vendor" // Explicitly set role to vendor
-      );
-      
-      if (error) throw error;
-      
-      toast.success("Vendor account created! Please verify your email if required.");
-      navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred during registration");
+        email,
+        password,
+        fullName,
+        'vendor', // Explicitly set role to vendor
+      )
+
+      if (error) throw error
+
+      toast.success(
+        'Vendor account created! Please verify your email if required.',
+      )
+      navigate('/')
+    } catch (error) {
+      toast.error(error.message || 'An error occurred during registration')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <PageHeader 
-        title="Become a Vendor" 
-        description="Create your vendor account to start selling your fresh produce on Market Fresh" 
+      <PageHeader
+        title="Become a Vendor"
+        description="Create your vendor account to start selling your fresh produce on Market Fresh"
       />
-      
+
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -66,7 +67,7 @@ const VendorOnboarding = () => {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="farmName">Vendor Name</Label>
             <Input
@@ -77,7 +78,7 @@ const VendorOnboarding = () => {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -89,7 +90,7 @@ const VendorOnboarding = () => {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
@@ -101,29 +102,29 @@ const VendorOnboarding = () => {
               required
             />
           </div>
-          
+
           <div className="pt-4 flex space-x-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/")} 
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
               type="button"
               disabled={loading}
               className="w-1/2"
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-market-green hover:bg-market-green-dark w-1/2"
               disabled={loading}
             >
-              {loading ? "Creating account..." : "Create Vendor Account"}
+              {loading ? 'Creating account...' : 'Create Vendor Account'}
             </Button>
           </div>
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default VendorOnboarding;
+export default VendorOnboarding

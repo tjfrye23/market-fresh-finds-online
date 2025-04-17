@@ -1,24 +1,23 @@
+import { Toaster } from '@/components/ui/toaster'
+import { Toaster as Sonner } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from '@/contexts/AuthContext'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import Index from './pages/Index'
+import Shop from './pages/Shop'
+import About from './pages/About'
+import Vendors from './pages/Vendors'
+import Auth from './pages/Auth'
+import NotFound from './pages/NotFound'
+import ManageProducts from './pages/ManageProducts'
+import AddProducts from './pages/AddProducts'
+import VendorOnboarding from './pages/VendorOnboarding'
+import VendorProfile from './pages/VendorProfile'
+import VendorDetail from './pages/VendorDetail'
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
-import Shop from "./pages/Shop";
-import About from "./pages/About";
-import Vendors from "./pages/Vendors";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import ManageProducts from "./pages/ManageProducts";
-import AddProducts from "./pages/AddProducts";
-import VendorOnboarding from "./pages/VendorOnboarding";
-import VendorProfile from "./pages/VendorProfile";
-import VendorDetail from "./pages/VendorDetail";
-
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 const AppContent = () => (
   <Routes>
@@ -29,25 +28,34 @@ const AppContent = () => (
     <Route path="/vendors/:id" element={<VendorDetail />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
-    <Route path="/vendor-profile" element={
-      <ProtectedRoute requiredRole="vendor">
-        <VendorProfile />
-      </ProtectedRoute>
-    } />
-    <Route path="/manage-products" element={
-      <ProtectedRoute requiredRole="vendor">
-        <ManageProducts />
-      </ProtectedRoute>
-    } />
-    <Route path="/add-products" element={
-      <ProtectedRoute requiredRole="vendor">
-        <AddProducts />
-      </ProtectedRoute>
-    } />
+    <Route
+      path="/vendor-profile"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <VendorProfile />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/manage-products"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <ManageProducts />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/add-products"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <AddProducts />
+        </ProtectedRoute>
+      }
+    />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
   </Routes>
-);
+)
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -61,6 +69,6 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+)
 
-export default App;
+export default App

@@ -273,3 +273,7 @@ export const Constants = {
     },
   },
 } as const
+
+export type VendorProfile =
+  Database['public']['Tables']['vendor_profiles']['Row']
+export type VendorProducts = Database['public']['Tables']['products']['Row']

@@ -1,9 +1,8 @@
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { Edit, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { supabase } from '@/integrations/supabase/client'
+import { Edit, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -11,45 +10,47 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { CATEGORIES } from "./productConstants";
-import { Product } from "./types";
+} from '@/components/ui/table'
+import { CATEGORIES } from './productConstants'
+import { Product } from './types'
 
 interface ProductListProps {
-  products: Product[];
-  onEdit: (product: Product) => void;
-  isLoading: boolean;
+  products: Product[]
+  onEdit: (product: Product) => void
+  isLoading: boolean
 }
 
 const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: string) => {
       const { error } = await supabase
-        .from("products")
+        .from('products')
         .delete()
-        .eq("id", productId);
+        .eq('id', productId)
 
-      if (error) throw error;
+      if (error) throw error
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["farmerProducts"] });
-      toast.success("Product deleted");
+      queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
+      toast.success('Product deleted')
     },
     onError: (error) => {
-      toast.error(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`)
     },
-  });
+  })
 
   const handleDelete = (productId: string) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      deleteProductMutation.mutate(productId);
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      deleteProductMutation.mutate(productId)
     }
-  };
+  }
 
   if (isLoading) {
-    return <div className="flex justify-center p-8">Loading your products...</div>;
+    return (
+      <div className="flex justify-center p-8">Loading your products...</div>
+    )
   }
 
   if (products.length === 0) {
@@ -59,10 +60,11 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
           No products yet
         </h3>
         <p className="text-gray-500 mb-6">
-          Start adding your products to the marketplace by clicking the button above.
+          Start adding your products to the marketplace by clicking the button
+          above.
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -94,16 +96,15 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
                   <div className="text-sm font-medium text-gray-900">
                     {product.name}
                   </div>
-                  <div className="text-sm text-gray-500">
-                    {product.unit}
-                  </div>
+                  <div className="text-sm text-gray-500">{product.unit}</div>
                 </div>
               </TableCell>
               <TableCell>
                 ${parseFloat(product.price.toString()).toFixed(2)}
               </TableCell>
               <TableCell>
-                {CATEGORIES.find(c => c.value === product.category)?.label || product.category}
+                {CATEGORIES.find((c) => c.value === product.category)?.label ||
+                  product.category}
               </TableCell>
               <TableCell>
                 <div className="flex space-x-2">
@@ -142,7 +143,7 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
         </TableBody>
       </Table>
     </div>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList

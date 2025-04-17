@@ -1,29 +1,29 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import PageHeader from "@/components/PageHeader";
-import ProductForm from "@/components/product/ProductForm";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, ArrowLeft, Save } from "lucide-react";
-import { Product, ProductFormValues } from "@/components/product/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useAuth } from '@/contexts/AuthContext'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import PageHeader from '@/components/PageHeader'
+import ProductForm from '@/components/product/ProductForm'
+import { Button } from '@/components/ui/button'
+import { PlusCircle, ArrowLeft, Save } from 'lucide-react'
+import { Product, ProductFormValues } from '@/components/product/types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/integrations/supabase/client'
 
 const AddProducts = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [products, setProducts] = useState<ProductFormValues[]>([]);
-  const [currentProduct, setCurrentProduct] = useState<ProductFormValues | null>(null);
-  const [showForm, setShowForm] = useState(true);
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [products, setProducts] = useState<ProductFormValues[]>([])
+  const [currentProduct, setCurrentProduct] =
+    useState<ProductFormValues | null>(null)
+  const [showForm, setShowForm] = useState(true)
 
   const addProductMutation = useMutation({
     mutationFn: async (products: ProductFormValues[]) => {
-      const productsData = products.map(values => ({
+      const productsData = products.map((values) => ({
         name: values.name,
         price: parseFloat(values.price),
         unit: values.unit,
@@ -32,62 +32,62 @@ const AddProducts = () => {
         image: values.image || null,
         organic: values.organic,
         local: values.local,
-        user_id: user?.id
-      }));
+        user_id: user?.id,
+      }))
 
       const { data, error } = await supabase
-        .from("products")
-        .insert(productsData);
+        .from('products')
+        .insert(productsData)
 
-      if (error) throw error;
-      return data;
+      if (error) throw error
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["farmerProducts"] });
-      toast.success(`${products.length} products successfully added`);
-      navigate("/manage-products");
+      queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
+      toast.success(`${products.length} products successfully added`)
+      navigate('/manage-products')
     },
     onError: (error) => {
-      console.error("Error saving products:", error);
-      toast.error(`Error: ${error.message}`);
+      console.error('Error saving products:', error)
+      toast.error(`Error: ${error.message}`)
     },
-  });
+  })
 
   const handleProductSubmit = (values: ProductFormValues) => {
-    setProducts([...products, values]);
-    setCurrentProduct(null);
-    setShowForm(false);
-    toast.success(`"${values.name}" added to queue`);
-  };
+    setProducts([...products, values])
+    setCurrentProduct(null)
+    setShowForm(false)
+    toast.success(`"${values.name}" added to queue`)
+  }
 
   const handleAddAnother = () => {
-    setShowForm(true);
-    setCurrentProduct(null);
-  };
+    setShowForm(true)
+    setCurrentProduct(null)
+  }
 
   const handleSaveAll = () => {
     if (products.length === 0) {
-      toast.error("Please add at least one product");
-      return;
+      toast.error('Please add at least one product')
+      return
     }
-    
-    addProductMutation.mutate(products);
-  };
+
+    addProductMutation.mutate(products)
+  }
 
   const handleRemoveProduct = (index: number) => {
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    setProducts(updatedProducts);
-  };
+    const updatedProducts = [...products]
+    updatedProducts.splice(index, 1)
+    setProducts(updatedProducts)
+  }
 
   const handleEditProduct = (index: number) => {
-    setCurrentProduct(products[index]);
-    setShowForm(true);
+    setCurrentProduct(products[index])
+    setShowForm(true)
     // Remove the product from the queue so it can be edited and re-added
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    setProducts(updatedProducts);
-  };
+    const updatedProducts = [...products]
+    updatedProducts.splice(index, 1)
+    setProducts(updatedProducts)
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -103,7 +103,7 @@ const AddProducts = () => {
           <div className="flex justify-between items-center mb-6">
             <Button
               variant="outline"
-              onClick={() => navigate("/manage-products")}
+              onClick={() => navigate('/manage-products')}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -125,7 +125,9 @@ const AddProducts = () => {
                 disabled={products.length === 0 || addProductMutation.isPending}
               >
                 <Save className="h-4 w-4" />
-                {addProductMutation.isPending ? "Saving..." : "Save All Products"}
+                {addProductMutation.isPending
+                  ? 'Saving...'
+                  : 'Save All Products'}
               </Button>
             </div>
           </div>
@@ -133,7 +135,7 @@ const AddProducts = () => {
           {showForm ? (
             <div className="bg-white shadow-md rounded-lg p-6 mb-8 overflow-hidden">
               <h2 className="text-xl font-semibold mb-4">
-                {currentProduct ? "Edit Product" : "Add New Product"}
+                {currentProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
               <div className="overflow-visible">
                 <ProductForm
@@ -141,8 +143,8 @@ const AddProducts = () => {
                   initialValues={currentProduct || undefined}
                   onSuccess={handleProductSubmit}
                   onCancel={() => {
-                    setShowForm(false);
-                    setCurrentProduct(null);
+                    setShowForm(false)
+                    setCurrentProduct(null)
                   }}
                   submitButtonText="Add to Queue"
                 />
@@ -154,7 +156,8 @@ const AddProducts = () => {
                 No products in queue
               </h3>
               <p className="text-gray-500 mb-6">
-                Start adding products by clicking the "Add Another Product" button.
+                Start adding products by clicking the "Add Another Product"
+                button.
               </p>
               <Button onClick={handleAddAnother}>
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -165,7 +168,9 @@ const AddProducts = () => {
 
           {products.length > 0 && !showForm && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Products Queue ({products.length})</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Products Queue ({products.length})
+              </h2>
               <div className="bg-white shadow rounded-lg overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -260,7 +265,7 @@ const AddProducts = () => {
       </main>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default AddProducts;
+export default AddProducts
