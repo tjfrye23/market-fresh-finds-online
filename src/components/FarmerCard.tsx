@@ -28,7 +28,7 @@ const FarmerCard = ({ id, owner_name, farm_name, location, image_url, specialty 
         <p className="text-market-green mb-2">{farm_name}</p>
         <p className="text-gray-600 mb-3">{location || "California"}</p>
         <p className="text-gray-500 mb-4">Specialty: {specialty || "Fresh Produce"}</p>
-        <Link to={`/farmers/${id}`} className="inline-block btn-primary">
+        <Link to={`/vendors/${id}`} className="inline-block btn-primary">
           Meet {owner_name.split(' ')[0]}
         </Link>
       </div>
