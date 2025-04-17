@@ -16,6 +16,7 @@ import ManageProducts from "./pages/ManageProducts";
 import AddProducts from "./pages/AddProducts";
 import VendorOnboarding from "./pages/VendorOnboarding";
 import VendorProfile from "./pages/VendorProfile";
+import VendorDetail from "./pages/VendorDetail";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const AppContent = () => (
     <Route path="/shop" element={<Shop />} />
     <Route path="/about" element={<About />} />
     <Route path="/farmers" element={<Farmers />} />
+    <Route path="/farmers/:id" element={<VendorDetail />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/farmer-onboarding" element={<VendorOnboarding />} />
     <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
