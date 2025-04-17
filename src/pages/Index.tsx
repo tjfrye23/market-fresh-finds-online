@@ -5,10 +5,53 @@ import ProductCard from "@/components/ProductCard";
 import CategoryCard from "@/components/CategoryCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Product } from "@/components/product/types";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
-  // Sample featured products
-  const featuredProducts = [
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch products from database and select random products for featured section
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching products:', error);
+          return;
+        }
+        
+        // If products are available, randomly select up to 4 for the featured section
+        if (data && data.length > 0) {
+          // Shuffle the array
+          const shuffled = [...data].sort(() => 0.5 - Math.random());
+          // Get the first 4 items or all if less than 4
+          const randomProducts = shuffled.slice(0, Math.min(4, shuffled.length));
+          setFeaturedProducts(randomProducts);
+        } else {
+          // Fallback to sample products if no products in database
+          setFeaturedProducts(sampleFeaturedProducts);
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        setFeaturedProducts(sampleFeaturedProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Sample featured products as fallback
+  const sampleFeaturedProducts = [
     {
       id: "1",
       name: "Organic Strawberries",
@@ -17,6 +60,11 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1518635017480-d9a4666b3a54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
       organic: true,
       local: true,
+      description: null,
+      category: "fruits",
+      user_id: "123",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
       id: "2",
@@ -26,6 +74,11 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2075&q=80",
       organic: false,
       local: true,
+      description: null,
+      category: "fruits",
+      user_id: "123",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
       id: "3",
@@ -35,6 +88,11 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1515471949468-fec1525563f3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       organic: true,
       local: false,
+      description: null,
+      category: "vegetables",
+      user_id: "123",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
       id: "4",
@@ -44,6 +102,11 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1585478259715-4d3f6b5a0a7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
       organic: false,
       local: true,
+      description: null,
+      category: "bakery",
+      user_id: "123",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
   ];
 
@@ -104,11 +167,28 @@ const Index = () => {
                 View All <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
+            
+            {isLoading ? (
+              <div className="flex justify-center items-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-market-green" />
+                <span className="ml-2">Loading products...</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {featuredProducts.map((product) => (
+                  <ProductCard 
+                    key={product.id} 
+                    id={product.id}
+                    name={product.name}
+                    price={product.price}
+                    unit={product.unit}
+                    image={product.image || ''}
+                    organic={product.organic || false}
+                    local={product.local || false}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
