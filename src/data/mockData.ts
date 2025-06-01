@@ -1,10 +1,9 @@
-
 export interface MockUser {
   id: string
   email: string
   fullName: string
   role: 'user' | 'vendor' | 'admin'
-  app_metadata?: any
+  app_metadata: any
   user_metadata?: any
   aud?: string
   created_at?: string

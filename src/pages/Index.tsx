@@ -24,12 +24,7 @@ const Index = () => {
     const fetchProducts = async () => {
       setIsLoading(true)
       try {
-        const { data, error } = await getMarketplaceProducts()
-
-        if (error) {
-          console.error('Error fetching products:', error)
-          return
-        }
+        const data = await getMarketplaceProducts()
 
         // If products are available, randomly select up to 4 for the featured section
         if (data && data.length > 0) {

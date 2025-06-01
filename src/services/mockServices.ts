@@ -1,4 +1,3 @@
-
 import { MockProduct, MockVendorProfile, mockProducts, mockVendors } from '@/data/mockData'
 
 // Simulate network delay
@@ -122,4 +121,77 @@ export const updateVendorProfile = async (vendorId: string, profileData: Partial
   localStorage.setItem('vendors', JSON.stringify(vendors))
   
   return updatedVendor
+}
+
+export const saveProduct = async (productData: Partial<MockProduct> & { id?: string }, userId: string): Promise<MockProduct> => {
+  if (productData.id) {
+    // Update existing product
+    return await updateProduct(productData.id, productData)
+  } else {
+    // Create new product
+    return await addProduct({
+      ...productData,
+      user_id: userId,
+      name: productData.name || '',
+      unit: productData.unit || '',
+      category: productData.category || '',
+      price: productData.price || 0,
+      description: productData.description || null,
+      image: productData.image || null,
+      organic: productData.organic || false,
+      local: productData.local || false,
+    })
+  }
+}
+
+export const getVendorByUserId = async (userId: string): Promise<MockVendorProfile | null> => {
+  await delay(300)
+  
+  const storedVendors = localStorage.getItem('vendors')
+  const vendors = storedVendors ? JSON.parse(storedVendors) : mockVendors
+  
+  return vendors.find((vendor: MockVendorProfile) => vendor.user_id === userId) || null
+}
+
+export const saveVendorProfile = async (profileData: Partial<MockVendorProfile>, userId: string): Promise<MockVendorProfile> => {
+  await delay(300)
+  
+  const storedVendors = localStorage.getItem('vendors')
+  const vendors = storedVendors ? JSON.parse(storedVendors) : mockVendors
+  
+  const existingVendorIndex = vendors.findIndex((v: MockVendorProfile) => v.user_id === userId)
+  
+  if (existingVendorIndex !== -1) {
+    // Update existing vendor
+    const updatedVendor = {
+      ...vendors[existingVendorIndex],
+      ...profileData,
+      updated_at: new Date().toISOString(),
+    }
+    
+    vendors[existingVendorIndex] = updatedVendor
+    localStorage.setItem('vendors', JSON.stringify(vendors))
+    
+    return updatedVendor
+  } else {
+    // Create new vendor
+    const newVendor: MockVendorProfile = {
+      id: Date.now().toString(),
+      user_id: userId,
+      vendor_name: profileData.vendor_name || '',
+      farm_name: profileData.farm_name || profileData.vendor_name || '',
+      owner_name: profileData.owner_name || '',
+      location: profileData.location || null,
+      specialty: profileData.specialty || null,
+      description: profileData.description || null,
+      image_url: profileData.image_url || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+    
+    const updatedVendors = [...vendors, newVendor]
+    localStorage.setItem('vendors', JSON.stringify(updatedVendors))
+    
+    return newVendor
+  }
 }

@@ -26,8 +26,14 @@ const AddProducts = () => {
       const results = []
       for (const productData of products) {
         const result = await addProduct({
-          ...productData,
+          name: productData.name,
           price: parseFloat(productData.price),
+          unit: productData.unit,
+          category: productData.category,
+          description: productData.description || null,
+          image: productData.image || null,
+          organic: productData.organic,
+          local: productData.local,
           user_id: user?.id || '',
         })
         results.push(result)
