@@ -5,10 +5,10 @@ import VendorCard from '@/components/VendorCard'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
-import { supabase } from '@/integrations/supabase/client'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useQuery } from '@tanstack/react-query'
+import { getVendors } from '@/services/mockServices'
 
 interface Vendor {
   id: string
@@ -25,18 +25,7 @@ const Vendors = () => {
 
   const { data: vendors, isLoading } = useQuery({
     queryKey: ['vendors'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vendor_profiles')
-        .select('id, vendor_name, owner_name, location, image_url, specialty')
-
-      if (error) {
-        console.error('Error fetching vendors:', error)
-        throw error
-      }
-
-      return data as Vendor[]
-    },
+    queryFn: getVendors,
   })
 
   // Update sample vendors to use the correct property names that match VendorsCardProps

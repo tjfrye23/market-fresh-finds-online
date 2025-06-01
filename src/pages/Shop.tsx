@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ArrowDownAZ, ArrowUpAZ, Filter } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
 import PageHeader from '@/components/PageHeader'
 import ProductCard from '@/components/ProductCard'
 import Navbar from '@/components/Navbar'

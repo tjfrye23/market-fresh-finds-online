@@ -11,9 +11,9 @@ import CategoryCard from '@/components/CategoryCard'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/integrations/supabase/client'
 import { Product } from '@/components/product/types'
 import { Loader2 } from 'lucide-react'
+import { getMarketplaceProducts } from '@/services/mockServices'
 
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
@@ -24,7 +24,7 @@ const Index = () => {
     const fetchProducts = async () => {
       setIsLoading(true)
       try {
-        const { data, error } = await supabase.from('products').select('*')
+        const { data, error } = await getMarketplaceProducts()
 
         if (error) {
           console.error('Error fetching products:', error)

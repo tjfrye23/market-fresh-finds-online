@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { PlusCircle, ArrowLeft, Save } from 'lucide-react'
 import { Product, ProductFormValues } from '@/components/product/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
+import { addProduct } from '@/services/mockServices'
 
 const AddProducts = () => {
   const { user } = useAuth()
@@ -23,27 +23,19 @@ const AddProducts = () => {
 
   const addProductMutation = useMutation({
     mutationFn: async (products: ProductFormValues[]) => {
-      const productsData = products.map((values) => ({
-        name: values.name,
-        price: parseFloat(values.price),
-        unit: values.unit,
-        category: values.category,
-        description: values.description || null,
-        image: values.image || null,
-        organic: values.organic,
-        local: values.local,
-        user_id: user?.id,
-      }))
-
-      const { data, error } = await supabase
-        .from('products')
-        .insert(productsData)
-
-      if (error) throw error
-      return data
+      const results = []
+      for (const productData of products) {
+        const result = await addProduct({
+          ...productData,
+          price: parseFloat(productData.price),
+          user_id: user?.id || '',
+        })
+        results.push(result)
+      }
+      return results
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
+      queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
       toast.success(`${products.length} products successfully added`)
       navigate('/manage-products')
     },
