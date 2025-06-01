@@ -1,8 +1,7 @@
+
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -15,28 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, loading } = useAuth()
 
-  const { data: userRole, isLoading: roleLoading } = useQuery({
-    queryKey: ['userRole', user?.id],
-    queryFn: async () => {
-      if (!user) return null
-
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error('Error fetching user role:', error)
-        return null
-      }
-
-      return data?.role as 'user' | 'vendor' | 'admin' | null
-    },
-    enabled: !!user,
-  })
-
-  if (loading || (user && roleLoading)) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         Loading...
@@ -48,9 +26,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/auth" replace />
   }
 
-  if (requiredRole && userRole !== requiredRole) {
+  if (requiredRole && user.role !== requiredRole) {
     // If a specific role is required but the user doesn't have it,
-    // redirect to home page with a toast message
+    // redirect to home page
     return <Navigate to="/" replace />
   }
 

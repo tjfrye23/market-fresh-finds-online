@@ -1,9 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Form,
@@ -27,6 +25,7 @@ import {
 } from '@/components/ui/select'
 import { CATEGORIES, UNITS, productFormSchema } from './productConstants'
 import { Product, ProductFormValues } from './types'
+import { saveProduct } from '@/services/mockServices'
 
 interface ProductFormProps {
   editingProduct: Product | null
@@ -62,35 +61,25 @@ const ProductForm = ({
 
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
-      if (editingProduct) {
-        const productData = {
-          name: values.name,
-          price: parseFloat(values.price),
-          unit: values.unit,
-          category: values.category,
-          description: values.description || null,
-          image: values.image || null,
-          organic: values.organic,
-          local: values.local,
-          user_id: user?.id,
-        }
+      if (!user) throw new Error('User not authenticated')
 
-        const response = await supabase
-          .from('products')
-          .update(productData)
-          .eq('id', editingProduct.id)
-
-        if (response.error) throw response.error
-        return response.data
+      const productData = {
+        id: editingProduct?.id,
+        name: values.name,
+        price: parseFloat(values.price),
+        unit: values.unit,
+        category: values.category,
+        description: values.description || null,
+        image: values.image || null,
+        organic: values.organic,
+        local: values.local,
       }
 
-      return values
+      return await saveProduct(productData, user.id)
     },
     onSuccess: (_, variables) => {
-      if (editingProduct) {
-        queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
-        toast.success('Product updated')
-      }
+      queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
+      toast.success(editingProduct ? 'Product updated' : 'Product created')
       form.reset()
       onSuccess(variables)
     },

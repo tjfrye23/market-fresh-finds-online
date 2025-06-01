@@ -1,19 +1,23 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '@/integrations/supabase/client'
-import { Database } from '@/integrations/supabase/types'
-import { Session, User } from '@supabase/supabase-js'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { MockUser, mockUsers } from '@/data/mockData'
+
+interface Session {
+  user: MockUser
+  access_token: string
+}
 
 type AuthContextType = {
   session: Session | null
-  user: User | null
+  user: MockUser | null
   signIn: (
     email: string,
     password: string,
   ) => Promise<{
     error: Error | null
-    data: { user: User | null; session: Session | null } | null
+    data: { user: MockUser | null; session: Session | null } | null
   }>
   signUp: (
     email: string,
@@ -22,7 +26,7 @@ type AuthContextType = {
     role?: string,
   ) => Promise<{
     error: Error | null
-    data: { user: User | null; session: Session | null } | null
+    data: { user: MockUser | null; session: Session | null } | null
   }>
   signOut: () => Promise<{ error: Error | null }>
   loading: boolean
@@ -34,104 +38,109 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [session, setSession] = useState<Session | null>(null)
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<MockUser | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Set up auth state listener first
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, currentSession) => {
-      setSession(currentSession)
-      setUser(currentSession?.user ?? null)
-      setLoading(false)
-    })
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession)
-      setUser(currentSession?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    // Check for existing session in localStorage
+    const savedSession = localStorage.getItem('mock_session')
+    if (savedSession) {
+      try {
+        const parsedSession = JSON.parse(savedSession)
+        setSession(parsedSession)
+        setUser(parsedSession.user)
+      } catch (error) {
+        console.error('Error parsing saved session:', error)
+        localStorage.removeItem('mock_session')
+      }
+    }
+    setLoading(false)
   }, [])
 
   const signIn = async (email: string, password: string) => {
     setLoading(true)
-    const response = await supabase.auth.signInWithPassword({ email, password })
+    
+    // Simple mock authentication - just check if user exists
+    const mockUser = mockUsers.find(u => u.email === email)
+    
+    if (!mockUser) {
+      setLoading(false)
+      return {
+        error: new Error('Invalid email or password'),
+        data: null
+      }
+    }
+
+    const mockSession: Session = {
+      user: mockUser,
+      access_token: 'mock_token_' + Date.now()
+    }
+
+    localStorage.setItem('mock_session', JSON.stringify(mockSession))
+    setSession(mockSession)
+    setUser(mockUser)
     setLoading(false)
-    return response
+
+    return {
+      error: null,
+      data: { user: mockUser, session: mockSession }
+    }
   }
 
   const signUp = async (
     email: string,
     password: string,
     fullName: string,
-    role: Database['public']['Enums']['user_role'] = 'user',
+    role: 'user' | 'vendor' | 'admin' = 'user',
   ) => {
     setLoading(true)
-    console.log('Signing up with role:', role) // Debug log
 
-    try {
-      // First, create the user account
-      const response = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            requested_role: role, // Store the requested role in user metadata
-          },
-        },
-      })
-
-      // If signup is successful and we have a user, add their role to the user_roles table
-      if (response.data.user && !response.error) {
-        const userId = response.data.user.id
-        console.log('User created with ID:', userId) // Debug log
-
-        // Use type assertion to tell TypeScript that 'vendor' is a valid role
-        const { error: roleError } = await supabase.from('user_roles').insert({
-          user_id: userId,
-          role: role,
-        })
-
-        if (roleError) {
-          console.error('Error setting user role:', roleError)
-          toast.error(
-            'Account created but role assignment failed. Please contact support.',
-          )
-        } else {
-          console.log('User role set successfully to:', role) // Debug log
-
-          // Show specific message for vendors
-          if (role === 'vendor') {
-            toast.success(
-              'Vendor account created! You can now manage your products after logging in.',
-            )
-          }
-        }
+    // Check if user already exists
+    const existingUser = mockUsers.find(u => u.email === email)
+    if (existingUser) {
+      setLoading(false)
+      return {
+        error: new Error('User already exists with this email'),
+        data: null
       }
+    }
 
-      setLoading(false)
-      return response
-    } catch (error) {
-      console.error('Unexpected error during signup:', error)
-      setLoading(false)
-      throw error
+    // Create new mock user
+    const newUser: MockUser = {
+      id: 'user_' + Date.now(),
+      email,
+      fullName,
+      role
+    }
+
+    // Add to mock users array (in real app this would be persistent)
+    mockUsers.push(newUser)
+
+    const mockSession: Session = {
+      user: newUser,
+      access_token: 'mock_token_' + Date.now()
+    }
+
+    localStorage.setItem('mock_session', JSON.stringify(mockSession))
+    setSession(mockSession)
+    setUser(newUser)
+    setLoading(false)
+
+    return {
+      error: null,
+      data: { user: newUser, session: mockSession }
     }
   }
 
   const signOut = async () => {
     setLoading(true)
-    const response = await supabase.auth.signOut()
-    if (!response.error) {
-      navigate('/auth')
-    }
+    localStorage.removeItem('mock_session')
+    setSession(null)
+    setUser(null)
+    navigate('/auth')
     setLoading(false)
-    return response
+    return { error: null }
   }
 
   return (

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { supabase } from '@/integrations/supabase/client'
 import { Edit, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/table'
 import { CATEGORIES } from './productConstants'
 import { Product } from './types'
+import { deleteProduct } from '@/services/mockServices'
 
 interface ProductListProps {
   products: Product[]
@@ -25,15 +25,10 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId)
-
-      if (error) throw error
+      await deleteProduct(productId)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['farmerProducts'] })
+      queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
       toast.success('Product deleted')
     },
     onError: (error) => {

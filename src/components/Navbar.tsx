@@ -1,10 +1,9 @@
+
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { ShoppingCart, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/integrations/supabase/client'
 import UserActions from './navbar/UserActions'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import NavLinks from './navbar/NavLinks'
@@ -14,28 +13,7 @@ const Navbar = () => {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
 
-  const { data: userRole } = useQuery({
-    queryKey: ['userRole', user?.id],
-    queryFn: async () => {
-      if (!user) return null
-
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error('Error fetching user role:', error)
-        return null
-      }
-
-      return data?.role as 'user' | 'vendor' | 'admin' | null
-    },
-    enabled: !!user,
-  })
-
-  const isVendor = userRole === 'vendor'
+  const isVendor = user?.role === 'vendor'
 
   const closeMenu = () => {
     setIsOpen(false)

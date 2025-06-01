@@ -1,22 +1,19 @@
-import { Product } from '@/components/product/types'
-import { supabase } from '@/integrations/supabase/client'
-import { getMarketplaceProducts } from '@/integrations/supabase/operations/getMarketplaceProducts'
-import { VendorProducts } from '@/integrations/supabase/types'
+
 import { useQuery } from '@tanstack/react-query'
+import { getMarketplaceProducts } from '@/services/mockServices'
+import { Product } from '@/components/product/types'
 
 export const useMarketplaceProducts = () => {
   return useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
-      let data: VendorProducts[]
       try {
-        data = await getMarketplaceProducts()
+        const data = await getMarketplaceProducts()
+        return data
       } catch (error) {
         console.error('Error fetching products:', error)
         return []
       }
-
-      return data
     },
   })
 }

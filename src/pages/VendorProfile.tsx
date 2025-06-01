@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -5,24 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
 import PageHeader from '@/components/PageHeader'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ImageUploader from '@/components/ImageUploader'
 import { Loader2, Edit, Save, X } from 'lucide-react'
-
-interface VendorProfile {
-  id?: string
-  user_id?: string
-  vendor_name: string
-  owner_name: string
-  location: string
-  specialty: string
-  description: string
-  image_url: string | null
-}
+import { getVendorByUserId, saveVendorProfile } from '@/services/mockServices'
+import { MockVendorProfile } from '@/data/mockData'
 
 const VendorProfile = () => {
   const { user } = useAuth()
@@ -30,7 +21,7 @@ const VendorProfile = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [profile, setProfile] = useState<VendorProfile>({
+  const [profile, setProfile] = useState<Partial<MockVendorProfile>>({
     vendor_name: '',
     owner_name: '',
     location: '',
@@ -48,20 +39,13 @@ const VendorProfile = () => {
 
     const fetchVendorProfile = async () => {
       try {
-        const { data, error } = await supabase
-          .from('vendor_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle()
-
-        if (error) throw error
-
+        const data = await getVendorByUserId(user.id)
         if (data) {
           setProfile(data)
           setIsNewProfile(false)
         }
       } catch (error) {
-        console.error('Error fetching vendor profile:', error.message)
+        console.error('Error fetching vendor profile:', error)
         toast.error('Could not load your vendor profile')
       } finally {
         setLoading(false)
@@ -102,31 +86,13 @@ const VendorProfile = () => {
     setSaving(true)
 
     try {
-      if (isNewProfile) {
-        // Insert new profile
-        const { error } = await supabase.from('vendor_profiles').insert({
-          ...profile,
-          user_id: user.id,
-        })
-
-        if (error) throw error
-
-        toast.success('Vendor profile created successfully!')
-        setIsNewProfile(false)
-      } else {
-        // Update existing profile
-        const { error } = await supabase
-          .from('vendor_profiles')
-          .update(profile)
-          .eq('user_id', user.id)
-
-        if (error) throw error
-
-        toast.success('Vendor profile updated successfully!')
-      }
+      const savedProfile = await saveVendorProfile(profile, user.id)
+      setProfile(savedProfile)
+      toast.success(isNewProfile ? 'Vendor profile created successfully!' : 'Vendor profile updated successfully!')
+      setIsNewProfile(false)
       setIsEditing(false)
     } catch (error) {
-      console.error('Error saving vendor profile:', error.message)
+      console.error('Error saving vendor profile:', error)
       toast.error('Failed to save vendor profile')
     } finally {
       setSaving(false)
@@ -138,21 +104,18 @@ const VendorProfile = () => {
   }
 
   const cancelEditing = () => {
-    // Reload the profile data to revert changes
     if (!isNewProfile && user) {
       setLoading(true)
-      supabase
-        .from('vendor_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle()
-        .then(({ data, error }) => {
-          if (error) {
-            toast.error('Could not reload your profile')
-            console.error(error)
-          } else if (data) {
+      getVendorByUserId(user.id)
+        .then((data) => {
+          if (data) {
             setProfile(data)
           }
+          setLoading(false)
+        })
+        .catch((error) => {
+          toast.error('Could not reload your profile')
+          console.error(error)
           setLoading(false)
         })
     }
@@ -196,7 +159,7 @@ const VendorProfile = () => {
                   <Input
                     id="vendor_name"
                     name="vendor_name"
-                    value={profile.vendor_name}
+                    value={profile.vendor_name || ''}
                     onChange={handleChange}
                     placeholder="Your farm or business name"
                     required
@@ -210,7 +173,7 @@ const VendorProfile = () => {
                   <Input
                     id="owner_name"
                     name="owner_name"
-                    value={profile.owner_name}
+                    value={profile.owner_name || ''}
                     onChange={handleChange}
                     placeholder="Your full name"
                     required

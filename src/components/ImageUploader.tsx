@@ -1,7 +1,7 @@
+
 import { useState, useRef } from 'react'
 import { Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
 
 interface ImageUploaderProps {
@@ -44,35 +44,25 @@ const ImageUploader = ({
     setIsUploading(true)
 
     try {
-      // Create a unique file path
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
-      const filePath = `${fileName}`
-
-      // Upload image to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file)
-
-      if (error) {
-        throw error
+      // Convert to base64 for mock implementation
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string
+        
+        // Update preview and notify parent
+        setImagePreview(imageUrl)
+        onImageUploaded(imageUrl)
+        toast.success('Image uploaded successfully')
+        setIsUploading(false)
       }
-
-      // Get public URL for the uploaded image
-      const { data: publicUrlData } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath)
-
-      const imageUrl = publicUrlData.publicUrl
-
-      // Update preview and notify parent
-      setImagePreview(imageUrl)
-      onImageUploaded(imageUrl)
-      toast.success('Image uploaded successfully')
+      reader.onerror = () => {
+        toast.error('Failed to upload image. Please try again.')
+        setIsUploading(false)
+      }
+      reader.readAsDataURL(file)
     } catch (error) {
       console.error('Error uploading image:', error)
       toast.error('Failed to upload image. Please try again.')
-    } finally {
       setIsUploading(false)
     }
   }
