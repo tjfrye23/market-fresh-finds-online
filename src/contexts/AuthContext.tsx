@@ -111,7 +111,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       id: 'user_' + Date.now(),
       email,
       fullName,
-      role
+      role,
+      app_metadata: {},
+      user_metadata: {}
     }
 
     // Add to mock users array (in real app this would be persistent)

@@ -1,10 +1,11 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { LogIn, Wheat } from 'lucide-react'
-import { User } from '@supabase/supabase-js'
+import { MockUser } from '@/data/mockData'
 
 interface UserActionsProps {
-  user: User | null
+  user: MockUser | null
   getUserInitials: () => string
   handleLogin: () => void
   navigateToVendorOnboarding: () => void
