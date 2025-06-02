@@ -22,7 +22,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Switch } from '@/components/ui/switch'
 import {
   Loader2,
   MapPin,
@@ -56,10 +55,10 @@ const CustomerDetails = () => {
     }
   }, [id])
 
-  const handleLockToggle = (checked: boolean) => {
+  const handleLockToggle = () => {
     const lockedUsers = JSON.parse(localStorage.getItem('locked_users') || '[]')
     
-    if (checked) {
+    if (!isLocked) {
       // Lock user
       if (!lockedUsers.includes(id)) {
         lockedUsers.push(id)
@@ -146,49 +145,53 @@ const CustomerDetails = () => {
                   </div>
 
                   <div className="mt-4 md:mt-0 flex items-center gap-4">
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    {/* Customer Status */}
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
                       isLocked 
                         ? 'bg-red-100 text-red-800' 
                         : 'bg-green-100 text-green-800'
                     }`}>
-                      {isLocked ? 'Locked' : 'Active Customer'}
+                      {isLocked ? (
+                        <Lock className="h-4 w-4" />
+                      ) : (
+                        <Unlock className="h-4 w-4" />
+                      )}
+                      {isLocked ? 'Locked' : 'Active'}
                     </div>
                     
-                    {/* Lock/Unlock Toggle */}
-                    <div className="flex items-center gap-2">
-                      {isLocked ? (
-                        <Lock className="h-4 w-4 text-red-600" />
-                      ) : (
-                        <Unlock className="h-4 w-4 text-green-600" />
-                      )}
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Switch checked={isLocked} />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {isLocked ? 'Unlock Customer' : 'Lock Customer'}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {isLocked 
-                                ? `Are you sure you want to unlock ${customer.fullName}? They will regain access to their account.`
-                                : `Are you sure you want to lock ${customer.fullName}? They will lose access to their account.`
-                              }
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleLockToggle(!isLocked)}
-                              className={isLocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
-                            >
-                              {isLocked ? 'Unlock' : 'Lock'}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    {/* Lock/Unlock Action Button */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant={isLocked ? "default" : "destructive"}
+                          size="sm"
+                        >
+                          {isLocked ? 'Unlock Customer' : 'Lock Customer'}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {isLocked ? 'Unlock Customer' : 'Lock Customer'}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {isLocked 
+                              ? `Are you sure you want to unlock ${customer.fullName}? They will regain access to their account.`
+                              : `Are you sure you want to lock ${customer.fullName}? They will lose access to their account.`
+                            }
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleLockToggle}
+                            className={isLocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+                          >
+                            {isLocked ? 'Unlock' : 'Lock'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </CardHeader>
