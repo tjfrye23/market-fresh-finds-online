@@ -1,8 +1,5 @@
 
 import { Link } from 'react-router-dom'
-import { ShoppingCart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useCart } from '@/contexts/CartContext'
 
 interface ProductCardProps {
   id: string
@@ -25,19 +22,6 @@ const ProductCard = ({
   local = false,
   farmName,
 }: ProductCardProps) => {
-  const { addToCart } = useCart()
-
-  const handleAddToCart = () => {
-    addToCart({
-      id,
-      name,
-      price,
-      unit,
-      image,
-      farmName,
-    })
-  }
-
   return (
     <div className="product-card group">
       <div className="relative overflow-hidden">
@@ -78,14 +62,6 @@ const ProductCard = ({
             </span>
             <span className="text-gray-500 text-sm">per {unit}</span>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full hover:bg-market-green hover:text-white"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="h-4 w-4" />
-          </Button>
         </div>
       </div>
     </div>
