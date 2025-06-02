@@ -49,7 +49,7 @@ const AdminDashboard = () => {
   }
 
   const handleVendorClick = (vendor) => {
-    navigate(`/vendors/${vendor.id}`)
+    navigate(`/admin/vendors/${vendor.id}`)
   }
 
   const handleCustomerClick = (customer) => {
