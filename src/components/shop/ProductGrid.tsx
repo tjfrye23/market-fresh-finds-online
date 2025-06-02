@@ -7,6 +7,7 @@ interface Vendor {
   user_id: string
   farm_name?: string
   vendor_name?: string
+  status?: string
 }
 
 interface ProductGridProps {
@@ -20,9 +21,16 @@ const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
     const vendor = vendors.find(v => v.user_id === product.user_id)
     return {
       ...product,
-      farmName: vendor?.farm_name || vendor?.vendor_name
+      farmName: vendor?.farm_name || vendor?.vendor_name,
+      vendorStatus: vendor?.status
     }
   }
+
+  // Filter products to only show those from active vendors
+  const activeProducts = products.filter(product => {
+    const vendor = vendors.find(v => v.user_id === product.user_id)
+    return vendor?.status === 'active' || !vendor?.status // Show products if vendor status is undefined (for backward compatibility)
+  })
 
   if (isLoading) {
     return (
@@ -32,14 +40,17 @@ const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
     )
   }
 
-  if (products.length === 0) {
+  if (activeProducts.length === 0) {
     return (
       <div className="bg-gray-50 p-8 rounded-lg text-center">
         <h3 className="text-lg font-medium mb-2">
-          No products found
+          No products available
         </h3>
         <p className="text-gray-500">
-          Try adjusting your filters to find what you're looking for.
+          {products.length > 0 
+            ? "All products are currently under vendor review." 
+            : "Try adjusting your filters to find what you're looking for."
+          }
         </p>
       </div>
     )
@@ -47,7 +58,7 @@ const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => {
+      {activeProducts.map((product) => {
         const productWithVendor = getProductWithVendorInfo(product)
         return (
           <ProductCard

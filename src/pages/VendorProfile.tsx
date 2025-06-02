@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
@@ -11,8 +10,8 @@ import PageHeader from '@/components/PageHeader'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ImageUploader from '@/components/ImageUploader'
-import { Loader2, Edit, Save, X } from 'lucide-react'
-import { getVendorByUserId, saveVendorProfile } from '@/services/mockServices'
+import { Loader2, Edit, Save, X, CheckCircle, Clock, AlertTriangle } from 'lucide-react'
+import { getVendorByUserId, saveVendorProfile, updateVendorStatus } from '@/services/mockServices'
 import { MockVendorProfile } from '@/data/mockData'
 
 const VendorProfile = () => {
@@ -28,6 +27,7 @@ const VendorProfile = () => {
     specialty: '',
     description: '',
     image_url: null,
+    status: 'pending'
   })
   const [isNewProfile, setIsNewProfile] = useState(true)
 
@@ -43,6 +43,9 @@ const VendorProfile = () => {
         if (data) {
           setProfile(data)
           setIsNewProfile(false)
+        } else {
+          // New vendor profile defaults to pending status
+          setProfile(prev => ({ ...prev, status: 'pending' }))
         }
       } catch (error) {
         console.error('Error fetching vendor profile:', error)
@@ -88,7 +91,7 @@ const VendorProfile = () => {
     try {
       const savedProfile = await saveVendorProfile(profile, user.id)
       setProfile(savedProfile)
-      toast.success(isNewProfile ? 'Vendor profile created successfully!' : 'Vendor profile updated successfully!')
+      toast.success(isNewProfile ? 'Vendor profile created successfully! Your profile is now pending admin review.' : 'Vendor profile updated successfully!')
       setIsNewProfile(false)
       setIsEditing(false)
     } catch (error) {
@@ -96,6 +99,22 @@ const VendorProfile = () => {
       toast.error('Failed to save vendor profile')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleStatusUpdate = async (newStatus: 'active' | 'rejected') => {
+    if (!user || user.role !== 'admin') {
+      toast.error('Only admins can update vendor status')
+      return
+    }
+
+    try {
+      await updateVendorStatus(profile.id!, newStatus)
+      setProfile(prev => ({ ...prev, status: newStatus }))
+      toast.success(`Vendor status updated to ${newStatus}`)
+    } catch (error) {
+      console.error('Error updating vendor status:', error)
+      toast.error('Failed to update vendor status')
     }
   }
 
@@ -120,6 +139,32 @@ const VendorProfile = () => {
         })
     }
     setIsEditing(false)
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <CheckCircle className="h-5 w-5 text-green-600" />
+      case 'pending':
+        return <Clock className="h-5 w-5 text-yellow-600" />
+      case 'rejected':
+        return <AlertTriangle className="h-5 w-5 text-red-600" />
+      default:
+        return <Clock className="h-5 w-5 text-gray-600" />
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800 border-green-200'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'rejected':
+        return 'bg-red-100 text-red-800 border-red-200'
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200'
+    }
   }
 
   if (loading) {
@@ -150,6 +195,48 @@ const VendorProfile = () => {
 
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+            {/* Status Banner */}
+            {!isNewProfile && (
+              <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${getStatusColor(profile.status || 'pending')}`}>
+                {getStatusIcon(profile.status || 'pending')}
+                <div>
+                  <p className="font-medium">
+                    Profile Status: {profile.status === 'active' ? 'Active' : profile.status === 'pending' ? 'Pending Review' : 'Rejected'}
+                  </p>
+                  <p className="text-sm">
+                    {profile.status === 'active' && 'Your profile is approved and products are visible to customers.'}
+                    {profile.status === 'pending' && 'Your profile is under admin review. Products will be visible once approved.'}
+                    {profile.status === 'rejected' && 'Your profile was rejected. Please contact support for more information.'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Admin Actions */}
+            {user?.role === 'admin' && !isNewProfile && profile.status === 'pending' && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="font-medium text-blue-800 mb-3">Admin Actions</h3>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleStatusUpdate('active')}
+                    className="bg-green-600 hover:bg-green-700"
+                    size="sm"
+                  >
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Approve Vendor
+                  </Button>
+                  <Button
+                    onClick={() => handleStatusUpdate('rejected')}
+                    variant="destructive"
+                    size="sm"
+                  >
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Reject Vendor
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {isNewProfile || isEditing ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">

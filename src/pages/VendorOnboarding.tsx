@@ -39,7 +39,7 @@ const VendorOnboarding = () => {
       if (error) throw error
 
       toast.success(
-        'Vendor account created! Please verify your email if required.',
+        'Vendor account created! Your profile is pending admin review. You will be notified once approved.',
       )
       navigate('/vendor/profile')
     } catch (error) {
@@ -57,6 +57,14 @@ const VendorOnboarding = () => {
       />
 
       <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-8">
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="font-medium text-yellow-800 mb-2">Review Process</h3>
+          <p className="text-sm text-yellow-700">
+            After creating your account, your vendor profile will be reviewed by our admin team. 
+            Once approved, your products will be visible to customers.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>

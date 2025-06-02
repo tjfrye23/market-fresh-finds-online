@@ -36,16 +36,21 @@ export const getVendorData = async (vendorId: string): Promise<MockVendorProfile
 }
 
 export const getVendors = async (): Promise<MockVendorProfile[]> => {
-  await delay(400)
-  
-  const storedVendors = localStorage.getItem('vendors')
-  if (storedVendors) {
-    return JSON.parse(storedVendors)
-  }
-  
-  // Store initial mock data
-  localStorage.setItem('vendors', JSON.stringify(mockVendors))
-  return mockVendors
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Return only active vendors for public display
+      const activeVendors = mockVendors.filter(vendor => vendor.status === 'active')
+      resolve(activeVendors)
+    }, 500)
+  })
+}
+
+export const getAllVendors = async (): Promise<MockVendorProfile[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockVendors)
+    }, 500)
+  })
 }
 
 export const addProduct = async (productData: Omit<MockProduct, 'id' | 'created_at' | 'updated_at'>): Promise<MockProduct> => {
@@ -123,6 +128,16 @@ export const updateVendorProfile = async (vendorId: string, profileData: Partial
   return updatedVendor
 }
 
+export const updateVendorStatus = async (vendorId: string, status: 'active' | 'pending' | 'rejected'): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // In a real app, this would update the vendor status in the database
+      console.log(`Vendor ${vendorId} status updated to ${status}`)
+      resolve()
+    }, 500)
+  })
+}
+
 export const saveProduct = async (productData: Partial<MockProduct> & { id?: string }, userId: string): Promise<MockProduct> => {
   if (productData.id) {
     // Update existing product
@@ -154,45 +169,26 @@ export const getVendorByUserId = async (userId: string): Promise<MockVendorProfi
   return vendors.find((vendor: MockVendorProfile) => vendor.user_id === userId) || null
 }
 
-export const saveVendorProfile = async (profileData: Partial<MockVendorProfile>, userId: string): Promise<MockVendorProfile> => {
-  await delay(300)
-  
-  const storedVendors = localStorage.getItem('vendors')
-  const vendors = storedVendors ? JSON.parse(storedVendors) : mockVendors
-  
-  const existingVendorIndex = vendors.findIndex((v: MockVendorProfile) => v.user_id === userId)
-  
-  if (existingVendorIndex !== -1) {
-    // Update existing vendor
-    const updatedVendor = {
-      ...vendors[existingVendorIndex],
-      ...profileData,
-      updated_at: new Date().toISOString(),
-    }
-    
-    vendors[existingVendorIndex] = updatedVendor
-    localStorage.setItem('vendors', JSON.stringify(vendors))
-    
-    return updatedVendor
-  } else {
-    // Create new vendor
-    const newVendor: MockVendorProfile = {
-      id: Date.now().toString(),
-      user_id: userId,
-      vendor_name: profileData.vendor_name || '',
-      farm_name: profileData.farm_name || profileData.vendor_name || '',
-      owner_name: profileData.owner_name || '',
-      location: profileData.location || null,
-      specialty: profileData.specialty || null,
-      description: profileData.description || null,
-      image_url: profileData.image_url || null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }
-    
-    const updatedVendors = [...vendors, newVendor]
-    localStorage.setItem('vendors', JSON.stringify(updatedVendors))
-    
-    return newVendor
-  }
+export const saveVendorProfile = async (
+  profile: Partial<MockVendorProfile>,
+  userId: string
+): Promise<MockVendorProfile> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const savedProfile: MockVendorProfile = {
+        id: profile.id || Math.random().toString(36).substr(2, 9),
+        user_id: userId,
+        vendor_name: profile.vendor_name || '',
+        owner_name: profile.owner_name || '',
+        location: profile.location || null,
+        specialty: profile.specialty || null,
+        description: profile.description || null,
+        image_url: profile.image_url || null,
+        status: profile.status || 'pending', // Default to pending status
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+      resolve(savedProfile)
+    }, 1000)
+  })
 }
