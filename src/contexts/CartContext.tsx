@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -81,8 +80,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId)
+    if (quantity < 0) {
       return
     }
 
