@@ -4,22 +4,25 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
+import { saveOrder } from '@/services/orderService'
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [isProcessing, setIsProcessing] = useState(false)
   
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    email: user?.email || '',
     phone: '',
     address: '',
     city: '',
@@ -39,10 +42,33 @@ const Checkout = () => {
     e.preventDefault()
     setIsProcessing(true)
 
-    // Simulate order processing
     try {
-      // In a real app, this would integrate with a payment processor
+      // Simulate order processing
       await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Save the order
+      const orderData = {
+        total: getTotalPrice(),
+        items: items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          farmName: item.farmName
+        })),
+        customerInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode
+        }
+      }
+      
+      const savedOrder = saveOrder(orderData)
+      console.log('Order saved:', savedOrder)
       
       clearCart()
       toast.success('Order placed successfully!')
