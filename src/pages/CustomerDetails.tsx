@@ -12,28 +12,69 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Switch } from '@/components/ui/switch'
+import {
   Loader2,
   MapPin,
   User,
   Mail,
   ShoppingBag,
   Calendar,
+  Lock,
+  Unlock,
 } from 'lucide-react'
 import { mockUsers } from '@/data/mockData'
+import { toast } from 'sonner'
 
 const CustomerDetails = () => {
   const { id } = useParams<{ id: string }>()
   const [customer, setCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isLocked, setIsLocked] = useState(false)
 
   useEffect(() => {
     if (id) {
       // Find customer from mock users
       const foundCustomer = mockUsers.find(user => user.id === id && user.role === 'user')
       setCustomer(foundCustomer)
+      
+      // Check if user is locked from localStorage
+      const lockedUsers = JSON.parse(localStorage.getItem('locked_users') || '[]')
+      setIsLocked(lockedUsers.includes(id))
+      
       setLoading(false)
     }
   }, [id])
+
+  const handleLockToggle = (checked: boolean) => {
+    const lockedUsers = JSON.parse(localStorage.getItem('locked_users') || '[]')
+    
+    if (checked) {
+      // Lock user
+      if (!lockedUsers.includes(id)) {
+        lockedUsers.push(id)
+        localStorage.setItem('locked_users', JSON.stringify(lockedUsers))
+        setIsLocked(true)
+        toast.success(`${customer.fullName} has been locked`)
+      }
+    } else {
+      // Unlock user
+      const updatedLockedUsers = lockedUsers.filter(userId => userId !== id)
+      localStorage.setItem('locked_users', JSON.stringify(updatedLockedUsers))
+      setIsLocked(false)
+      toast.success(`${customer.fullName} has been unlocked`)
+    }
+  }
 
   // Loading state
   if (loading) {
@@ -104,9 +145,49 @@ const CustomerDetails = () => {
                     </CardDescription>
                   </div>
 
-                  <div className="mt-4 md:mt-0 flex items-center">
-                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      Active Customer
+                  <div className="mt-4 md:mt-0 flex items-center gap-4">
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isLocked 
+                        ? 'bg-red-100 text-red-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {isLocked ? 'Locked' : 'Active Customer'}
+                    </div>
+                    
+                    {/* Lock/Unlock Toggle */}
+                    <div className="flex items-center gap-2">
+                      {isLocked ? (
+                        <Lock className="h-4 w-4 text-red-600" />
+                      ) : (
+                        <Unlock className="h-4 w-4 text-green-600" />
+                      )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Switch checked={isLocked} />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {isLocked ? 'Unlock Customer' : 'Lock Customer'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {isLocked 
+                                ? `Are you sure you want to unlock ${customer.fullName}? They will regain access to their account.`
+                                : `Are you sure you want to lock ${customer.fullName}? They will lose access to their account.`
+                              }
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleLockToggle(!isLocked)}
+                              className={isLocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+                            >
+                              {isLocked ? 'Unlock' : 'Lock'}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </div>
@@ -134,7 +215,7 @@ const CustomerDetails = () => {
                   </h3>
                   <p className="text-gray-700">
                     {customer.fullName} is a valued customer who has been part of our marketplace community. 
-                    They maintain an active account and regularly engage with our platform.
+                    They maintain an {isLocked ? 'inactive (locked)' : 'active'} account and {isLocked ? 'cannot currently engage' : 'regularly engage'} with our platform.
                   </p>
                 </div>
               </CardContent>
