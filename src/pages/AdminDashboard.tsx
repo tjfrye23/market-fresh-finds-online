@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -23,7 +24,7 @@ import {
   Package,
   Store
 } from 'lucide-react'
-import { mockUsers } from '@/data/mockData'
+import { mockUsers, mockVendors } from '@/data/mockData'
 
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -37,10 +38,11 @@ const AdminDashboard = () => {
     const storedOrders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
     setOrders(storedOrders)
     
-    // Filter users by role
-    const vendorUsers = mockUsers.filter(u => u.role === 'vendor')
+    // Use vendor profiles instead of user records
+    setVendors(mockVendors)
+    
+    // Filter users by role for customers
     const customerUsers = mockUsers.filter(u => u.role === 'user')
-    setVendors(vendorUsers)
     setCustomers(customerUsers)
   }, [])
 
@@ -185,8 +187,9 @@ const AdminDashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
+                        <TableHead>Vendor Name</TableHead>
+                        <TableHead>Owner</TableHead>
+                        <TableHead>Location</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -197,10 +200,13 @@ const AdminDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleVendorClick(vendor)}
                         >
-                          <TableCell className="font-medium">{vendor.fullName}</TableCell>
-                          <TableCell>{vendor.email}</TableCell>
+                          <TableCell className="font-medium">{vendor.vendor_name}</TableCell>
+                          <TableCell>{vendor.owner_name}</TableCell>
+                          <TableCell>{vendor.location || 'Not specified'}</TableCell>
                           <TableCell>
-                            <Badge variant="default">Active</Badge>
+                            <Badge variant={vendor.status === 'active' ? 'default' : vendor.status === 'pending' ? 'secondary' : 'destructive'}>
+                              {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                            </Badge>
                           </TableCell>
                         </TableRow>
                       ))}
