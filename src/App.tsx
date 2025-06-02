@@ -40,6 +40,14 @@ const AppContent = () => (
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/order-confirmation" element={<OrderConfirmation />} />
     <Route
+      path="/profile"
+      element={
+        <ProtectedRoute>
+          <UserProfile />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/orders"
       element={
         <ProtectedRoute>
