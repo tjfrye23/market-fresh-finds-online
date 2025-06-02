@@ -1,10 +1,9 @@
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { ShoppingCart, Menu, Heart } from 'lucide-react'
+import { ShoppingCart, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
-import { useFavorites } from '@/contexts/FavoritesContext'
 import { toast } from 'sonner'
 import UserActions from './navbar/UserActions'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -15,13 +14,11 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { user, signOut } = useAuth()
   const { getTotalItems } = useCart()
-  const { getFavoritesCount } = useFavorites()
   const navigate = useNavigate()
 
   const isVendor = user?.role === 'vendor'
   const isAdmin = user?.role === 'admin'
   const cartItemCount = getTotalItems()
-  const favoritesCount = getFavoritesCount()
 
   const closeMenu = () => {
     setIsOpen(false)
@@ -65,21 +62,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Link
-              to="/favorites"
-              className="p-2 text-gray-700 hover:text-market-green transition-colors relative"
-            >
-              <Heart className="h-6 w-6" />
-              {favoritesCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {favoritesCount}
-                </Badge>
-              )}
-            </Link>
-
             <Link
               to="/cart"
               className="p-2 text-gray-700 hover:text-market-green transition-colors relative"

@@ -11,7 +11,10 @@ import {
   LogOut,
   Package,
   BarChart3,
+  Heart,
 } from 'lucide-react'
+import { useFavorites } from '@/contexts/FavoritesContext'
+import { Badge } from '@/components/ui/badge'
 
 interface NavLinksProps {
   isVendor: boolean
@@ -32,6 +35,9 @@ const NavLinks = ({
   onLogout,
   onVendorSignup,
 }: NavLinksProps) => {
+  const { getFavoritesCount } = useFavorites()
+  const favoritesCount = getFavoritesCount()
+
   return (
     <div className="py-4 space-y-4">
       <div className="space-y-2">
@@ -51,6 +57,25 @@ const NavLinks = ({
         >
           <Apple className="mr-2 h-5 w-5" />
           <span>Shop</span>
+        </Link>
+
+        <Link
+          to="/favorites"
+          className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+          onClick={onClose}
+        >
+          <Heart className="mr-2 h-5 w-5" />
+          <div className="flex items-center justify-between w-full">
+            <span>Favorites</span>
+            {favoritesCount > 0 && (
+              <Badge 
+                variant="destructive" 
+                className="h-5 w-5 flex items-center justify-center p-0 text-xs"
+              >
+                {favoritesCount}
+              </Badge>
+            )}
+          </div>
         </Link>
 
         <Link
