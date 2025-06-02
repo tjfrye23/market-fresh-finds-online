@@ -179,6 +179,7 @@ export const saveVendorProfile = async (
         id: profile.id || Math.random().toString(36).substr(2, 9),
         user_id: userId,
         vendor_name: profile.vendor_name || '',
+        farm_name: profile.vendor_name || '', // Use vendor_name as farm_name if not provided separately
         owner_name: profile.owner_name || '',
         location: profile.location || null,
         specialty: profile.specialty || null,
