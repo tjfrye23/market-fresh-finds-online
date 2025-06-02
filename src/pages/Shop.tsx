@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
@@ -22,7 +23,7 @@ const Shop = () => {
   const [showOrganic, setShowOrganic] = useState(false)
   const [showLocal, setShowLocal] = useState(false)
   const [vendors, setVendors] = useState(mockVendors)
-  const [selectedVendors, setSelectedVendors: any] = useState([])
+  const [selectedVendors, setSelectedVendors] = useState<string[]>([])
   const { isShopOpen } = useMarketSchedule()
   const shopOpen = isShopOpen()
 
