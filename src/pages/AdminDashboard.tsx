@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -54,9 +53,7 @@ const AdminDashboard = () => {
   }
 
   const handleCustomerClick = (customer) => {
-    // Navigate to customer profile or details page
-    // For now, we'll navigate to the user profile page
-    navigate(`/profile`)
+    navigate(`/admin/customers/${customer.id}`)
   }
 
   if (!user || !isAdmin) {
