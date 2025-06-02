@@ -1,130 +1,39 @@
 
 import { useState } from 'react'
-import { ArrowDownAZ, ArrowUpAZ, Filter } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import PageHeader from '@/components/PageHeader'
-import ProductCard from '@/components/ProductCard'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { Product } from '@/components/product/types'
+import ShopFilters from '@/components/shop/ShopFilters'
+import ProductGrid from '@/components/shop/ProductGrid'
 import { useMarketplaceProducts } from '@/hooks/useMarketplaceProducts'
+import { useShopFilters } from '@/hooks/useShopFilters'
 import { getVendors } from '@/services/mockServices'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 
 const Shop = () => {
-  const [sortBy, setSortBy] = useState('featured')
   const [filterVisible, setFilterVisible] = useState(false)
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([])
-  const [featuresFilter, setFeaturesFilter] = useState<{
-    organic: boolean
-    local: boolean
-    inSeason: boolean
-  }>({
-    organic: false,
-    local: false,
-    inSeason: false,
-  })
-  const [priceRange, setPriceRange] = useState<string>('all')
-  const [vendorFilter, setVendorFilter] = useState<string>('all')
-
-  const { data: products = [], isLoading } = useMarketplaceProducts()
   
+  const { data: products = [], isLoading } = useMarketplaceProducts()
   const { data: vendors = [] } = useQuery({
     queryKey: ['vendors'],
     queryFn: getVendors,
   })
 
-  const toggleFilter = () => {
-    setFilterVisible(!filterVisible)
-  }
+  const {
+    categoryFilter,
+    setCategoryFilter,
+    featuresFilter,
+    setFeaturesFilter,
+    priceRange,
+    setPriceRange,
+    vendorFilter,
+    setVendorFilter,
+    sortBy,
+    setSortBy,
+    getFilteredAndSortedProducts,
+  } = useShopFilters()
 
-  const handleCategoryChange = (category: string) => {
-    setCategoryFilter((prev) => {
-      if (category === 'all') {
-        return []
-      }
-
-      if (prev.includes(category)) {
-        return prev.filter((c) => c !== category)
-      } else {
-        return [...prev, category]
-      }
-    })
-  }
-
-  const handleFeatureChange = (feature: 'organic' | 'local' | 'inSeason') => {
-    setFeaturesFilter((prev) => ({
-      ...prev,
-      [feature]: !prev[feature],
-    }))
-  }
-
-  const handlePriceRangeChange = (range: string) => {
-    setPriceRange(range)
-  }
-
-  const handleVendorChange = (vendorId: string) => {
-    setVendorFilter(vendorId)
-  }
-
-  const getProductWithVendorInfo = (product: any) => {
-    const vendor = vendors.find(v => v.user_id === product.user_id)
-    return {
-      ...product,
-      farmName: vendor?.farm_name || vendor?.vendor_name
-    }
-  }
-
-  const getFilteredAndSortedProducts = () => {
-    let result = [...products]
-
-    if (categoryFilter.length > 0) {
-      result = result.filter((product) =>
-        categoryFilter.includes(product.category),
-      )
-    }
-
-    if (featuresFilter.organic) {
-      result = result.filter((product) => product.organic)
-    }
-
-    if (featuresFilter.local) {
-      result = result.filter((product) => product.local)
-    }
-
-    if (vendorFilter !== 'all') {
-      result = result.filter((product) => product.user_id === vendorFilter)
-    }
-
-    if (priceRange === 'under5') {
-      result = result.filter((product) => product.price < 5)
-    } else if (priceRange === '5to10') {
-      result = result.filter(
-        (product) => product.price >= 5 && product.price <= 10,
-      )
-    } else if (priceRange === 'over10') {
-      result = result.filter((product) => product.price > 10)
-    }
-
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => a.price - b.price)
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price)
-    } else if (sortBy === 'name-asc') {
-      result.sort((a, b) => a.name.localeCompare(b.name))
-    } else if (sortBy === 'name-desc') {
-      result.sort((a, b) => b.name.localeCompare(a.name))
-    }
-
-    return result
-  }
-
-  const filteredProducts = getFilteredAndSortedProducts()
+  const filteredProducts = getFilteredAndSortedProducts(products)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -139,13 +48,19 @@ const Shop = () => {
         <div className="page-container">
           <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div className="flex items-center">
-              <button
-                onClick={toggleFilter}
-                className="mr-4 bg-market-gray px-4 py-2 rounded-md flex items-center md:hidden"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </button>
+              <ShopFilters
+                filterVisible={filterVisible}
+                setFilterVisible={setFilterVisible}
+                categoryFilter={categoryFilter}
+                setCategoryFilter={setCategoryFilter}
+                featuresFilter={featuresFilter}
+                setFeaturesFilter={setFeaturesFilter}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                vendorFilter={vendorFilter}
+                setVendorFilter={setVendorFilter}
+                vendors={vendors}
+              />
               <p className="text-gray-600">
                 {isLoading
                   ? 'Loading products...'
@@ -173,228 +88,12 @@ const Shop = () => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-8">
-            <div
-              className={`md:w-1/4 lg:w-1/5 ${filterVisible ? 'block' : 'hidden'} md:block`}
-            >
-              <div className="bg-white shadow-md rounded-lg p-6">
-                <h2 className="font-semibold text-xl mb-4">Filters</h2>
-                
-                <Accordion type="multiple" defaultValue={["categories", "vendor", "features", "price"]} className="w-full">
-                  <AccordionItem value="categories">
-                    <AccordionTrigger className="text-lg font-semibold">Categories</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.length === 0}
-                            onChange={() => handleCategoryChange('all')}
-                          />
-                          <span>All Products</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.includes('fruits')}
-                            onChange={() => handleCategoryChange('fruits')}
-                          />
-                          <span>Fruits</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.includes('vegetables')}
-                            onChange={() => handleCategoryChange('vegetables')}
-                          />
-                          <span>Vegetables</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.includes('herbs')}
-                            onChange={() => handleCategoryChange('herbs')}
-                          />
-                          <span>Herbs</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.includes('dairy')}
-                            onChange={() => handleCategoryChange('dairy')}
-                          />
-                          <span>Dairy & Eggs</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={categoryFilter.includes('bakery')}
-                            onChange={() => handleCategoryChange('bakery')}
-                          />
-                          <span>Bakery</span>
-                        </label>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="vendor">
-                    <AccordionTrigger className="text-lg font-semibold">Vendor</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        <label className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="vendor" 
-                            className="mr-2"
-                            checked={vendorFilter === 'all'}
-                            onChange={() => handleVendorChange('all')}
-                          />
-                          <span>All Vendors</span>
-                        </label>
-                        {vendors.map((vendor) => (
-                          <label key={vendor.id} className="flex items-center">
-                            <input 
-                              type="radio" 
-                              name="vendor" 
-                              className="mr-2"
-                              checked={vendorFilter === vendor.user_id}
-                              onChange={() => handleVendorChange(vendor.user_id)}
-                            />
-                            <span>{vendor.farm_name || vendor.vendor_name}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="features">
-                    <AccordionTrigger className="text-lg font-semibold">Features</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={featuresFilter.organic}
-                            onChange={() => handleFeatureChange('organic')}
-                          />
-                          <span>Organic</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={featuresFilter.local}
-                            onChange={() => handleFeatureChange('local')}
-                          />
-                          <span>Local</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="checkbox" 
-                            className="mr-2"
-                            checked={featuresFilter.inSeason}
-                            onChange={() => handleFeatureChange('inSeason')}
-                          />
-                          <span>In Season</span>
-                        </label>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="price">
-                    <AccordionTrigger className="text-lg font-semibold">Price Range</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        <label className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="price" 
-                            className="mr-2"
-                            checked={priceRange === 'all'}
-                            onChange={() => handlePriceRangeChange('all')}
-                          />
-                          <span>All Prices</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="price" 
-                            className="mr-2"
-                            checked={priceRange === 'under5'}
-                            onChange={() => handlePriceRangeChange('under5')}
-                          />
-                          <span>Under $5</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="price" 
-                            className="mr-2"
-                            checked={priceRange === '5to10'}
-                            onChange={() => handlePriceRangeChange('5to10')}
-                          />
-                          <span>$5 to $10</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input 
-                            type="radio" 
-                            name="price" 
-                            className="mr-2"
-                            checked={priceRange === 'over10'}
-                            onChange={() => handlePriceRangeChange('over10')}
-                          />
-                          <span>Over $10</span>
-                        </label>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-            </div>
-
             <div className="md:w-3/4 lg:w-4/5">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                  <p>Loading products...</p>
-                </div>
-              ) : filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredProducts.map((product) => {
-                    const productWithVendor = getProductWithVendorInfo(product)
-                    return (
-                      <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        price={product.price}
-                        unit={product.unit}
-                        image={
-                          product.image ||
-                          'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80'
-                        }
-                        organic={product.organic || false}
-                        local={product.local || false}
-                        farmName={productWithVendor.farmName}
-                      />
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="bg-gray-50 p-8 rounded-lg text-center">
-                  <h3 className="text-lg font-medium mb-2">
-                    No products found
-                  </h3>
-                  <p className="text-gray-500">
-                    Try adjusting your filters to find what you're looking for.
-                  </p>
-                </div>
-              )}
+              <ProductGrid 
+                products={filteredProducts}
+                vendors={vendors}
+                isLoading={isLoading}
+              />
             </div>
           </div>
         </div>
