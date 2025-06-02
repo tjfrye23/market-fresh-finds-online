@@ -8,9 +8,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ArrowLeft, Save } from 'lucide-react'
 import { getVendorOrders } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
+import { toast } from 'sonner'
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -25,18 +27,32 @@ const getStatusColor = (status: string) => {
   }
 }
 
+const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'shipped' | 'delivered') => {
+  const orders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
+  const updatedOrders = orders.map((order: Order) => 
+    order.id === orderId ? { ...order, status: newStatus } : order
+  )
+  localStorage.setItem('marketplace_orders', JSON.stringify(updatedOrders))
+  return updatedOrders.find((order: Order) => order.id === orderId)
+}
+
 const OrderDetail = () => {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
+  const [selectedStatus, setSelectedStatus] = useState<'processing' | 'shipped' | 'delivered'>('processing')
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     if (user?.id && orderId) {
       getVendorOrders(user.id).then(orders => {
         const foundOrder = orders.find(o => o.id === orderId)
         setOrder(foundOrder || null)
+        if (foundOrder) {
+          setSelectedStatus(foundOrder.status)
+        }
         setLoading(false)
       }).catch(error => {
         console.error('Error loading order:', error)
@@ -44,6 +60,24 @@ const OrderDetail = () => {
       })
     }
   }, [user, orderId])
+
+  const handleStatusUpdate = async () => {
+    if (!order || !orderId) return
+    
+    setIsUpdating(true)
+    try {
+      const updatedOrder = updateOrderStatus(orderId, selectedStatus)
+      if (updatedOrder) {
+        setOrder(updatedOrder)
+        toast.success('Order status updated successfully')
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error)
+      toast.error('Failed to update order status')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -101,9 +135,42 @@ const OrderDetail = () => {
                   <p className="text-sm text-gray-600">Order Date</p>
                   <p className="font-medium">{new Date(order.date).toLocaleDateString()}</p>
                 </div>
-                <Badge className={getStatusColor(order.status)}>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </Badge>
+                <div className="flex items-center gap-4">
+                  <Badge className={getStatusColor(order.status)}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Status Update Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Update Order Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <Select value={selectedStatus} onValueChange={(value: 'processing' | 'shipped' | 'delivered') => setSelectedStatus(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button 
+                  onClick={handleStatusUpdate} 
+                  disabled={isUpdating || selectedStatus === order.status}
+                  className="flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {isUpdating ? 'Updating...' : 'Update Status'}
+                </Button>
               </div>
             </CardContent>
           </Card>
