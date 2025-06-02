@@ -19,13 +19,17 @@ interface ShopFiltersProps {
   filterVisible: boolean
   setFilterVisible: (visible: boolean) => void
   categoryFilter: string[]
-  setCategoryFilter: (categories: string[]) => void
+  setCategoryFilter: React.Dispatch<React.SetStateAction<string[]>>
   featuresFilter: {
     organic: boolean
     local: boolean
     inSeason: boolean
   }
-  setFeaturesFilter: (features: { organic: boolean; local: boolean; inSeason: boolean }) => void
+  setFeaturesFilter: React.Dispatch<React.SetStateAction<{
+    organic: boolean
+    local: boolean
+    inSeason: boolean
+  }>>
   priceRange: string
   setPriceRange: (range: string) => void
   vendorFilter: string
