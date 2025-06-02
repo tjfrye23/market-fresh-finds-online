@@ -1,4 +1,3 @@
-
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -27,6 +26,7 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import OrderDetail from './pages/OrderDetail'
 import Orders from './pages/Orders'
 import AdminDashboard from './pages/AdminDashboard'
+import VendorDetails from './pages/VendorDetails'
 
 const queryClient = new QueryClient()
 
@@ -37,7 +37,7 @@ const AppContent = () => (
     <Route path="/shop/:id" element={<ProductDetail />} />
     <Route path="/about" element={<About />} />
     <Route path="/vendors" element={<Vendors />} />
-    <Route path="/vendors/:id" element={<VendorDetail />} />
+    <Route path="/vendors/:id" element={<VendorDetails />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/checkout" element={<Checkout />} />
