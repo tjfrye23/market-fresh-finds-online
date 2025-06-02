@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { getMarketplaceProducts } from '@/services/mockServices'
 
 interface CartItem {
   id: string
@@ -47,26 +48,45 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('marketplace_cart', JSON.stringify(items))
   }, [items])
 
-  const addToCart = (product: Omit<CartItem, 'quantity'>) => {
-    setItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id)
+  const addToCart = async (product: Omit<CartItem, 'quantity'>) => {
+    try {
+      const products = await getMarketplaceProducts()
+      const productData = products.find(p => p.id === product.id)
       
-      if (existingItem) {
-        // Update quantity if item already exists
-        const updatedItems = prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-        toast.success(`${product.name} quantity updated in cart`)
-        return updatedItems
-      } else {
-        // Add new item to cart
-        const newItem: CartItem = { ...product, quantity: 1 }
-        toast.success(`${product.name} added to cart`)
-        return [...prevItems, newItem]
+      if (!productData) {
+        toast.error('Product not found')
+        return
       }
-    })
+
+      setItems(prevItems => {
+        const existingItem = prevItems.find(item => item.id === product.id)
+        const currentQuantity = existingItem ? existingItem.quantity : 0
+        
+        if (currentQuantity >= productData.stock) {
+          toast.error(`Only ${productData.stock} ${product.unit}(s) available`)
+          return prevItems
+        }
+        
+        if (existingItem) {
+          // Update quantity if item already exists
+          const updatedItems = prevItems.map(item =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+          toast.success(`${product.name} quantity updated in cart`)
+          return updatedItems
+        } else {
+          // Add new item to cart
+          const newItem: CartItem = { ...product, quantity: 1 }
+          toast.success(`${product.name} added to cart`)
+          return [...prevItems, newItem]
+        }
+      })
+    } catch (error) {
+      console.error('Error checking stock:', error)
+      toast.error('Unable to add item to cart')
+    }
   }
 
   const removeFromCart = (productId: string) => {
@@ -79,18 +99,31 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     })
   }
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = async (productId: string, quantity: number) => {
     if (quantity < 0) {
       return
     }
 
-    setItems(prevItems =>
-      prevItems.map(item =>
-        item.id === productId
-          ? { ...item, quantity }
-          : item
+    try {
+      const products = await getMarketplaceProducts()
+      const productData = products.find(p => p.id === productId)
+      
+      if (productData && quantity > productData.stock) {
+        toast.error(`Only ${productData.stock} available`)
+        return
+      }
+
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === productId
+            ? { ...item, quantity }
+            : item
+        )
       )
-    )
+    } catch (error) {
+      console.error('Error checking stock:', error)
+      toast.error('Unable to update quantity')
+    }
   }
 
   const getTotalItems = () => {

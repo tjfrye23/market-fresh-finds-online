@@ -57,7 +57,12 @@ const ProductDetail = () => {
     )
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!product.stock || product.stock === 0) {
+      return
+    }
+
+    const currentCartItem = addToCart ? undefined : undefined // Get current cart quantity if needed
     addToCart({
       id: product.id,
       name: product.name,
@@ -110,6 +115,18 @@ const ProductDetail = () => {
                 ${product.price.toFixed(2)} per {product.unit}
               </p>
 
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">
+                  {product.stock > 0 ? (
+                    <span className="text-green-600">
+                      {product.stock} {product.unit}(s) available
+                    </span>
+                  ) : (
+                    <span className="text-red-600">Out of stock</span>
+                  )}
+                </p>
+              </div>
+
               <div className="mb-6">
                 <h3 className="font-medium text-gray-900 mb-2">Category</h3>
                 <Badge variant="outline" className="capitalize">
@@ -150,9 +167,10 @@ const ProductDetail = () => {
                 size="lg" 
                 className="bg-market-green hover:bg-market-green-dark text-white w-full sm:w-auto"
                 onClick={handleAddToCart}
+                disabled={!product.stock || product.stock === 0}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
+                {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
               </Button>
             </div>
           </div>

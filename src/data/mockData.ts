@@ -1,4 +1,3 @@
-
 export interface MockUser {
   id: string
   email: string
@@ -35,6 +34,7 @@ export interface MockProduct {
   image: string | null
   organic: boolean
   local: boolean
+  stock: number
   created_at: string
   updated_at: string
 }
@@ -93,6 +93,7 @@ export const mockProducts: MockProduct[] = [
     image: 'https://images.unsplash.com/photo-1515363578674-99828b5a8b4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     organic: true,
     local: true,
+    stock: 15,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -107,6 +108,7 @@ export const mockProducts: MockProduct[] = [
     image: 'https://images.unsplash.com/photo-1546470427-e212b9d57d84?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     organic: true,
     local: true,
+    stock: 8,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -121,6 +123,7 @@ export const mockProducts: MockProduct[] = [
     image: 'https://images.unsplash.com/photo-1594736797933-d0a9ba10b3b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     organic: false,
     local: true,
+    stock: 12,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -135,6 +138,7 @@ export const mockProducts: MockProduct[] = [
     image: 'https://images.unsplash.com/photo-1618164435735-413ae8126cb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     organic: true,
     local: true,
+    stock: 20,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   }
