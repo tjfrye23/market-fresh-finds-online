@@ -1,5 +1,8 @@
 
 import { Link } from 'react-router-dom'
+import { Heart } from 'lucide-react'
+import { useFavorites } from '@/contexts/FavoritesContext'
+import { Button } from '@/components/ui/button'
 
 interface ProductCardProps {
   id: string
@@ -22,6 +25,26 @@ const ProductCard = ({
   local = false,
   farmName,
 }: ProductCardProps) => {
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isFavorite(id)) {
+      removeFromFavorites(id)
+    } else {
+      addToFavorites({
+        id,
+        name,
+        price,
+        unit,
+        image,
+        farmName,
+      })
+    }
+  }
+
   return (
     <div className="product-card group">
       <div className="relative overflow-hidden">
@@ -43,6 +66,24 @@ const ProductCard = ({
               Local
             </span>
           )}
+        </div>
+
+        {/* Favorite button */}
+        <div className="absolute top-2 right-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 bg-white/80 hover:bg-white/90 backdrop-blur-sm"
+            onClick={handleFavoriteToggle}
+          >
+            <Heart
+              className={`h-4 w-4 ${
+                isFavorite(id)
+                  ? 'fill-red-500 text-red-500'
+                  : 'text-gray-600 hover:text-red-500'
+              }`}
+            />
+          </Button>
         </div>
       </div>
 

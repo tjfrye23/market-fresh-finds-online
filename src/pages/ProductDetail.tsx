@@ -1,5 +1,6 @@
+
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -8,11 +9,14 @@ import { Input } from '@/components/ui/input'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/contexts/CartContext'
+import { useFavorites } from '@/contexts/FavoritesContext'
 import { getMarketplaceProducts, getVendorByUserId } from '@/services/mockServices'
+import { toast } from 'sonner'
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>()
   const { addToCart } = useCart()
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
   const [quantity, setQuantity] = useState(1)
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
@@ -48,6 +52,25 @@ const ProductDetail = () => {
         image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
         farmName: vendor?.vendor_name,
       })
+    }
+  }
+
+  const handleFavoriteToggle = () => {
+    if (!product) return
+
+    if (isFavorite(product.id)) {
+      removeFromFavorites(product.id)
+      toast.success(`${product.name} removed from favorites`)
+    } else {
+      addToFavorites({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        unit: product.unit,
+        image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+        farmName: vendor?.vendor_name,
+      })
+      toast.success(`${product.name} added to favorites`)
     }
   }
 
@@ -95,12 +118,26 @@ const ProductDetail = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Image */}
-            <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+            <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
               <img
                 src={product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4 h-10 w-10 bg-white/80 hover:bg-white/90 backdrop-blur-sm"
+                onClick={handleFavoriteToggle}
+              >
+                <Heart
+                  className={`h-5 w-5 ${
+                    isFavorite(product.id)
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-gray-600 hover:text-red-500'
+                  }`}
+                />
+              </Button>
             </div>
 
             {/* Product Info */}
