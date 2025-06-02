@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
 import {
@@ -88,7 +87,7 @@ const ShopFilters = ({
       {/* Mobile filter button */}
       <button
         onClick={toggleFilter}
-        className="mr-4 bg-market-gray px-4 py-2 rounded-md flex items-center md:hidden"
+        className="mb-4 bg-market-gray px-4 py-2 rounded-md flex items-center md:hidden"
       >
         <Filter className="h-4 w-4 mr-2" />
         Filters

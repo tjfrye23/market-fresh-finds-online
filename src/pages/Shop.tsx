@@ -48,19 +48,6 @@ const Shop = () => {
         <div className="page-container">
           <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div className="flex items-center">
-              <ShopFilters
-                filterVisible={filterVisible}
-                setFilterVisible={setFilterVisible}
-                categoryFilter={categoryFilter}
-                setCategoryFilter={setCategoryFilter}
-                featuresFilter={featuresFilter}
-                setFeaturesFilter={setFeaturesFilter}
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                vendorFilter={vendorFilter}
-                setVendorFilter={setVendorFilter}
-                vendors={vendors}
-              />
               <p className="text-gray-600">
                 {isLoading
                   ? 'Loading products...'
@@ -88,6 +75,19 @@ const Shop = () => {
           </div>
 
           <div className="flex gap-8">
+            <ShopFilters
+              filterVisible={filterVisible}
+              setFilterVisible={setFilterVisible}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              featuresFilter={featuresFilter}
+              setFeaturesFilter={setFeaturesFilter}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              vendorFilter={vendorFilter}
+              setVendorFilter={setVendorFilter}
+              vendors={vendors}
+            />
             <div className="flex-1">
               <ProductGrid 
                 products={filteredProducts}
