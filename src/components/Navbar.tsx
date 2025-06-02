@@ -3,17 +3,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { ShoppingCart, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
 import { toast } from 'sonner'
 import UserActions from './navbar/UserActions'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Badge } from '@/components/ui/badge'
 import NavLinks from './navbar/NavLinks'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { user, signOut } = useAuth()
+  const { getTotalItems } = useCart()
   const navigate = useNavigate()
 
   const isVendor = user?.role === 'vendor'
+  const cartItemCount = getTotalItems()
 
   const closeMenu = () => {
     setIsOpen(false)
@@ -59,9 +63,17 @@ const Navbar = () => {
           <div className="flex items-center space-x-2">
             <Link
               to="/cart"
-              className="p-2 text-gray-700 hover:text-market-green transition-colors"
+              className="p-2 text-gray-700 hover:text-market-green transition-colors relative"
             >
               <ShoppingCart className="h-6 w-6" />
+              {cartItemCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {cartItemCount}
+                </Badge>
+              )}
             </Link>
 
             <UserActions
