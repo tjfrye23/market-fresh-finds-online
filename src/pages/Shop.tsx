@@ -88,11 +88,13 @@ const Shop = () => {
           </div>
 
           <div className="flex gap-8">
-            <ProductGrid 
-              products={filteredProducts}
-              vendors={vendors}
-              isLoading={isLoading}
-            />
+            <div className="flex-1">
+              <ProductGrid 
+                products={filteredProducts}
+                vendors={vendors}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
         </div>
       </main>

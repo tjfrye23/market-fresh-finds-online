@@ -103,9 +103,9 @@ const ShopFilters = ({
       {/* Filters panel */}
       <div className={`
         fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 
-        md:relative md:w-64 md:transform-none md:z-auto md:bg-transparent md:h-auto
+        md:static md:w-64 md:transform-none md:z-auto md:h-auto md:flex-shrink-0
         ${filterVisible ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 md:block md:mr-8
+        md:translate-x-0 md:block
       `}>
         <div className="bg-white shadow-md rounded-lg p-6 h-full md:h-auto overflow-y-auto">
           {/* Mobile header */}
