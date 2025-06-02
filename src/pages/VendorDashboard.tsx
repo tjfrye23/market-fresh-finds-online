@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Navigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import OrderDetailDialog from '@/components/OrderDetailDialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -64,6 +65,8 @@ const VendorDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<VendorMetrics | null>(null)
   const [loading, setLoading] = useState(true)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false)
 
   useEffect(() => {
     if (user?.id) {
@@ -80,6 +83,11 @@ const VendorDashboard = () => {
       })
     }
   }, [user])
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order)
+    setOrderDialogOpen(true)
+  }
 
   if (!user || user.role !== 'vendor') {
     return <Navigate to="/auth" replace />
@@ -217,7 +225,11 @@ const VendorDashboard = () => {
                           </TableCell>
                           <TableCell>${order.total.toFixed(2)}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewOrder(order)}
+                            >
                               <Eye className="h-4 w-4 mr-1" />
                               View
                             </Button>
@@ -266,7 +278,11 @@ const VendorDashboard = () => {
                           </TableCell>
                           <TableCell>${order.total.toFixed(2)}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewOrder(order)}
+                            >
                               <Eye className="h-4 w-4 mr-1" />
                               View
                             </Button>
@@ -280,6 +296,12 @@ const VendorDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <OrderDetailDialog
+          order={selectedOrder}
+          open={orderDialogOpen}
+          onOpenChange={setOrderDialogOpen}
+        />
       </main>
       <Footer />
     </div>
