@@ -149,7 +149,7 @@ export const mockUsers: MockUser[] = [
     id: 'vendor1',
     email: 'test@example.com',
     fullName: 'Thomas',
-    role: 'vendor',
+    role: 'admin',
     app_metadata: {},
     user_metadata: {},
     aud: 'authenticated',
