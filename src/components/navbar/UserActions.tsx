@@ -1,8 +1,8 @@
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { LogIn, Wheat } from 'lucide-react'
 import { MockUser } from '@/data/mockData'
+import { useNavigate } from 'react-router-dom'
 
 interface UserActionsProps {
   user: MockUser | null
@@ -17,10 +17,23 @@ const UserActions = ({
   handleLogin,
   navigateToVendorOnboarding,
 }: UserActionsProps) => {
+  const navigate = useNavigate()
+
+  const handleProfileClick = () => {
+    if (user?.role === 'vendor') {
+      navigate('/vendor-profile')
+    } else {
+      navigate('/orders') // For regular users, take them to orders page as their main profile
+    }
+  }
+
   if (user) {
     return (
       <div className="flex items-center">
-        <Avatar className="h-8 w-8 hidden md:flex">
+        <Avatar 
+          className="h-8 w-8 hidden md:flex cursor-pointer hover:opacity-80 transition-opacity" 
+          onClick={handleProfileClick}
+        >
           <AvatarImage src="" />
           <AvatarFallback className="bg-market-green text-white">
             {getUserInitials()}
