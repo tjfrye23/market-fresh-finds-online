@@ -22,6 +22,7 @@ import VendorDetail from './pages/VendorDetail'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
+import Orders from './pages/Orders'
 
 const queryClient = new QueryClient()
 
@@ -37,6 +38,14 @@ const AppContent = () => (
     <Route path="/cart" element={<Cart />} />
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/order-confirmation" element={<OrderConfirmation />} />
+    <Route
+      path="/orders"
+      element={
+        <ProtectedRoute>
+          <Orders />
+        </ProtectedRoute>
+      }
+    />
     <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
     <Route
       path="/vendor-profile"

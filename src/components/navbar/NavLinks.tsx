@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom'
 import {
   Home,
@@ -8,6 +9,7 @@ import {
   Settings,
   LogIn,
   LogOut,
+  Package,
 } from 'lucide-react'
 
 interface NavLinksProps {
@@ -65,6 +67,17 @@ const NavLinks = ({
           <Users className="mr-2 h-5 w-5" />
           <span>Our Vendors</span>
         </Link>
+
+        {isLoggedIn && (
+          <Link
+            to="/orders"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+            onClick={onClose}
+          >
+            <Package className="mr-2 h-5 w-5" />
+            <span>My Orders</span>
+          </Link>
+        )}
 
         {isVendor && (
           <Link
