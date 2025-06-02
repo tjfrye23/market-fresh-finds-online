@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
@@ -34,12 +33,14 @@ import {
 } from 'lucide-react'
 import { mockUsers } from '@/data/mockData'
 import { toast } from 'sonner'
+import { getUserOrders } from '@/services/orderService'
 
 const CustomerDetails = () => {
   const { id } = useParams<{ id: string }>()
   const [customer, setCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isLocked, setIsLocked] = useState(false)
+  const [lastOrderDate, setLastOrderDate] = useState<string | null>(null)
 
   useEffect(() => {
     if (id) {
@@ -50,6 +51,16 @@ const CustomerDetails = () => {
       // Check if user is locked from localStorage
       const lockedUsers = JSON.parse(localStorage.getItem('locked_users') || '[]')
       setIsLocked(lockedUsers.includes(id))
+      
+      // Get customer's orders and find the last order date
+      if (foundCustomer) {
+        const customerOrders = getUserOrders(foundCustomer.email)
+        if (customerOrders.length > 0) {
+          // Sort orders by date descending and get the most recent
+          const sortedOrders = customerOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          setLastOrderDate(sortedOrders[0].date)
+        }
+      }
       
       setLoading(false)
     }
@@ -230,7 +241,7 @@ const CustomerDetails = () => {
                 Customer Statistics
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">Total Orders</CardTitle>
@@ -248,6 +259,18 @@ const CustomerDetails = () => {
                   <CardContent>
                     <div className="text-2xl font-bold text-green-600">$1,450</div>
                     <p className="text-sm text-gray-500">All time</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Last Order</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-orange-600">
+                      {lastOrderDate ? new Date(lastOrderDate).toLocaleDateString() : 'N/A'}
+                    </div>
+                    <p className="text-sm text-gray-500">Most recent</p>
                   </CardContent>
                 </Card>
 
