@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -6,10 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { useCart } from '@/contexts/CartContext'
 import { getMarketplaceProducts, getVendorByUserId } from '@/services/mockServices'
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>()
+  const { addToCart } = useCart()
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['products'],
@@ -54,6 +55,17 @@ const ProductDetail = () => {
         <Footer />
       </div>
     )
+  }
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      unit: product.unit,
+      image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+      farmName: vendor?.vendor_name,
+    })
   }
 
   return (
@@ -137,6 +149,7 @@ const ProductDetail = () => {
               <Button 
                 size="lg" 
                 className="bg-market-green hover:bg-market-green-dark text-white w-full sm:w-auto"
+                onClick={handleAddToCart}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 Add to Cart
