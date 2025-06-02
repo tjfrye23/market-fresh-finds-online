@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -49,7 +50,7 @@ const Index = () => {
   }, [])
 
   // Sample featured products as fallback
-  const sampleFeaturedProducts = [
+  const sampleFeaturedProducts: Product[] = [
     {
       id: '1',
       name: 'Organic Strawberries',
@@ -62,6 +63,7 @@ const Index = () => {
       description: null,
       category: 'fruits',
       user_id: '123',
+      stock: 25,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -77,6 +79,7 @@ const Index = () => {
       description: null,
       category: 'fruits',
       user_id: '123',
+      stock: 18,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -92,6 +95,7 @@ const Index = () => {
       description: null,
       category: 'vegetables',
       user_id: '123',
+      stock: 12,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -107,6 +111,7 @@ const Index = () => {
       description: null,
       category: 'bakery',
       user_id: '123',
+      stock: 6,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },

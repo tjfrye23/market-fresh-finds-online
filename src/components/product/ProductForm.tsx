@@ -222,8 +222,9 @@ const ProductForm = ({
         <div className="space-y-4">
           <FormLabel>Product Image (Optional)</FormLabel>
           <ImageUploader
-            onImageUpload={setUploadedImage}
-            initialImage={editingProduct?.image}
+            existingImageUrl={editingProduct?.image || null}
+            onImageUploaded={setUploadedImage}
+            onImageRemoved={() => setUploadedImage(null)}
           />
         </div>
 
