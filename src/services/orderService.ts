@@ -3,7 +3,7 @@ export interface Order {
   id: string
   orderNumber: string
   date: string
-  status: 'processing' | 'shipped' | 'delivered'
+  status: 'processing' | 'processed'
   total: number
   items: Array<{
     name: string

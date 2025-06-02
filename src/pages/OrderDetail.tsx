@@ -15,10 +15,8 @@ import { toast } from 'sonner'
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'delivered':
+    case 'processed':
       return 'bg-green-100 text-green-800'
-    case 'shipped':
-      return 'bg-blue-100 text-blue-800'
     case 'processing':
       return 'bg-yellow-100 text-yellow-800'
     default:
@@ -26,7 +24,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'shipped' | 'delivered') => {
+const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'processed') => {
   const orders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
   const updatedOrders = orders.map((order: Order) => 
     order.id === orderId ? { ...order, status: newStatus } : order
@@ -41,7 +39,7 @@ const OrderDetail = () => {
   const { user } = useAuth()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedStatus, setSelectedStatus] = useState<'processing' | 'shipped' | 'delivered'>('processing')
+  const [selectedStatus, setSelectedStatus] = useState<'processing' | 'processed'>('processing')
   const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
@@ -151,14 +149,13 @@ const OrderDetail = () => {
             <CardContent>
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <Select value={selectedStatus} onValueChange={(value: 'processing' | 'shipped' | 'delivered') => setSelectedStatus(value)}>
+                  <Select value={selectedStatus} onValueChange={(value: 'processing' | 'processed') => setSelectedStatus(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="processing">Processing</SelectItem>
-                      <SelectItem value="shipped">Shipped</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="processed">Processed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
