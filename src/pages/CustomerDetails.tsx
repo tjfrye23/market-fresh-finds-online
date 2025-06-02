@@ -86,6 +86,15 @@ const CustomerDetails = () => {
     }
   }
 
+  const handleContactCustomer = () => {
+    const subject = encodeURIComponent(`Regarding your account - ${customer.fullName}`)
+    const body = encodeURIComponent(`Hello ${customer.fullName},\n\nI hope this email finds you well.\n\nBest regards,\nMarketplace Team`)
+    const mailtoLink = `mailto:${customer.email}?subject=${subject}&body=${body}`
+    
+    window.open(mailtoLink, '_blank')
+    toast.success(`Opening email client to contact ${customer.fullName}`)
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -169,6 +178,17 @@ const CustomerDetails = () => {
                       )}
                       {isLocked ? 'Locked' : 'Active'}
                     </div>
+
+                    {/* Contact Customer Button */}
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={handleContactCustomer}
+                      className="flex items-center gap-2"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Contact Customer
+                    </Button>
                     
                     {/* Lock/Unlock Action Button */}
                     <AlertDialog>
