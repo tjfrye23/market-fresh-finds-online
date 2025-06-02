@@ -1,4 +1,5 @@
 
+
 import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -52,11 +53,13 @@ const ProductCard = ({
             {name}
           </h3>
         </Link>
-        <p className="text-gray-500 mb-3 text-sm">per {unit}</p>
-        <div className="flex justify-between items-center">
-          <span className="font-bold text-market-green-dark">
-            ${price.toFixed(2)}
-          </span>
+        <div className="flex justify-between items-center mt-3">
+          <div className="flex flex-col">
+            <span className="font-bold text-market-green-dark">
+              ${price.toFixed(2)}
+            </span>
+            <span className="text-gray-500 text-sm">per {unit}</span>
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -71,3 +74,4 @@ const ProductCard = ({
 }
 
 export default ProductCard
+
