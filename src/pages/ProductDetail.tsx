@@ -1,8 +1,10 @@
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/contexts/CartContext'
@@ -11,6 +13,7 @@ import { getMarketplaceProducts, getVendorByUserId } from '@/services/mockServic
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>()
   const { addToCart } = useCart()
+  const [quantity, setQuantity] = useState(1)
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['products'],
@@ -24,6 +27,29 @@ const ProductDetail = () => {
     queryFn: () => product ? getVendorByUserId(product.user_id) : null,
     enabled: !!product?.user_id,
   })
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity >= 1 && newQuantity <= (product?.stock || 0)) {
+      setQuantity(newQuantity)
+    }
+  }
+
+  const handleAddToCart = async () => {
+    if (!product?.stock || product.stock === 0) {
+      return
+    }
+
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        unit: product.unit,
+        image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+        farmName: vendor?.vendor_name,
+      })
+    }
+  }
 
   if (productsLoading) {
     return (
@@ -55,22 +81,6 @@ const ProductDetail = () => {
         <Footer />
       </div>
     )
-  }
-
-  const handleAddToCart = async () => {
-    if (!product.stock || product.stock === 0) {
-      return
-    }
-
-    const currentCartItem = addToCart ? undefined : undefined // Get current cart quantity if needed
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      unit: product.unit,
-      image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
-      farmName: vendor?.vendor_name,
-    })
   }
 
   return (
@@ -163,6 +173,47 @@ const ProductDetail = () => {
                 </div>
               )}
 
+              {/* Quantity Selector */}
+              {product.stock > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-medium text-gray-900 mb-2">Quantity</h3>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuantityChange(quantity - 1)}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={quantity}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value)
+                        if (!isNaN(value)) {
+                          handleQuantityChange(value)
+                        }
+                      }}
+                      className="w-20 text-center"
+                      min="1"
+                      max={product.stock}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuantityChange(quantity + 1)}
+                      disabled={quantity >= product.stock}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm text-gray-500 ml-2">
+                      (Max: {product.stock})
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <Button 
                 size="lg" 
                 className="bg-market-green hover:bg-market-green-dark text-white w-full sm:w-auto"
@@ -170,7 +221,7 @@ const ProductDetail = () => {
                 disabled={!product.stock || product.stock === 0}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                {product.stock > 0 ? `Add ${quantity} to Cart` : 'Out of Stock'}
               </Button>
             </div>
           </div>
