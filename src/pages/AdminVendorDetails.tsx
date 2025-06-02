@@ -163,6 +163,7 @@ const AdminVendorDetails = () => {
   }
 
   const vendorUser = getVendorUser()
+  const vendorStatus = vendor.status || 'pending'
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -194,14 +195,14 @@ const AdminVendorDetails = () => {
 
                   <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     {/* Status Badge */}
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(vendor.status)}`}>
-                      {getStatusIcon(vendor.status)}
-                      {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(vendorStatus)}`}>
+                      {getStatusIcon(vendorStatus)}
+                      {vendorStatus.charAt(0).toUpperCase() + vendorStatus.slice(1)}
                     </div>
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      {vendor.status !== 'active' && (
+                      {vendorStatus !== 'active' && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button size="sm" className="bg-green-600 hover:bg-green-700">
@@ -228,7 +229,7 @@ const AdminVendorDetails = () => {
                         </AlertDialog>
                       )}
 
-                      {vendor.status !== 'rejected' && (
+                      {vendorStatus !== 'rejected' && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button size="sm" variant="destructive">
