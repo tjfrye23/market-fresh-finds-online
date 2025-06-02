@@ -85,6 +85,7 @@ const ShopFilters = ({
 
   return (
     <>
+      {/* Mobile filter button */}
       <button
         onClick={toggleFilter}
         className="mr-4 bg-market-gray px-4 py-2 rounded-md flex items-center md:hidden"
@@ -93,16 +94,29 @@ const ShopFilters = ({
         Filters
       </button>
       
-      <div className={`fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 z-40 md:hidden ${filterVisible ? 'block' : 'hidden'}`} onClick={toggleFilter}></div>
+      {/* Mobile overlay */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 z-40 md:hidden ${filterVisible ? 'block' : 'hidden'}`} 
+        onClick={toggleFilter}
+      />
       
-      <div className={`fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 md:relative md:w-1/4 lg:w-1/5 md:transform-none md:z-auto md:bg-transparent ${filterVisible ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:block`}>
+      {/* Filters panel */}
+      <div className={`
+        fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 
+        md:relative md:w-64 md:transform-none md:z-auto md:bg-transparent md:h-auto
+        ${filterVisible ? 'translate-x-0' : '-translate-x-full'} 
+        md:translate-x-0 md:block md:mr-8
+      `}>
         <div className="bg-white shadow-md rounded-lg p-6 h-full md:h-auto overflow-y-auto">
+          {/* Mobile header */}
           <div className="flex justify-between items-center mb-4 md:hidden">
             <h2 className="font-semibold text-xl">Filters</h2>
             <button onClick={toggleFilter} className="text-gray-500 hover:text-gray-700">
               ✕
             </button>
           </div>
+          
+          {/* Desktop header */}
           <h2 className="font-semibold text-xl mb-4 hidden md:block">Filters</h2>
           
           <Accordion type="multiple" defaultValue={["categories", "vendor", "features", "price"]} className="w-full">

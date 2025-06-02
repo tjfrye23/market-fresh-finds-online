@@ -87,14 +87,12 @@ const Shop = () => {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="md:w-3/4 lg:w-4/5">
-              <ProductGrid 
-                products={filteredProducts}
-                vendors={vendors}
-                isLoading={isLoading}
-              />
-            </div>
+          <div className="flex gap-8">
+            <ProductGrid 
+              products={filteredProducts}
+              vendors={vendors}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       </main>
