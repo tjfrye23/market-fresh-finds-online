@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { LogIn, Wheat } from 'lucide-react'
@@ -21,6 +22,10 @@ const UserActions = ({
 
   const handleProfileClick = () => {
     navigate('/profile')
+  }
+
+  const handleVendorOnboarding = () => {
+    navigate('/vendor/onboarding')
   }
 
   if (user) {
@@ -53,7 +58,7 @@ const UserActions = ({
       <Button
         variant="default"
         size="sm"
-        onClick={navigateToVendorOnboarding}
+        onClick={handleVendorOnboarding}
         className="bg-market-green hover:bg-market-green-dark items-center"
       >
         <Wheat className="mr-1 h-4 w-4" />

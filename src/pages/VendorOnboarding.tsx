@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,7 +41,7 @@ const VendorOnboarding = () => {
       toast.success(
         'Vendor account created! Please verify your email if required.',
       )
-      navigate('/')
+      navigate('/vendor/profile')
     } catch (error) {
       toast.error(error.message || 'An error occurred during registration')
     } finally {

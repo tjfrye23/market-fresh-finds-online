@@ -56,9 +56,9 @@ const AppContent = () => (
         </ProtectedRoute>
       }
     />
-    <Route path="/vendor-onboarding" element={<VendorOnboarding />} />
+    <Route path="/vendor/onboarding" element={<VendorOnboarding />} />
     <Route
-      path="/vendor-profile"
+      path="/vendor/profile"
       element={
         <ProtectedRoute requiredRole="vendor">
           <VendorProfile />
@@ -66,7 +66,7 @@ const AppContent = () => (
       }
     />
     <Route
-      path="/vendor-dashboard"
+      path="/vendor/dashboard"
       element={
         <ProtectedRoute requiredRole="vendor">
           <VendorDashboard />
@@ -74,7 +74,7 @@ const AppContent = () => (
       }
     />
     <Route
-      path="/manage-products"
+      path="/vendor/manage-products"
       element={
         <ProtectedRoute requiredRole="vendor">
           <ManageProducts />
@@ -82,7 +82,7 @@ const AppContent = () => (
       }
     />
     <Route
-      path="/add-products"
+      path="/vendor/add-products"
       element={
         <ProtectedRoute requiredRole="vendor">
           <AddProducts />

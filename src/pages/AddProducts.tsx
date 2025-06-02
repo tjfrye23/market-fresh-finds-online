@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -44,7 +45,7 @@ const AddProducts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
       toast.success(`${products.length} products successfully added`)
-      navigate('/manage-products')
+      navigate('/vendor/manage-products')
     },
     onError: (error) => {
       console.error('Error saving products:', error)
@@ -102,7 +103,7 @@ const AddProducts = () => {
           <div className="flex justify-between items-center mb-6">
             <Button
               variant="outline"
-              onClick={() => navigate('/manage-products')}
+              onClick={() => navigate('/vendor/manage-products')}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
