@@ -1,3 +1,4 @@
+
 import { z } from 'zod'
 import { productFormSchema } from './productConstants'
 
@@ -12,6 +13,7 @@ export interface Product {
   local: boolean | null
   category: string
   user_id: string
+  stock: number
   created_at: string
   updated_at: string
 }

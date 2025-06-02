@@ -1,8 +1,13 @@
+
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -11,11 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import ImageUploader from '@/components/ImageUploader'
 import {
   Select,
   SelectContent,
@@ -26,6 +26,8 @@ import {
 import { CATEGORIES, UNITS, productFormSchema } from './productConstants'
 import { Product, ProductFormValues } from './types'
 import { saveProduct } from '@/services/mockServices'
+import { useAuth } from '@/contexts/AuthContext'
+import ImageUploader from '@/components/ImageUploader'
 
 interface ProductFormProps {
   editingProduct: Product | null
@@ -44,166 +46,79 @@ const ProductForm = ({
 }: ProductFormProps) => {
   const { user } = useAuth()
   const queryClient = useQueryClient()
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: initialValues || {
       name: editingProduct?.name || '',
-      price: editingProduct ? editingProduct.price.toString() : '',
+      price: editingProduct?.price?.toString() || '',
       unit: editingProduct?.unit || '',
       category: editingProduct?.category || '',
       description: editingProduct?.description || '',
       image: editingProduct?.image || '',
       organic: editingProduct?.organic || false,
       local: editingProduct?.local || false,
+      stock: editingProduct?.stock?.toString() || '10',
     },
   })
 
-  const addProductMutation = useMutation({
+  const saveProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
-      if (!user) throw new Error('User not authenticated')
-
       const productData = {
-        id: editingProduct?.id,
-        name: values.name,
+        ...values,
         price: parseFloat(values.price),
-        unit: values.unit,
-        category: values.category,
-        description: values.description || null,
-        image: values.image || null,
-        organic: values.organic,
-        local: values.local,
+        stock: parseInt(values.stock),
+        image: uploadedImage || values.image,
+        id: editingProduct?.id,
       }
 
-      return await saveProduct(productData, user.id)
+      return await saveProduct(productData, user?.id || '')
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
-      toast.success(editingProduct ? 'Product updated' : 'Product created')
-      form.reset()
-      onSuccess(variables)
+      
+      if (editingProduct) {
+        toast.success('Product updated successfully')
+      } else {
+        onSuccess(variables)
+      }
     },
     onError: (error) => {
-      console.error('Form submission error:', error)
+      console.error('Error saving product:', error)
       toast.error(`Error: ${error.message}`)
     },
   })
 
   const onSubmit = (values: ProductFormValues) => {
-    addProductMutation.mutate(values)
+    saveProductMutation.mutate(values)
   }
 
   return (
-    <div className="overflow-visible px-1">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem className="rounded-md overflow-visible">
-                <FormLabel>Product Image</FormLabel>
-                <FormControl>
-                  <ImageUploader
-                    existingImageUrl={field.value || null}
-                    onImageUploaded={(url) => field.onChange(url)}
-                    onImageRemoved={() => field.onChange('')}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="rounded-md overflow-visible">
+              <FormItem>
                 <FormLabel>Product Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="E.g., Organic Strawberries" {...field} />
+                  <Input placeholder="e.g., Organic Tomatoes" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <div className="grid grid-cols-1 gap-4 rounded-md overflow-visible">
-            <FormLabel>Price per Unit</FormLabel>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem className="rounded-md overflow-visible">
-                      <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                            $
-                          </span>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="0.00"
-                            className="pl-7"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <span className="text-sm font-medium">per</span>
-
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="unit"
-                  render={({ field }) => (
-                    <FormItem className="rounded-md overflow-visible">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a unit" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {UNITS.map((unit) => (
-                            <SelectItem key={unit.value} value={unit.value}>
-                              {unit.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          </div>
 
           <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
-              <FormItem className="rounded-md overflow-visible">
+              <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
@@ -224,67 +139,145 @@ const ProductForm = ({
 
           <FormField
             control={form.control}
-            name="description"
+            name="price"
             render={({ field }) => (
-              <FormItem className="rounded-md overflow-visible">
-                <FormLabel>Description (Optional)</FormLabel>
+              <FormItem>
+                <FormLabel>Price ($)</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Describe your product..." {...field} />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="organic"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2 rounded-md overflow-visible">
+          <FormField
+            control={form.control}
+            name="unit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Unit</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a unit" />
+                    </SelectTrigger>
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Organic</FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
+                  <SelectContent>
+                    {UNITS.map((unit) => (
+                      <SelectItem key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="local"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2 rounded-md overflow-visible">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Locally Sourced</FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Stock Quantity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" type="button" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={addProductMutation.isPending}>
-              {addProductMutation.isPending ? 'Saving...' : submitButtonText}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description (Optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Describe your product..."
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-4">
+          <FormLabel>Product Image (Optional)</FormLabel>
+          <ImageUploader
+            onImageUpload={setUploadedImage}
+            initialImage={editingProduct?.image}
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <FormField
+            control={form.control}
+            name="organic"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Organic</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="local"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Local</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={saveProductMutation.isPending}
+          >
+            {saveProductMutation.isPending ? 'Saving...' : submitButtonText}
+          </Button>
+        </div>
+      </form>
+    </Form>
   )
 }
 

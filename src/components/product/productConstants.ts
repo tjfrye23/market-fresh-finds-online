@@ -1,44 +1,37 @@
+
 import { z } from 'zod'
 
+export const productFormSchema = z.object({
+  name: z.string().min(1, 'Product name is required'),
+  price: z.string().min(1, 'Price is required'),
+  unit: z.string().min(1, 'Unit is required'),
+  category: z.string().min(1, 'Category is required'),
+  description: z.string().optional(),
+  image: z.string().optional(),
+  organic: z.boolean().default(false),
+  local: z.boolean().default(false),
+  stock: z.string().min(1, 'Stock quantity is required'),
+})
+
 export const CATEGORIES = [
-  { value: 'fruits', label: 'Fruits' },
   { value: 'vegetables', label: 'Vegetables' },
-  { value: 'dairy-eggs', label: 'Dairy & Eggs' },
-  { value: 'bakery', label: 'Bakery' },
+  { value: 'fruits', label: 'Fruits' },
+  { value: 'herbs', label: 'Herbs' },
+  { value: 'dairy', label: 'Dairy' },
   { value: 'meat', label: 'Meat' },
-  { value: 'prepared-foods', label: 'Prepared Foods' },
+  { value: 'grains', label: 'Grains' },
+  { value: 'other', label: 'Other' },
 ]
 
 export const UNITS = [
-  { value: 'lb', label: 'Pound (lb)' },
-  { value: 'oz', label: 'Ounce (oz)' },
-  { value: 'kg', label: 'Kilogram (kg)' },
-  { value: 'g', label: 'Gram (g)' },
-  { value: 'each', label: 'Each' },
-  { value: 'bunch', label: 'Bunch' },
-  { value: 'dozen', label: 'Dozen' },
-  { value: 'pint', label: 'Pint' },
-  { value: 'quart', label: 'Quart' },
-  { value: 'gallon', label: 'Gallon' },
-  { value: 'package', label: 'Package' },
-  { value: 'box', label: 'Box' },
+  { value: 'lb', label: 'per pound' },
+  { value: 'kg', label: 'per kilogram' },
+  { value: 'bunch', label: 'per bunch' },
+  { value: 'piece', label: 'per piece' },
+  { value: 'bag', label: 'per bag' },
+  { value: 'box', label: 'per box' },
+  { value: 'dozen', label: 'per dozen' },
+  { value: 'pint', label: 'per pint' },
+  { value: 'quart', label: 'per quart' },
+  { value: 'gallon', label: 'per gallon' },
 ]
-
-export const productFormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  price: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: 'Price must be a positive number',
-    }),
-  unit: z.string().min(1, { message: 'Unit is required' }),
-  category: z.string().min(1, { message: 'Category is required' }),
-  description: z.string().optional(),
-  image: z
-    .string()
-    .url({ message: 'Please enter a valid URL' })
-    .optional()
-    .or(z.literal('')),
-  organic: z.boolean().default(false),
-  local: z.boolean().default(false),
-})
