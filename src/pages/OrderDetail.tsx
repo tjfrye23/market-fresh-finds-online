@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, ArrowRight } from 'lucide-react'
 import { getVendorOrders } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
 import { toast } from 'sonner'
@@ -38,6 +39,7 @@ const OrderDetail = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [order, setOrder] = useState<Order | null>(null)
+  const [allOrders, setAllOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState<'processing' | 'processed'>('processing')
   const [isUpdating, setIsUpdating] = useState(false)
@@ -45,7 +47,11 @@ const OrderDetail = () => {
   useEffect(() => {
     if (user?.id && orderId) {
       getVendorOrders(user.id).then(orders => {
-        const foundOrder = orders.find(o => o.id === orderId)
+        // Sort orders by date (newest first) to maintain consistent order
+        const sortedOrders = orders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        setAllOrders(sortedOrders)
+        
+        const foundOrder = sortedOrders.find(o => o.id === orderId)
         setOrder(foundOrder || null)
         if (foundOrder) {
           setSelectedStatus(foundOrder.status)
@@ -74,6 +80,23 @@ const OrderDetail = () => {
     } finally {
       setIsUpdating(false)
     }
+  }
+
+  const handleNextOrder = () => {
+    if (!order || allOrders.length === 0) return
+    
+    const currentIndex = allOrders.findIndex(o => o.id === order.id)
+    if (currentIndex !== -1 && currentIndex < allOrders.length - 1) {
+      const nextOrder = allOrders[currentIndex + 1]
+      navigate(`/vendor/orders/${nextOrder.id}`)
+    }
+  }
+
+  const getNextOrderAvailable = () => {
+    if (!order || allOrders.length === 0) return false
+    
+    const currentIndex = allOrders.findIndex(o => o.id === order.id)
+    return currentIndex !== -1 && currentIndex < allOrders.length - 1
   }
 
   if (loading) {
@@ -107,19 +130,31 @@ const OrderDetail = () => {
     )
   }
 
+  const isNextOrderAvailable = getNextOrderAvailable()
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/vendor/dashboard')}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
+          <div className="flex justify-between items-center mb-4">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/vendor/dashboard')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={handleNextOrder}
+              disabled={!isNextOrderAvailable}
+              className={!isNextOrderAvailable ? 'opacity-50 cursor-not-allowed' : ''}
+            >
+              Next Order
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900">Order Details - {order.orderNumber}</h1>
         </div>
 
