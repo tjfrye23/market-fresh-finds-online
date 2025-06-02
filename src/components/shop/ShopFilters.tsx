@@ -93,9 +93,17 @@ const ShopFilters = ({
         Filters
       </button>
       
-      <div className={`md:w-1/4 lg:w-1/5 ${filterVisible ? 'block' : 'hidden'} md:block`}>
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="font-semibold text-xl mb-4">Filters</h2>
+      <div className={`fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 z-40 md:hidden ${filterVisible ? 'block' : 'hidden'}`} onClick={toggleFilter}></div>
+      
+      <div className={`fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 md:relative md:w-1/4 lg:w-1/5 md:transform-none md:z-auto md:bg-transparent ${filterVisible ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:block`}>
+        <div className="bg-white shadow-md rounded-lg p-6 h-full md:h-auto overflow-y-auto">
+          <div className="flex justify-between items-center mb-4 md:hidden">
+            <h2 className="font-semibold text-xl">Filters</h2>
+            <button onClick={toggleFilter} className="text-gray-500 hover:text-gray-700">
+              ✕
+            </button>
+          </div>
+          <h2 className="font-semibold text-xl mb-4 hidden md:block">Filters</h2>
           
           <Accordion type="multiple" defaultValue={["categories", "vendor", "features", "price"]} className="w-full">
             <AccordionItem value="categories">
