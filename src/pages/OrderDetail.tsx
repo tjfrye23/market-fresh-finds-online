@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -194,19 +193,6 @@ const OrderDetail = () => {
                   <p className="text-sm text-gray-600">Phone</p>
                   <p className="font-medium">{order.customerInfo.phone}</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Shipping Address */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Shipping Address</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-gray-700">
-                <p>{order.customerInfo.address}</p>
-                <p>{order.customerInfo.city}, {order.customerInfo.state} {order.customerInfo.zipCode}</p>
               </div>
             </CardContent>
           </Card>
