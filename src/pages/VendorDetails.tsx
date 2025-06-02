@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
@@ -80,6 +79,13 @@ const VendorDetails = () => {
     )
   }
 
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('vendor-products')
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -142,7 +148,10 @@ const VendorDetails = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-4 my-6">
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                  <Button 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={scrollToProducts}
+                  >
                     <ShoppingBag className="mr-2 h-4 w-4" />
                     View Products
                   </Button>
@@ -193,6 +202,24 @@ const VendorDetails = () => {
                     <p className="text-sm text-gray-500">Average rating</p>
                   </CardContent>
                 </Card>
+              </div>
+            </div>
+
+            {/* Products Section */}
+            <div id="vendor-products" className="mt-10">
+              <h2 className="text-2xl font-display font-semibold text-gray-900 mb-6">
+                Available Products
+              </h2>
+
+              <div className="bg-gray-50 rounded-lg p-8 text-center">
+                <p className="text-gray-600 mb-4">
+                  No products available from this vendor yet.
+                </p>
+                <Link to="/shop">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    Browse All Products
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
