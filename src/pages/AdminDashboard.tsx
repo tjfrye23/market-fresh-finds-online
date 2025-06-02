@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,6 +28,7 @@ import { mockUsers } from '@/data/mockData'
 
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
+  const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [vendors, setVendors] = useState([])
   const [customers, setCustomers] = useState([])
@@ -43,6 +44,20 @@ const AdminDashboard = () => {
     setVendors(vendorUsers)
     setCustomers(customerUsers)
   }, [])
+
+  const handleOrderClick = (order) => {
+    navigate(`/vendor/orders/${order.id}`)
+  }
+
+  const handleVendorClick = (vendor) => {
+    navigate(`/vendors/${vendor.id}`)
+  }
+
+  const handleCustomerClick = (customer) => {
+    // Navigate to customer profile or details page
+    // For now, we'll navigate to the user profile page
+    navigate(`/profile`)
+  }
 
   if (!user || !isAdmin) {
     return <Navigate to="/auth" replace />
@@ -136,7 +151,11 @@ const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {orders.map((order) => (
-                        <TableRow key={order.id}>
+                        <TableRow 
+                          key={order.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleOrderClick(order)}
+                        >
                           <TableCell className="font-medium">{order.orderNumber}</TableCell>
                           <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                           <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
@@ -176,7 +195,11 @@ const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {vendors.map((vendor) => (
-                        <TableRow key={vendor.id}>
+                        <TableRow 
+                          key={vendor.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleVendorClick(vendor)}
+                        >
                           <TableCell className="font-medium">{vendor.fullName}</TableCell>
                           <TableCell>{vendor.email}</TableCell>
                           <TableCell>
@@ -212,7 +235,11 @@ const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {customers.map((customer) => (
-                        <TableRow key={customer.id}>
+                        <TableRow 
+                          key={customer.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleCustomerClick(customer)}
+                        >
                           <TableCell className="font-medium">{customer.fullName}</TableCell>
                           <TableCell>{customer.email}</TableCell>
                           <TableCell>
