@@ -19,6 +19,7 @@ export interface MockVendorProfile {
   specialty: string | null
   description: string | null
   image_url: string | null
+  status: 'active' | 'pending' | 'rejected'
   created_at: string
   updated_at: string
 }
@@ -50,6 +51,7 @@ export const mockVendors: MockVendorProfile[] = [
     specialty: 'Organic Vegetables',
     description: 'Family-owned organic farm specializing in seasonal vegetables and herbs. We use sustainable farming practices and have been serving the community for over 20 years.',
     image_url: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    status: 'active',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -63,6 +65,7 @@ export const mockVendors: MockVendorProfile[] = [
     specialty: 'Stone Fruits',
     description: 'Third-generation fruit growers specializing in peaches, plums, and apricots. Our orchard uses integrated pest management and sustainable water practices.',
     image_url: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    status: 'active',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -76,6 +79,7 @@ export const mockVendors: MockVendorProfile[] = [
     specialty: 'Culinary Herbs',
     description: 'Boutique herb farm focusing on rare and specialty culinary herbs. We grow everything from basil varieties to edible flowers.',
     image_url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+    status: 'active',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   }
