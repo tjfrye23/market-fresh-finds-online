@@ -136,13 +136,29 @@ const UserProfile = () => {
               View My Orders
             </Button>
             {user.role === 'vendor' && (
-              <Button 
-                onClick={() => window.location.href = '/vendor-profile'}
-                variant="outline"
-                className="w-full"
-              >
-                Manage Vendor Profile
-              </Button>
+              <>
+                <Button 
+                  onClick={() => window.location.href = '/vendor-dashboard'}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Vendor Dashboard
+                </Button>
+                <Button 
+                  onClick={() => window.location.href = '/vendor-profile'}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Manage Vendor Profile
+                </Button>
+                <Button 
+                  onClick={() => window.location.href = '/manage-products'}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Manage Products
+                </Button>
+              </>
             )}
           </div>
         </div>

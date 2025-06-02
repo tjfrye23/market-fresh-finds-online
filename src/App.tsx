@@ -18,6 +18,7 @@ import ManageProducts from './pages/ManageProducts'
 import AddProducts from './pages/AddProducts'
 import VendorOnboarding from './pages/VendorOnboarding'
 import VendorProfile from './pages/VendorProfile'
+import VendorDashboard from './pages/VendorDashboard'
 import UserProfile from './pages/UserProfile'
 import VendorDetail from './pages/VendorDetail'
 import Cart from './pages/Cart'
@@ -61,6 +62,14 @@ const AppContent = () => (
       element={
         <ProtectedRoute requiredRole="vendor">
           <VendorProfile />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/vendor-dashboard"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <VendorDashboard />
         </ProtectedRoute>
       }
     />
