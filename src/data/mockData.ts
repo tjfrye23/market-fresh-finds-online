@@ -13,7 +13,6 @@ export interface MockVendorProfile {
   id: string
   user_id: string
   vendor_name: string
-  farm_name: string
   owner_name: string
   location: string | null
   specialty: string | null
@@ -45,7 +44,6 @@ export const mockVendors: MockVendorProfile[] = [
     id: '1',
     user_id: 'vendor1',
     vendor_name: 'Green Valley Farm',
-    farm_name: 'Green Valley Farm',
     owner_name: 'Sarah Johnson',
     location: 'Sonoma County, CA',
     specialty: 'Organic Vegetables',
@@ -59,7 +57,6 @@ export const mockVendors: MockVendorProfile[] = [
     id: '2',
     user_id: 'vendor2',
     vendor_name: 'Sunrise Orchard',
-    farm_name: 'Sunrise Orchard',
     owner_name: 'Mike Chen',
     location: 'Central Valley, CA',
     specialty: 'Stone Fruits',
@@ -73,7 +70,6 @@ export const mockVendors: MockVendorProfile[] = [
     id: '3',
     user_id: 'vendor3',
     vendor_name: 'Coastal Herbs',
-    farm_name: 'Coastal Herbs',
     owner_name: 'Elena Rodriguez',
     location: 'Monterey Bay, CA',
     specialty: 'Culinary Herbs',

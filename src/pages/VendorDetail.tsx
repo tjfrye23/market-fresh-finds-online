@@ -79,7 +79,7 @@ const VendorDetail = () => {
         <div className="h-64 md:h-96 w-full relative">
           <img
             src={vendor.image_url || defaultImage}
-            alt={vendor.farm_name}
+            alt={vendor.vendor_name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black opacity-30"></div>
@@ -92,7 +92,7 @@ const VendorDetail = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                   <div>
                     <CardTitle className="text-3xl font-display text-market-green-dark">
-                      {vendor.farm_name}
+                      {vendor.vendor_name}
                     </CardTitle>
                     <CardDescription className="text-xl mt-1">
                       Owned by {vendor.owner_name}
@@ -125,11 +125,11 @@ const VendorDetail = () => {
 
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg text-market-green-dark mb-2">
-                    About {vendor.farm_name}
+                    About {vendor.vendor_name}
                   </h3>
                   <p className="text-gray-700">
                     {vendor.description ||
-                      `${vendor.farm_name} is committed to sustainable farming practices and bringing the freshest produce to your table. ${vendor.owner_name} has been farming for over 10 years and takes pride in growing the highest quality crops.`}
+                      `${vendor.vendor_name} is committed to sustainable farming practices and bringing the freshest produce to your table. ${vendor.owner_name} has been farming for over 10 years and takes pride in growing the highest quality crops.`}
                   </p>
                 </div>
 
@@ -152,7 +152,7 @@ const VendorDetail = () => {
             {/* Products section */}
             <div className="mt-10">
               <h2 className="text-2xl font-display font-semibold text-market-green-dark mb-6">
-                Products from {vendor.farm_name}
+                Products from {vendor.vendor_name}
               </h2>
 
               {productsLoading ? (

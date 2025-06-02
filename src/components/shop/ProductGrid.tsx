@@ -1,11 +1,9 @@
-
 import ProductCard from '@/components/ProductCard'
 import { Product } from '@/components/product/types'
 
 interface Vendor {
   id: string
   user_id: string
-  farm_name?: string
   vendor_name?: string
   status?: string
 }
@@ -21,7 +19,7 @@ const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
     const vendor = vendors.find(v => v.user_id === product.user_id)
     return {
       ...product,
-      farmName: vendor?.farm_name || vendor?.vendor_name,
+      farmName: vendor?.vendor_name,
       vendorStatus: vendor?.status
     }
   }
