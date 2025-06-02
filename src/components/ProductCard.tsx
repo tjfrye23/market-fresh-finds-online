@@ -12,6 +12,7 @@ interface ProductCardProps {
   image: string
   organic?: boolean
   local?: boolean
+  farmName?: string
 }
 
 const ProductCard = ({
@@ -22,6 +23,7 @@ const ProductCard = ({
   image,
   organic = false,
   local = false,
+  farmName,
 }: ProductCardProps) => {
   return (
     <div className="product-card group">
@@ -53,6 +55,9 @@ const ProductCard = ({
             {name}
           </h3>
         </Link>
+        {farmName && (
+          <p className="text-gray-500 text-sm mb-2">from {farmName}</p>
+        )}
         <div className="flex justify-between items-center mt-3">
           <div className="flex flex-col">
             <span className="font-bold text-market-green-dark">

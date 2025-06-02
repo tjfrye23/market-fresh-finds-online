@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { ArrowDownAZ, ArrowUpAZ, Filter } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +7,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Product } from '@/components/product/types'
 import { useMarketplaceProducts } from '@/hooks/useMarketplaceProducts'
+import { getVendors } from '@/services/mockServices'
 
 const Shop = () => {
   const [sortBy, setSortBy] = useState('featured')
@@ -25,6 +25,11 @@ const Shop = () => {
   const [priceRange, setPriceRange] = useState<string>('all')
 
   const { data: products = [], isLoading } = useMarketplaceProducts()
+  
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['vendors'],
+    queryFn: getVendors,
+  })
 
   const toggleFilter = () => {
     setFilterVisible(!filterVisible)
@@ -53,6 +58,14 @@ const Shop = () => {
 
   const handlePriceRangeChange = (range: string) => {
     setPriceRange(range)
+  }
+
+  const getProductWithVendorInfo = (product: any) => {
+    const vendor = vendors.find(v => v.user_id === product.user_id)
+    return {
+      ...product,
+      farmName: vendor?.farm_name || vendor?.vendor_name
+    }
   }
 
   const getFilteredAndSortedProducts = () => {
@@ -290,21 +303,25 @@ const Shop = () => {
                 </div>
               ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      id={product.id}
-                      name={product.name}
-                      price={product.price}
-                      unit={product.unit}
-                      image={
-                        product.image ||
-                        'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80'
-                      }
-                      organic={product.organic || false}
-                      local={product.local || false}
-                    />
-                  ))}
+                  {filteredProducts.map((product) => {
+                    const productWithVendor = getProductWithVendorInfo(product)
+                    return (
+                      <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        name={product.name}
+                        price={product.price}
+                        unit={product.unit}
+                        image={
+                          product.image ||
+                          'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80'
+                        }
+                        organic={product.organic || false}
+                        local={product.local || false}
+                        farmName={productWithVendor.farmName}
+                      />
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="bg-gray-50 p-8 rounded-lg text-center">
