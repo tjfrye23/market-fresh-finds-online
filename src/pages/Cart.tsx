@@ -6,9 +6,11 @@ import { useQuery } from '@tanstack/react-query'
 import { getMarketplaceProducts } from '@/services/mockServices'
 import { Button } from '@/components/ui/button'
 import { Minus, Plus, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart()
+  const navigate = useNavigate()
   
   const { data: products = [] } = useQuery({
     queryKey: ['products'],
@@ -116,7 +118,11 @@ const Cart = () => {
             </div>
             
             <div className="space-y-2">
-              <Button className="w-full" size="lg">
+              <Button 
+                className="w-full" 
+                size="lg"
+                onClick={() => navigate('/checkout')}
+              >
                 Proceed to Checkout
               </Button>
               <Button
