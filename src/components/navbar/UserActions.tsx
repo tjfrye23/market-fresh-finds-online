@@ -20,11 +20,7 @@ const UserActions = ({
   const navigate = useNavigate()
 
   const handleProfileClick = () => {
-    if (user?.role === 'vendor') {
-      navigate('/vendor-profile')
-    } else {
-      navigate('/orders') // For regular users, take them to orders page as their main profile
-    }
+    navigate('/profile')
   }
 
   if (user) {
