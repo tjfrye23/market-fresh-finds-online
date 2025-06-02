@@ -140,6 +140,7 @@ export const saveProduct = async (productData: Partial<MockProduct> & { id?: str
       image: productData.image || null,
       organic: productData.organic || false,
       local: productData.local || false,
+      stock: productData.stock || 10, // Default stock value for new products
     })
   }
 }

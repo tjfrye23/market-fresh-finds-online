@@ -34,6 +34,7 @@ const AddProducts = () => {
           image: productData.image || null,
           organic: productData.organic,
           local: productData.local,
+          stock: 10, // Default stock value for new products
           user_id: user?.id || '',
         })
         results.push(result)
