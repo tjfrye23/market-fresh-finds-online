@@ -20,7 +20,7 @@ const UserActions = ({
   const navigate = useNavigate()
 
   const handleProfileClick = () => {
-    navigate('/profile')
+    navigate('/user-profile')
   }
 
   if (user) {
