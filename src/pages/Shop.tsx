@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { ArrowDownAZ, ArrowUpAZ, Filter } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +9,12 @@ import Footer from '@/components/Footer'
 import { Product } from '@/components/product/types'
 import { useMarketplaceProducts } from '@/hooks/useMarketplaceProducts'
 import { getVendors } from '@/services/mockServices'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 const Shop = () => {
   const [sortBy, setSortBy] = useState('featured')
@@ -170,164 +177,184 @@ const Shop = () => {
               className={`md:w-1/4 lg:w-1/5 ${filterVisible ? 'block' : 'hidden'} md:block`}
             >
               <div className="bg-white shadow-md rounded-lg p-6">
-                <h3 className="font-semibold text-lg mb-4">Categories</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.length === 0}
-                      onChange={() => handleCategoryChange('all')}
-                    />
-                    <span>All Products</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.includes('fruits')}
-                      onChange={() => handleCategoryChange('fruits')}
-                    />
-                    <span>Fruits</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.includes('vegetables')}
-                      onChange={() => handleCategoryChange('vegetables')}
-                    />
-                    <span>Vegetables</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.includes('herbs')}
-                      onChange={() => handleCategoryChange('herbs')}
-                    />
-                    <span>Herbs</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.includes('dairy')}
-                      onChange={() => handleCategoryChange('dairy')}
-                    />
-                    <span>Dairy & Eggs</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={categoryFilter.includes('bakery')}
-                      onChange={() => handleCategoryChange('bakery')}
-                    />
-                    <span>Bakery</span>
-                  </label>
-                </div>
+                <h2 className="font-semibold text-xl mb-4">Filters</h2>
+                
+                <Accordion type="multiple" defaultValue={["categories", "vendor", "features", "price"]} className="w-full">
+                  <AccordionItem value="categories">
+                    <AccordionTrigger className="text-lg font-semibold">Categories</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.length === 0}
+                            onChange={() => handleCategoryChange('all')}
+                          />
+                          <span>All Products</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.includes('fruits')}
+                            onChange={() => handleCategoryChange('fruits')}
+                          />
+                          <span>Fruits</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.includes('vegetables')}
+                            onChange={() => handleCategoryChange('vegetables')}
+                          />
+                          <span>Vegetables</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.includes('herbs')}
+                            onChange={() => handleCategoryChange('herbs')}
+                          />
+                          <span>Herbs</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.includes('dairy')}
+                            onChange={() => handleCategoryChange('dairy')}
+                          />
+                          <span>Dairy & Eggs</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={categoryFilter.includes('bakery')}
+                            onChange={() => handleCategoryChange('bakery')}
+                          />
+                          <span>Bakery</span>
+                        </label>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
 
-                <h3 className="font-semibold text-lg mt-6 mb-4">Vendor</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input 
-                      type="radio" 
-                      name="vendor" 
-                      className="mr-2"
-                      checked={vendorFilter === 'all'}
-                      onChange={() => handleVendorChange('all')}
-                    />
-                    <span>All Vendors</span>
-                  </label>
-                  {vendors.map((vendor) => (
-                    <label key={vendor.id} className="flex items-center">
-                      <input 
-                        type="radio" 
-                        name="vendor" 
-                        className="mr-2"
-                        checked={vendorFilter === vendor.user_id}
-                        onChange={() => handleVendorChange(vendor.user_id)}
-                      />
-                      <span>{vendor.farm_name || vendor.vendor_name}</span>
-                    </label>
-                  ))}
-                </div>
+                  <AccordionItem value="vendor">
+                    <AccordionTrigger className="text-lg font-semibold">Vendor</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="vendor" 
+                            className="mr-2"
+                            checked={vendorFilter === 'all'}
+                            onChange={() => handleVendorChange('all')}
+                          />
+                          <span>All Vendors</span>
+                        </label>
+                        {vendors.map((vendor) => (
+                          <label key={vendor.id} className="flex items-center">
+                            <input 
+                              type="radio" 
+                              name="vendor" 
+                              className="mr-2"
+                              checked={vendorFilter === vendor.user_id}
+                              onChange={() => handleVendorChange(vendor.user_id)}
+                            />
+                            <span>{vendor.farm_name || vendor.vendor_name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
 
-                <h3 className="font-semibold text-lg mt-6 mb-4">Features</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={featuresFilter.organic}
-                      onChange={() => handleFeatureChange('organic')}
-                    />
-                    <span>Organic</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={featuresFilter.local}
-                      onChange={() => handleFeatureChange('local')}
-                    />
-                    <span>Local</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="mr-2"
-                      checked={featuresFilter.inSeason}
-                      onChange={() => handleFeatureChange('inSeason')}
-                    />
-                    <span>In Season</span>
-                  </label>
-                </div>
+                  <AccordionItem value="features">
+                    <AccordionTrigger className="text-lg font-semibold">Features</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={featuresFilter.organic}
+                            onChange={() => handleFeatureChange('organic')}
+                          />
+                          <span>Organic</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={featuresFilter.local}
+                            onChange={() => handleFeatureChange('local')}
+                          />
+                          <span>Local</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="checkbox" 
+                            className="mr-2"
+                            checked={featuresFilter.inSeason}
+                            onChange={() => handleFeatureChange('inSeason')}
+                          />
+                          <span>In Season</span>
+                        </label>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
 
-                <h3 className="font-semibold text-lg mt-6 mb-4">Price Range</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input 
-                      type="radio" 
-                      name="price" 
-                      className="mr-2"
-                      checked={priceRange === 'all'}
-                      onChange={() => handlePriceRangeChange('all')}
-                    />
-                    <span>All Prices</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="radio" 
-                      name="price" 
-                      className="mr-2"
-                      checked={priceRange === 'under5'}
-                      onChange={() => handlePriceRangeChange('under5')}
-                    />
-                    <span>Under $5</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="radio" 
-                      name="price" 
-                      className="mr-2"
-                      checked={priceRange === '5to10'}
-                      onChange={() => handlePriceRangeChange('5to10')}
-                    />
-                    <span>$5 to $10</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="radio" 
-                      name="price" 
-                      className="mr-2"
-                      checked={priceRange === 'over10'}
-                      onChange={() => handlePriceRangeChange('over10')}
-                    />
-                    <span>Over $10</span>
-                  </label>
-                </div>
+                  <AccordionItem value="price">
+                    <AccordionTrigger className="text-lg font-semibold">Price Range</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        <label className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="price" 
+                            className="mr-2"
+                            checked={priceRange === 'all'}
+                            onChange={() => handlePriceRangeChange('all')}
+                          />
+                          <span>All Prices</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="price" 
+                            className="mr-2"
+                            checked={priceRange === 'under5'}
+                            onChange={() => handlePriceRangeChange('under5')}
+                          />
+                          <span>Under $5</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="price" 
+                            className="mr-2"
+                            checked={priceRange === '5to10'}
+                            onChange={() => handlePriceRangeChange('5to10')}
+                          />
+                          <span>$5 to $10</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input 
+                            type="radio" 
+                            name="price" 
+                            className="mr-2"
+                            checked={priceRange === 'over10'}
+                            onChange={() => handlePriceRangeChange('over10')}
+                          />
+                          <span>Over $10</span>
+                        </label>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </div>
 
