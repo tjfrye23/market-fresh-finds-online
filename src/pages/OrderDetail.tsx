@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -37,7 +36,7 @@ const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'processed
 const OrderDetail = () => {
   const { orderId } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [order, setOrder] = useState<Order | null>(null)
   const [allOrders, setAllOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -46,9 +45,10 @@ const OrderDetail = () => {
 
   useEffect(() => {
     if (user?.id && orderId) {
-      getVendorOrders(user.id).then(orders => {
-        // Sort orders by date (newest first) to maintain consistent order
-        const sortedOrders = orders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      if (isAdmin) {
+        // Admin can see all orders
+        const allStoredOrders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
+        const sortedOrders = allStoredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         setAllOrders(sortedOrders)
         
         const foundOrder = sortedOrders.find(o => o.id === orderId)
@@ -57,12 +57,25 @@ const OrderDetail = () => {
           setSelectedStatus(foundOrder.status)
         }
         setLoading(false)
-      }).catch(error => {
-        console.error('Error loading order:', error)
-        setLoading(false)
-      })
+      } else {
+        // Vendor can only see their orders
+        getVendorOrders(user.id).then(orders => {
+          const sortedOrders = orders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          setAllOrders(sortedOrders)
+          
+          const foundOrder = sortedOrders.find(o => o.id === orderId)
+          setOrder(foundOrder || null)
+          if (foundOrder) {
+            setSelectedStatus(foundOrder.status)
+          }
+          setLoading(false)
+        }).catch(error => {
+          console.error('Error loading order:', error)
+          setLoading(false)
+        })
+      }
     }
-  }, [user, orderId])
+  }, [user, orderId, isAdmin])
 
   const handleStatusUpdate = async () => {
     if (!order || !orderId) return
@@ -88,7 +101,8 @@ const OrderDetail = () => {
     const currentIndex = allOrders.findIndex(o => o.id === order.id)
     if (currentIndex !== -1 && currentIndex < allOrders.length - 1) {
       const nextOrder = allOrders[currentIndex + 1]
-      navigate(`/vendor/orders/${nextOrder.id}`)
+      const basePath = isAdmin ? '/admin/orders' : '/vendor/orders'
+      navigate(`${basePath}/${nextOrder.id}`)
     }
   }
 
@@ -97,6 +111,10 @@ const OrderDetail = () => {
     
     const currentIndex = allOrders.findIndex(o => o.id === order.id)
     return currentIndex !== -1 && currentIndex < allOrders.length - 1
+  }
+
+  const getBackPath = () => {
+    return isAdmin ? '/admin/dashboard' : '/vendor/dashboard'
   }
 
   if (loading) {
@@ -119,7 +137,7 @@ const OrderDetail = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
             <p className="text-gray-600 mb-4">The order you're looking for doesn't exist.</p>
-            <Button onClick={() => navigate('/vendor/dashboard')}>
+            <Button onClick={() => navigate(getBackPath())}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
@@ -140,7 +158,7 @@ const OrderDetail = () => {
           <div className="flex justify-between items-center mb-4">
             <Button 
               variant="outline" 
-              onClick={() => navigate('/vendor/dashboard')}
+              onClick={() => navigate(getBackPath())}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
