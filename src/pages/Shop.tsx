@@ -23,6 +23,7 @@ const Shop = () => {
     inSeason: false,
   })
   const [priceRange, setPriceRange] = useState<string>('all')
+  const [vendorFilter, setVendorFilter] = useState<string>('all')
 
   const { data: products = [], isLoading } = useMarketplaceProducts()
   
@@ -60,6 +61,10 @@ const Shop = () => {
     setPriceRange(range)
   }
 
+  const handleVendorChange = (vendorId: string) => {
+    setVendorFilter(vendorId)
+  }
+
   const getProductWithVendorInfo = (product: any) => {
     const vendor = vendors.find(v => v.user_id === product.user_id)
     return {
@@ -83,6 +88,10 @@ const Shop = () => {
 
     if (featuresFilter.local) {
       result = result.filter((product) => product.local)
+    }
+
+    if (vendorFilter !== 'all') {
+      result = result.filter((product) => product.user_id === vendorFilter)
     }
 
     if (priceRange === 'under5') {
@@ -217,6 +226,32 @@ const Shop = () => {
                     />
                     <span>Bakery</span>
                   </label>
+                </div>
+
+                <h3 className="font-semibold text-lg mt-6 mb-4">Vendor</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="vendor" 
+                      className="mr-2"
+                      checked={vendorFilter === 'all'}
+                      onChange={() => handleVendorChange('all')}
+                    />
+                    <span>All Vendors</span>
+                  </label>
+                  {vendors.map((vendor) => (
+                    <label key={vendor.id} className="flex items-center">
+                      <input 
+                        type="radio" 
+                        name="vendor" 
+                        className="mr-2"
+                        checked={vendorFilter === vendor.user_id}
+                        onChange={() => handleVendorChange(vendor.user_id)}
+                      />
+                      <span>{vendor.farm_name || vendor.vendor_name}</span>
+                    </label>
+                  ))}
                 </div>
 
                 <h3 className="font-semibold text-lg mt-6 mb-4">Features</h3>
