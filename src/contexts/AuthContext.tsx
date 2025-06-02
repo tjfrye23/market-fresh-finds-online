@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -30,6 +29,7 @@ type AuthContextType = {
   }>
   signOut: () => Promise<{ error: Error | null }>
   loading: boolean
+  isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -41,6 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<MockUser | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+
+  const isAdmin = user?.role === 'admin'
 
   useEffect(() => {
     // Check for existing session in localStorage
@@ -147,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ session, user, signIn, signUp, signOut, loading }}
+      value={{ session, user, signIn, signUp, signOut, loading, isAdmin }}
     >
       {children}
     </AuthContext.Provider>

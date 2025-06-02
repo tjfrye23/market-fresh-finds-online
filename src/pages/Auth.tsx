@@ -132,6 +132,19 @@ const Auth = () => {
                         </p>
                       </Label>
                     </div>
+
+                    <div className="flex items-center space-x-2 border p-3 rounded-md">
+                      <RadioGroupItem value="admin" id="admin" />
+                      <Label
+                        htmlFor="admin"
+                        className="cursor-pointer flex-grow"
+                      >
+                        <span className="font-medium">Administrator</span>
+                        <p className="text-sm text-gray-500">
+                          I want to manage the marketplace
+                        </p>
+                      </Label>
+                    </div>
                   </RadioGroup>
                 </div>
               </>

@@ -16,6 +16,7 @@ import {
 interface NavLinksProps {
   isVendor: boolean
   isLoggedIn: boolean
+  isAdmin: boolean
   onClose: () => void
   onLogin: () => void
   onLogout: () => void
@@ -25,6 +26,7 @@ interface NavLinksProps {
 const NavLinks = ({
   isVendor,
   isLoggedIn,
+  isAdmin,
   onClose,
   onLogin,
   onLogout,
@@ -77,6 +79,17 @@ const NavLinks = ({
           >
             <Package className="mr-2 h-5 w-5" />
             <span>My Orders</span>
+          </Link>
+        )}
+
+        {isAdmin && (
+          <Link
+            to="/admin/dashboard"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-gray-50"
+            onClick={onClose}
+          >
+            <Settings className="mr-2 h-5 w-5" />
+            <span>Admin Dashboard</span>
           </Link>
         )}
 

@@ -135,6 +135,15 @@ const UserProfile = () => {
             >
               View My Orders
             </Button>
+            {user.role === 'admin' && (
+              <Button 
+                onClick={() => window.location.href = '/admin/dashboard'}
+                variant="outline"
+                className="w-full"
+              >
+                Admin Dashboard
+              </Button>
+            )}
             {user.role === 'vendor' && (
               <>
                 <Button 

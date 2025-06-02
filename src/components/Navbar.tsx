@@ -17,6 +17,7 @@ const Navbar = () => {
   const navigate = useNavigate()
 
   const isVendor = user?.role === 'vendor'
+  const isAdmin = user?.role === 'admin'
   const cartItemCount = getTotalItems()
 
   const closeMenu = () => {
@@ -93,6 +94,7 @@ const Navbar = () => {
                 <NavLinks
                   isVendor={isVendor}
                   isLoggedIn={!!user}
+                  isAdmin={isAdmin}
                   onClose={() => setIsOpen(false)}
                   onLogin={handleLogin}
                   onLogout={handleLogout}

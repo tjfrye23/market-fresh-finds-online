@@ -25,6 +25,7 @@ import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import OrderDetail from './pages/OrderDetail'
 import Orders from './pages/Orders'
+import AdminDashboard from './pages/AdminDashboard'
 
 const queryClient = new QueryClient()
 
@@ -94,6 +95,14 @@ const AppContent = () => (
       element={
         <ProtectedRoute requiredRole="vendor">
           <AddProducts />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/dashboard"
+      element={
+        <ProtectedRoute requiredRole="admin">
+          <AdminDashboard />
         </ProtectedRoute>
       }
     />
