@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -26,10 +27,29 @@ import {
   Package, 
   TrendingUp, 
   Calendar,
-  Eye
+  Eye,
+  MoreHorizontal,
+  Edit,
+  Save
 } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getVendorOrders, getVendorMetrics } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
+import { toast } from 'sonner'
 
 interface VendorMetrics {
   totalRevenue: number
@@ -49,6 +69,15 @@ const getStatusColor = (status: string) => {
   }
 }
 
+const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'processed') => {
+  const orders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
+  const updatedOrders = orders.map((order: Order) => 
+    order.id === orderId ? { ...order, status: newStatus } : order
+  )
+  localStorage.setItem('marketplace_orders', JSON.stringify(updatedOrders))
+  return updatedOrders.find((order: Order) => order.id === orderId)
+}
+
 const chartConfig = {
   revenue: {
     label: 'Revenue',
@@ -62,6 +91,10 @@ const VendorDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<VendorMetrics | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [selectedStatus, setSelectedStatus] = useState<'processing' | 'processed'>('processing')
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     if (user?.id) {
@@ -81,6 +114,40 @@ const VendorDashboard = () => {
 
   const handleViewOrder = (order: Order) => {
     navigate(`/vendor/orders/${order.id}`)
+  }
+
+  const handleUpdateStatus = (order: Order) => {
+    setSelectedOrder(order)
+    setSelectedStatus(order.status)
+    setIsStatusDialogOpen(true)
+  }
+
+  const handleStatusUpdate = async () => {
+    if (!selectedOrder) return
+    
+    setIsUpdating(true)
+    try {
+      const updatedOrder = updateOrderStatus(selectedOrder.id, selectedStatus)
+      if (updatedOrder) {
+        // Update the orders state
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.id === selectedOrder.id ? updatedOrder : order
+          )
+        )
+        toast.success('Order status updated successfully')
+        setIsStatusDialogOpen(false)
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error)
+      toast.error('Failed to update order status')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleRowClick = (order: Order) => {
+    handleViewOrder(order)
   }
 
   if (!user || user.role !== 'vendor') {
@@ -208,7 +275,11 @@ const VendorDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {currentOrders.map((order) => (
-                        <TableRow key={order.id}>
+                        <TableRow 
+                          key={order.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleRowClick(order)}
+                        >
                           <TableCell className="font-medium">{order.orderNumber}</TableCell>
                           <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                           <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
@@ -219,14 +290,33 @@ const VendorDashboard = () => {
                           </TableCell>
                           <TableCell>${order.total.toFixed(2)}</TableCell>
                           <TableCell>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleViewOrder(order)}
-                            >
-                              <Eye className="h-4 w-4 mr-1" />
-                              View
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  className="h-8 w-8 p-0"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-white">
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleViewOrder(order)
+                                }}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleUpdateStatus(order)
+                                }}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Update Status
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -261,7 +351,11 @@ const VendorDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {pastOrders.map((order) => (
-                        <TableRow key={order.id}>
+                        <TableRow 
+                          key={order.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleRowClick(order)}
+                        >
                           <TableCell className="font-medium">{order.orderNumber}</TableCell>
                           <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
                           <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
@@ -272,14 +366,33 @@ const VendorDashboard = () => {
                           </TableCell>
                           <TableCell>${order.total.toFixed(2)}</TableCell>
                           <TableCell>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleViewOrder(order)}
-                            >
-                              <Eye className="h-4 w-4 mr-1" />
-                              View
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  className="h-8 w-8 p-0"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-white">
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleViewOrder(order)
+                                }}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleUpdateStatus(order)
+                                }}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Update Status
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -290,6 +403,42 @@ const VendorDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Status Update Dialog */}
+        <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle>Update Order Status</DialogTitle>
+              <DialogDescription>
+                Update the status for order {selectedOrder?.orderNumber}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Select value={selectedStatus} onValueChange={(value: 'processing' | 'processed') => setSelectedStatus(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="processed">Processed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsStatusDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleStatusUpdate} 
+                disabled={isUpdating || selectedStatus === selectedOrder?.status}
+                className="flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {isUpdating ? 'Updating...' : 'Update Status'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
