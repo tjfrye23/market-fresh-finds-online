@@ -1,4 +1,3 @@
-
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -24,6 +23,7 @@ import VendorDetail from './pages/VendorDetail'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
+import OrderDetail from './pages/OrderDetail'
 import Orders from './pages/Orders'
 
 const queryClient = new QueryClient()
@@ -70,6 +70,14 @@ const AppContent = () => (
       element={
         <ProtectedRoute requiredRole="vendor">
           <VendorDashboard />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/vendor/orders/:orderId"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <OrderDetail />
         </ProtectedRoute>
       }
     />

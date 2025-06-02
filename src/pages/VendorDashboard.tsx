@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import OrderDetailDialog from '@/components/OrderDetailDialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,11 +60,10 @@ const chartConfig = {
 
 const VendorDashboard = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [orders, setOrders] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<VendorMetrics | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
-  const [orderDialogOpen, setOrderDialogOpen] = useState(false)
 
   useEffect(() => {
     if (user?.id) {
@@ -85,8 +82,7 @@ const VendorDashboard = () => {
   }, [user])
 
   const handleViewOrder = (order: Order) => {
-    setSelectedOrder(order)
-    setOrderDialogOpen(true)
+    navigate(`/vendor/orders/${order.id}`)
   }
 
   if (!user || user.role !== 'vendor') {
@@ -296,12 +292,6 @@ const VendorDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
-
-        <OrderDetailDialog
-          order={selectedOrder}
-          open={orderDialogOpen}
-          onOpenChange={setOrderDialogOpen}
-        />
       </main>
       <Footer />
     </div>
