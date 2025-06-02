@@ -1,99 +1,109 @@
-
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import PageHeader from '@/components/PageHeader'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import ShopFilters from '@/components/shop/ShopFilters'
-import ProductGrid from '@/components/shop/ProductGrid'
-import { useMarketplaceProducts } from '@/hooks/useMarketplaceProducts'
-import { useShopFilters } from '@/hooks/useShopFilters'
-import { getVendors } from '@/services/mockServices'
+import PageHeader from '@/components/PageHeader'
+import ProductGrid from '@/components/ProductGrid'
+import ShopFilters from '@/components/ShopFilters'
+import { mockProducts, mockVendors } from '@/data/mockData'
+import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
+import ShopAvailabilityBanner from '@/components/ShopAvailabilityBanner'
 
 const Shop = () => {
-  const [filterVisible, setFilterVisible] = useState(false)
-  
-  const { data: products = [], isLoading } = useMarketplaceProducts()
-  const { data: vendors = [] } = useQuery({
-    queryKey: ['vendors'],
-    queryFn: getVendors,
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [products, setProducts] = useState(mockProducts)
+  const [categories, setCategories] = useState([
+    'vegetables',
+    'fruits',
+    'herbs',
+  ])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10 })
+  const [showOrganic, setShowOrganic] = useState(false)
+  const [showLocal, setShowLocal] = useState(false)
+  const [vendors, setVendors] = useState(mockVendors)
+  const [selectedVendors, setSelectedVendors: any] = useState([])
+  const { isShopOpen } = useMarketSchedule()
+  const shopOpen = isShopOpen()
+
+  useEffect(() => {
+    const initialCategories = searchParams.getAll('category')
+    setSelectedCategories(initialCategories)
+  }, [searchParams])
+
+  const handleCategoryChange = (category: string) => {
+    let newCategories
+    if (selectedCategories.includes(category)) {
+      newCategories = selectedCategories.filter((c) => c !== category)
+    } else {
+      newCategories = [...selectedCategories, category]
+    }
+
+    setSelectedCategories(newCategories)
+    setSearchParams({ category: newCategories })
+  }
+
+  const handleVendorChange = (vendorId: string) => {
+    let newVendors
+    if (selectedVendors.includes(vendorId)) {
+      newVendors = selectedVendors.filter((v: string) => v !== vendorId)
+    } else {
+      newVendors = [...selectedVendors, vendorId]
+    }
+
+    setSelectedVendors(newVendors)
+  }
+
+  const filteredProducts = products.filter((product) => {
+    const categoryMatch =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(product.category)
+    const priceMatch =
+      product.price >= priceRange.min && product.price <= priceRange.max
+    const organicMatch = !showOrganic || product.organic === showOrganic
+    const localMatch = !showLocal || product.local === showLocal
+    const vendorMatch =
+      selectedVendors.length === 0 || selectedVendors.includes(product.user_id)
+
+    return (
+      categoryMatch &&
+      priceMatch &&
+      organicMatch &&
+      localMatch &&
+      vendorMatch
+    )
   })
-
-  const {
-    categoryFilter,
-    setCategoryFilter,
-    featuresFilter,
-    setFeaturesFilter,
-    priceRange,
-    setPriceRange,
-    vendorFilter,
-    setVendorFilter,
-    sortBy,
-    setSortBy,
-    getFilteredAndSortedProducts,
-  } = useShopFilters()
-
-  const filteredProducts = getFilteredAndSortedProducts(products)
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        <PageHeader
-          title="Shop Our Products"
-          description="Browse our selection of fresh, locally-sourced products"
-          image="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
+        <PageHeader 
+          title="Fresh Market" 
+          subtitle="Farm-fresh produce delivered to your door"
         />
-
-        <div className="page-container">
-          <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <div className="flex items-center">
-              <p className="text-gray-600">
-                {isLoading
-                  ? 'Loading products...'
-                  : `Showing ${filteredProducts.length} products`}
-              </p>
-            </div>
-
-            <div className="flex items-center">
-              <label htmlFor="sort" className="mr-2 text-gray-600">
-                Sort by:
-              </label>
-              <select
-                id="sort"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-market-green focus:border-transparent"
-              >
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name-asc">Name: A to Z</option>
-                <option value="name-desc">Name: Z to A</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex gap-8">
-            <ShopFilters
-              filterVisible={filterVisible}
-              setFilterVisible={setFilterVisible}
-              categoryFilter={categoryFilter}
-              setCategoryFilter={setCategoryFilter}
-              featuresFilter={featuresFilter}
-              setFeaturesFilter={setFeaturesFilter}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              vendorFilter={vendorFilter}
-              setVendorFilter={setVendorFilter}
-              vendors={vendors}
-            />
-            <div className="flex-1">
-              <ProductGrid 
-                products={filteredProducts}
+        <div className="container mx-auto px-4 py-8">
+          <ShopAvailabilityBanner />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1">
+              <ShopFilters
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onCategoryChange={handleCategoryChange}
+                priceRange={priceRange}
+                onPriceRangeChange={setPriceRange}
+                showOrganic={showOrganic}
+                onOrganicChange={setShowOrganic}
+                showLocal={showLocal}
+                onLocalChange={setShowLocal}
                 vendors={vendors}
-                isLoading={isLoading}
+                selectedVendors={selectedVendors}
+                onVendorChange={handleVendorChange}
               />
+            </div>
+            <div className="lg:col-span-3">
+              <ProductGrid products={filteredProducts} />
             </div>
           </div>
         </div>

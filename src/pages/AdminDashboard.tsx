@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -25,6 +24,7 @@ import {
   Store
 } from 'lucide-react'
 import { mockUsers, mockVendors } from '@/data/mockData'
+import MarketScheduleManager from '@/components/admin/MarketScheduleManager'
 
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -125,6 +125,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
+            <TabsTrigger value="schedule">Market Schedule</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -253,6 +254,14 @@ const AdminDashboard = () => {
                     </TableBody>
                   </Table>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schedule">
+            <Card>
+              <CardContent className="p-6">
+                <MarketScheduleManager />
               </CardContent>
             </Card>
           </TabsContent>
