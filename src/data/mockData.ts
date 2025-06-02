@@ -42,7 +42,7 @@ export interface MockProduct {
 
 export const mockVendors: MockVendorProfile[] = [
   {
-    id: 'vendor1',
+    id: '1',
     user_id: 'vendor1',
     vendor_name: 'Green Valley Farm',
     owner_name: 'Sarah Johnson',
@@ -55,7 +55,7 @@ export const mockVendors: MockVendorProfile[] = [
     updated_at: '2024-01-01T00:00:00Z'
   },
   {
-    id: 'vendor2',
+    id: '2',
     user_id: 'vendor2',
     vendor_name: 'Sunrise Orchard',
     owner_name: 'Mike Chen',
@@ -68,7 +68,7 @@ export const mockVendors: MockVendorProfile[] = [
     updated_at: '2024-01-01T00:00:00Z'
   },
   {
-    id: 'vendor3',
+    id: '3',
     user_id: 'vendor3',
     vendor_name: 'Coastal Herbs',
     owner_name: 'Elena Rodriguez',
