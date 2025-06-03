@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Trash2, Clock, Calendar } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Plus, Trash2, Clock, Calendar, RefreshCw } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 
@@ -34,7 +34,8 @@ const MarketScheduleManager = () => {
     onlineStartTime: '',
     onlineEndTime: '',
     description: '',
-    isActive: true
+    isActive: true,
+    isRecurring: false
   })
 
   const marketInfo = getNextMarketInfo()
@@ -55,7 +56,8 @@ const MarketScheduleManager = () => {
       onlineStartTime: formData.onlineStartTime,
       onlineEndTime: formData.onlineEndTime,
       description: formData.description,
-      isActive: formData.isActive
+      isActive: formData.isActive,
+      isRecurring: formData.isRecurring
     })
 
     setFormData({
@@ -66,7 +68,8 @@ const MarketScheduleManager = () => {
       onlineStartTime: '',
       onlineEndTime: '',
       description: '',
-      isActive: true
+      isActive: true,
+      isRecurring: false
     })
     setIsDialogOpen(false)
     toast.success('Market schedule added successfully')
@@ -87,6 +90,17 @@ const MarketScheduleManager = () => {
     const hour12 = parseInt(hours) % 12 || 12
     const ampm = parseInt(hours) >= 12 ? 'PM' : 'AM'
     return `${hour12}:${minutes} ${ampm}`
+  }
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'default'
+      case 'rejected':
+        return 'destructive'
+      default:
+        return 'secondary'
+    }
   }
 
   return (
@@ -187,13 +201,27 @@ const MarketScheduleManager = () => {
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isActive"
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
-                />
-                <Label htmlFor="isActive">Active</Label>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isRecurring"
+                    checked={formData.isRecurring}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRecurring: !!checked }))}
+                  />
+                  <Label htmlFor="isRecurring" className="flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4" />
+                    Recurring Schedule
+                  </Label>
+                </div>
               </div>
 
               <Button type="submit" className="w-full">Add Schedule</Button>
@@ -254,9 +282,20 @@ const MarketScheduleManager = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-medium">{schedule.name}</h3>
-                      <Badge variant={schedule.isActive ? 'default' : 'secondary'}>
-                        {schedule.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Badge variant={schedule.isActive ? 'default' : 'secondary'}>
+                          {schedule.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                        <Badge variant={getStatusBadgeVariant(schedule.status)}>
+                          {schedule.status}
+                        </Badge>
+                        {schedule.isRecurring && (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <RefreshCw className="h-3 w-3" />
+                            Recurring
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     {schedule.description && (
                       <p className="text-sm text-gray-600 mb-3">{schedule.description}</p>

@@ -11,12 +11,14 @@ export interface MarketSchedule {
   onlineEndTime: string // HH:MM format
   description: string
   isActive: boolean
+  isRecurring: boolean
+  status: 'pending review' | 'approved' | 'rejected'
   createdAt: string
 }
 
 interface MarketScheduleContextType {
   schedules: MarketSchedule[]
-  addSchedule: (schedule: Omit<MarketSchedule, 'id' | 'createdAt'>) => void
+  addSchedule: (schedule: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => void
   updateSchedule: (id: string, updates: Partial<MarketSchedule>) => void
   deleteSchedule: (id: string) => void
   isShopOpen: () => boolean
@@ -39,10 +41,11 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     localStorage.setItem('marketplace_schedules', JSON.stringify(schedules))
   }, [schedules])
 
-  const addSchedule = (scheduleData: Omit<MarketSchedule, 'id' | 'createdAt'>) => {
+  const addSchedule = (scheduleData: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => {
     const newSchedule: MarketSchedule = {
       ...scheduleData,
       id: Math.random().toString(36).substr(2, 9),
+      status: 'pending review',
       createdAt: new Date().toISOString()
     }
     setSchedules(prev => [...prev, newSchedule])
