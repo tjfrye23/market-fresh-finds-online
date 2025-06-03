@@ -33,7 +33,6 @@ const MarketScheduleManager = () => {
     onlineStartDate: undefined as Date | undefined,
     onlineEndDate: undefined as Date | undefined,
     description: '',
-    isActive: true,
     isRecurring: false
   })
 
@@ -57,7 +56,7 @@ const MarketScheduleManager = () => {
       onlineStartDate: formData.onlineStartDate,
       onlineEndDate: formData.onlineEndDate,
       description: formData.description,
-      isActive: formData.isActive,
+      isActive: true,
       isRecurring: formData.isRecurring
     })
 
@@ -71,7 +70,6 @@ const MarketScheduleManager = () => {
       onlineStartDate: undefined,
       onlineEndDate: undefined,
       description: '',
-      isActive: true,
       isRecurring: false
     })
     setIsDialogOpen(false)
@@ -273,27 +271,16 @@ const MarketScheduleManager = () => {
                 />
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isActive"
-                    checked={formData.isActive}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
-                  />
-                  <Label htmlFor="isActive">Active</Label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isRecurring"
-                    checked={formData.isRecurring}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRecurring: !!checked }))}
-                  />
-                  <Label htmlFor="isRecurring" className="flex items-center gap-2">
-                    <RefreshCw className="h-4 w-4" />
-                    Recurring Schedule
-                  </Label>
-                </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="isRecurring"
+                  checked={formData.isRecurring}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRecurring: !!checked }))}
+                />
+                <Label htmlFor="isRecurring" className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Recurring Schedule
+                </Label>
               </div>
 
               <Button type="submit" className="w-full">Add Schedule</Button>
