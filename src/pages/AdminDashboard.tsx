@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -62,7 +61,7 @@ const AdminDashboard = () => {
   }
 
   const handleMarketScheduleClick = (schedule) => {
-    console.log("Clicked on schedule with ID:", schedule.id)
+    console.log("Navigating to schedule detail:", schedule.id)
     navigate(`/admin/market-schedule/${schedule.id}`)
   }
 
@@ -318,7 +317,7 @@ const AdminDashboard = () => {
                         {schedules.map((schedule) => (
                           <TableRow 
                             key={schedule.id}
-                            className="cursor-pointer hover:bg-muted/50"
+                            className="cursor-pointer hover:bg-muted/50 transition-colors"
                             onClick={() => handleMarketScheduleClick(schedule)}
                           >
                             <TableCell className="font-medium">{schedule.name}</TableCell>
