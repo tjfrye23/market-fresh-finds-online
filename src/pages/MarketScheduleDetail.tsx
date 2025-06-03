@@ -10,12 +10,17 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Calendar, Clock, RefreshCw, Store } from 'lucide-react'
 
 const MarketScheduleDetail = () => {
-  const { id } = useParams<{ id: string }>()
+  const { scheduleId } = useParams<{ scheduleId: string }>()
   const navigate = useNavigate()
   const { schedules } = useMarketSchedule()
   const { user } = useAuth()
   
-  const schedule = schedules.find(s => s.id === id)
+  // Find the schedule by ID
+  const schedule = schedules.find(s => s.id === scheduleId)
+  
+  console.log("Schedule ID from URL:", scheduleId)
+  console.log("Available schedules:", schedules.map(s => s.id))
+  console.log("Found schedule:", schedule)
 
   if (!schedule) {
     return (

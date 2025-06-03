@@ -61,6 +61,7 @@ const AdminDashboard = () => {
   }
 
   const handleMarketScheduleClick = (schedule) => {
+    console.log("Clicked on schedule with ID:", schedule.id)
     navigate(`/admin/market-schedule/${schedule.id}`)
   }
 
