@@ -7,13 +7,16 @@ import Footer from '@/components/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Calendar, Clock, RefreshCw, Store } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ArrowLeft, Calendar, Clock, RefreshCw, Store, Settings } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 const MarketScheduleDetail = () => {
   const { scheduleId } = useParams<{ scheduleId: string }>()
   const navigate = useNavigate()
-  const { schedules } = useMarketSchedule()
-  const { user } = useAuth()
+  const { schedules, updateSchedule } = useMarketSchedule()
+  const { user, isAdmin } = useAuth()
+  const { toast } = useToast()
   
   // Find the schedule by ID
   const schedule = schedules.find(s => s.id === scheduleId)
@@ -56,6 +59,14 @@ const MarketScheduleDetail = () => {
       default:
         return 'secondary'
     }
+  }
+
+  const handleStatusChange = (newStatus: 'pending review' | 'approved' | 'rejected') => {
+    updateSchedule(schedule.id, { status: newStatus })
+    toast({
+      title: "Status Updated",
+      description: `Market schedule status changed to ${newStatus}`,
+    })
   }
 
   return (
@@ -140,7 +151,10 @@ const MarketScheduleDetail = () => {
           {/* Schedule Status */}
           <Card>
             <CardHeader>
-              <CardTitle>Schedule Status</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Schedule Status
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -153,6 +167,29 @@ const MarketScheduleDetail = () => {
                     {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
                   </Badge>
                 </div>
+                
+                {/* Admin Status Change Control */}
+                {isAdmin && (
+                  <div className="p-4 border rounded-lg bg-muted/50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Change Status</p>
+                        <p className="text-sm text-gray-600">Update the approval status of this market schedule</p>
+                      </div>
+                      <Select value={schedule.status} onValueChange={handleStatusChange}>
+                        <SelectTrigger className="w-48">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending review">Pending Review</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="text-sm text-gray-600">
                   <p><span className="font-medium">Created:</span> {new Date(schedule.createdAt).toLocaleString()}</p>
                 </div>
