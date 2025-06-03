@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -244,7 +243,7 @@ const MarketScheduleManager = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label htmlFor="onlineStartTime">Online Start *</Label>
+                  <Label htmlFor="onlineStartTime">Start Time *</Label>
                   <Input
                     id="onlineStartTime"
                     type="time"
@@ -253,7 +252,7 @@ const MarketScheduleManager = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="onlineEndTime">Online End *</Label>
+                  <Label htmlFor="onlineEndTime">End Time *</Label>
                   <Input
                     id="onlineEndTime"
                     type="time"
