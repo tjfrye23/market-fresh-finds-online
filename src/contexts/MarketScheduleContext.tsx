@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export interface MarketSchedule {
@@ -29,6 +28,58 @@ interface MarketScheduleContextType {
 
 const MarketScheduleContext = createContext<MarketScheduleContextType | undefined>(undefined)
 
+// Mock data for initial schedules
+const mockSchedules: MarketSchedule[] = [
+  {
+    id: '1',
+    name: 'Weekly Farmers Market',
+    marketDate: new Date('2024-06-08'),
+    startTime: '08:00',
+    endTime: '14:00',
+    onlineStartTime: '06:00',
+    onlineEndTime: '16:00',
+    onlineStartDate: new Date('2024-06-05'),
+    onlineEndDate: new Date('2024-06-08'),
+    description: 'Our regular weekly farmers market featuring local vendors and fresh produce.',
+    isActive: true,
+    isRecurring: true,
+    status: 'approved',
+    createdAt: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: '2',
+    name: 'Holiday Special Market',
+    marketDate: new Date('2024-06-15'),
+    startTime: '09:00',
+    endTime: '15:00',
+    onlineStartTime: '07:00',
+    onlineEndTime: '17:00',
+    onlineStartDate: new Date('2024-06-12'),
+    onlineEndDate: new Date('2024-06-15'),
+    description: 'Special holiday market with extended hours and additional vendors.',
+    isActive: true,
+    isRecurring: false,
+    status: 'approved',
+    createdAt: '2024-01-15T00:00:00Z'
+  },
+  {
+    id: '3',
+    name: 'Summer Evening Market',
+    marketDate: new Date('2024-06-22'),
+    startTime: '16:00',
+    endTime: '20:00',
+    onlineStartTime: '14:00',
+    onlineEndTime: '22:00',
+    onlineStartDate: new Date('2024-06-20'),
+    onlineEndDate: new Date('2024-06-22'),
+    description: 'Evening market for summer season with live music and food trucks.',
+    isActive: false,
+    isRecurring: true,
+    status: 'pending review',
+    createdAt: '2024-02-01T00:00:00Z'
+  }
+]
+
 export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [schedules, setSchedules] = useState<MarketSchedule[]>([])
 
@@ -44,6 +95,9 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
         onlineEndDate: new Date(schedule.onlineEndDate)
       }))
       setSchedules(schedulesWithDates)
+    } else {
+      // If no stored schedules, use mock data
+      setSchedules(mockSchedules)
     }
   }, [])
 

@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -74,11 +73,6 @@ const MarketScheduleManager = () => {
     })
     setIsDialogOpen(false)
     toast.success('Market schedule added successfully')
-  }
-
-  const handleToggleActive = (id: string, isActive: boolean) => {
-    updateSchedule(id, { isActive })
-    toast.success(`Schedule ${isActive ? 'activated' : 'deactivated'}`)
   }
 
   const handleDelete = (id: string) => {
@@ -342,9 +336,6 @@ const MarketScheduleManager = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-medium">{schedule.name}</h3>
                       <div className="flex gap-2">
-                        <Badge variant={schedule.isActive ? 'default' : 'secondary'}>
-                          {schedule.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
                         <Badge variant={getStatusBadgeVariant(schedule.status)}>
                           {schedule.status}
                         </Badge>
@@ -367,10 +358,10 @@ const MarketScheduleManager = () => {
                         <span className="font-medium">Market:</span> {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
                       </div>
                       <div>
-                        <span className="font-medium">Online Start:</span> {formatTime(schedule.onlineStartTime)}
+                        <span className="font-medium">Start Time:</span> {formatTime(schedule.onlineStartTime)}
                       </div>
                       <div>
-                        <span className="font-medium">Online End:</span> {formatTime(schedule.onlineEndTime)}
+                        <span className="font-medium">End Time:</span> {formatTime(schedule.onlineEndTime)}
                       </div>
                     </div>
                     {schedule.onlineStartDate && schedule.onlineEndDate && (
@@ -380,10 +371,6 @@ const MarketScheduleManager = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Switch
-                      checked={schedule.isActive}
-                      onCheckedChange={(checked) => handleToggleActive(schedule.id, checked)}
-                    />
                     <Button
                       variant="outline"
                       size="icon"
