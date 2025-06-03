@@ -1,3 +1,4 @@
+
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -32,6 +33,7 @@ import VendorDetails from './pages/VendorDetails'
 import CustomerDetails from './pages/CustomerDetails'
 import AdminVendorDetails from './pages/AdminVendorDetails'
 import Favorites from './pages/Favorites'
+import MarketScheduleDetail from './pages/MarketScheduleDetail'
 
 const queryClient = new QueryClient()
 
@@ -90,6 +92,14 @@ const AppContent = () => (
       }
     />
     <Route
+      path="/vendor/market-schedule/:scheduleId"
+      element={
+        <ProtectedRoute requiredRole="vendor">
+          <MarketScheduleDetail />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/vendor/manage-products"
       element={
         <ProtectedRoute requiredRole="vendor">
@@ -134,6 +144,14 @@ const AppContent = () => (
       element={
         <ProtectedRoute requiredRole="admin">
           <CustomerDetails />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/market-schedule/:scheduleId"
+      element={
+        <ProtectedRoute requiredRole="admin">
+          <MarketScheduleDetail />
         </ProtectedRoute>
       }
     />
