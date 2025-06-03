@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2, Clock, Calendar } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from 'sonner'
@@ -28,9 +29,11 @@ const MarketScheduleManager = () => {
   const [formData, setFormData] = useState({
     name: '',
     dayOfWeek: '',
-    marketTime: '',
-    openDaysBefore: '',
-    closeHoursAfter: '',
+    startTime: '',
+    endTime: '',
+    onlineStartTime: '',
+    onlineEndTime: '',
+    description: '',
     isActive: true
   })
 
@@ -39,26 +42,30 @@ const MarketScheduleManager = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.dayOfWeek || !formData.marketTime || !formData.openDaysBefore || !formData.closeHoursAfter) {
-      toast.error('Please fill in all fields')
+    if (!formData.name || !formData.dayOfWeek || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime) {
+      toast.error('Please fill in all required fields')
       return
     }
 
     addSchedule({
       name: formData.name,
       dayOfWeek: parseInt(formData.dayOfWeek),
-      marketTime: formData.marketTime,
-      openDaysBefore: parseInt(formData.openDaysBefore),
-      closeHoursAfter: parseInt(formData.closeHoursAfter),
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      onlineStartTime: formData.onlineStartTime,
+      onlineEndTime: formData.onlineEndTime,
+      description: formData.description,
       isActive: formData.isActive
     })
 
     setFormData({
       name: '',
       dayOfWeek: '',
-      marketTime: '',
-      openDaysBefore: '',
-      closeHoursAfter: '',
+      startTime: '',
+      endTime: '',
+      onlineStartTime: '',
+      onlineEndTime: '',
+      description: '',
       isActive: true
     })
     setIsDialogOpen(false)
@@ -96,13 +103,13 @@ const MarketScheduleManager = () => {
               Add Schedule
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Add Market Schedule</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="name">Schedule Name</Label>
+                <Label htmlFor="name">Schedule Name *</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -112,7 +119,7 @@ const MarketScheduleManager = () => {
               </div>
               
               <div>
-                <Label htmlFor="dayOfWeek">Market Day</Label>
+                <Label htmlFor="dayOfWeek">Market Day *</Label>
                 <Select value={formData.dayOfWeek} onValueChange={(value) => setFormData(prev => ({ ...prev, dayOfWeek: value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select day" />
@@ -127,39 +134,56 @@ const MarketScheduleManager = () => {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="marketTime">Market Time</Label>
-                <Input
-                  id="marketTime"
-                  type="time"
-                  value={formData.marketTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, marketTime: e.target.value }))}
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="startTime">Start Time *</Label>
+                  <Input
+                    id="startTime"
+                    type="time"
+                    value={formData.startTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endTime">End Time *</Label>
+                  <Input
+                    id="endTime"
+                    type="time"
+                    value={formData.endTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="onlineStartTime">Online Start *</Label>
+                  <Input
+                    id="onlineStartTime"
+                    type="time"
+                    value={formData.onlineStartTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, onlineStartTime: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="onlineEndTime">Online End *</Label>
+                  <Input
+                    id="onlineEndTime"
+                    type="time"
+                    value={formData.onlineEndTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, onlineEndTime: e.target.value }))}
+                  />
+                </div>
               </div>
 
               <div>
-                <Label htmlFor="openDaysBefore">Open Days Before Market</Label>
-                <Input
-                  id="openDaysBefore"
-                  type="number"
-                  min="0"
-                  max="7"
-                  value={formData.openDaysBefore}
-                  onChange={(e) => setFormData(prev => ({ ...prev, openDaysBefore: e.target.value }))}
-                  placeholder="e.g., 3"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="closeHoursAfter">Close Hours After Market</Label>
-                <Input
-                  id="closeHoursAfter"
-                  type="number"
-                  min="0"
-                  max="48"
-                  value={formData.closeHoursAfter}
-                  onChange={(e) => setFormData(prev => ({ ...prev, closeHoursAfter: e.target.value }))}
-                  placeholder="e.g., 6"
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Market description..."
+                  rows={3}
                 />
               </div>
 
@@ -195,13 +219,13 @@ const MarketScheduleManager = () => {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Shop Opens</p>
+                <p className="text-sm text-gray-600">Online Opens</p>
                 <p className="font-medium">
-                  {marketInfo.opensAt ? marketInfo.opensAt.toLocaleDateString() : 'Not scheduled'}
+                  {marketInfo.opensAt ? marketInfo.opensAt.toLocaleString() : 'Not scheduled'}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Shop Closes</p>
+                <p className="text-sm text-gray-600">Online Closes</p>
                 <p className="font-medium">
                   {marketInfo.closesAt ? marketInfo.closesAt.toLocaleString() : 'Not scheduled'}
                 </p>
@@ -226,7 +250,7 @@ const MarketScheduleManager = () => {
           schedules.map(schedule => (
             <Card key={schedule.id}>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-medium">{schedule.name}</h3>
@@ -234,18 +258,21 @@ const MarketScheduleManager = () => {
                         {schedule.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                    {schedule.description && (
+                      <p className="text-sm text-gray-600 mb-3">{schedule.description}</p>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
                       <div>
                         <span className="font-medium">Day:</span> {DAYS_OF_WEEK[schedule.dayOfWeek].label}
                       </div>
                       <div>
-                        <span className="font-medium">Time:</span> {formatTime(schedule.marketTime)}
+                        <span className="font-medium">Market:</span> {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
                       </div>
                       <div>
-                        <span className="font-medium">Opens:</span> {schedule.openDaysBefore} days before
+                        <span className="font-medium">Online Start:</span> {formatTime(schedule.onlineStartTime)}
                       </div>
                       <div>
-                        <span className="font-medium">Closes:</span> {schedule.closeHoursAfter} hours after
+                        <span className="font-medium">Online End:</span> {formatTime(schedule.onlineEndTime)}
                       </div>
                     </div>
                   </div>

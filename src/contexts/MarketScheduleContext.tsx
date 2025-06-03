@@ -5,9 +5,11 @@ export interface MarketSchedule {
   id: string
   name: string
   dayOfWeek: number // 0 = Sunday, 1 = Monday, etc.
-  marketTime: string // HH:MM format
-  openDaysBefore: number
-  closeHoursAfter: number
+  startTime: string // HH:MM format
+  endTime: string // HH:MM format
+  onlineStartTime: string // HH:MM format
+  onlineEndTime: string // HH:MM format
+  description: string
   isActive: boolean
   createdAt: string
 }
@@ -75,20 +77,21 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
 
     activeSchedules.forEach(schedule => {
       const marketDate = getNextMarketDate(schedule.dayOfWeek)
-      const [hours, minutes] = schedule.marketTime.split(':').map(Number)
-      marketDate.setHours(hours, minutes, 0, 0)
+      const [startHours, startMinutes] = schedule.startTime.split(':').map(Number)
+      marketDate.setHours(startHours, startMinutes, 0, 0)
 
       if (!nextMarket || marketDate < nextMarket) {
         nextMarket = marketDate
         
-        // Calculate opening time (X days before market)
+        // Calculate online opening time
         opensAt = new Date(marketDate)
-        opensAt.setDate(marketDate.getDate() - schedule.openDaysBefore)
-        opensAt.setHours(0, 0, 0, 0)
+        const [onlineStartHours, onlineStartMinutes] = schedule.onlineStartTime.split(':').map(Number)
+        opensAt.setHours(onlineStartHours, onlineStartMinutes, 0, 0)
 
-        // Calculate closing time (Y hours after market)
+        // Calculate online closing time
         closesAt = new Date(marketDate)
-        closesAt.setHours(marketDate.getHours() + schedule.closeHoursAfter)
+        const [onlineEndHours, onlineEndMinutes] = schedule.onlineEndTime.split(':').map(Number)
+        closesAt.setHours(onlineEndHours, onlineEndMinutes, 0, 0)
       }
     })
 
