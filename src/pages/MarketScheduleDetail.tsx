@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -122,6 +121,11 @@ const MarketScheduleDetail = () => {
                     <div>
                       <span className="font-medium">Hours:</span> {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
                     </div>
+                    {schedule.address && (
+                      <div>
+                        <span className="font-medium">Address:</span> {schedule.address}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div>

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export interface MarketSchedule {
@@ -10,6 +11,7 @@ export interface MarketSchedule {
   onlineEndTime: string // HH:MM format
   onlineStartDate: Date // New field for online shop start date
   onlineEndDate: Date // New field for online shop end date
+  address: string // New address field
   description: string
   isActive: boolean
   isRecurring: boolean
@@ -40,6 +42,7 @@ const mockSchedules: MarketSchedule[] = [
     onlineEndTime: '16:00',
     onlineStartDate: new Date('2024-06-05'),
     onlineEndDate: new Date('2024-06-08'),
+    address: '123 Main Street, Downtown Plaza',
     description: 'Our regular weekly farmers market featuring local vendors and fresh produce.',
     isActive: true,
     isRecurring: true,
@@ -56,6 +59,7 @@ const mockSchedules: MarketSchedule[] = [
     onlineEndTime: '17:00',
     onlineStartDate: new Date('2024-06-12'),
     onlineEndDate: new Date('2024-06-15'),
+    address: '456 Park Avenue, City Center',
     description: 'Special holiday market with extended hours and additional vendors.',
     isActive: true,
     isRecurring: false,
@@ -72,6 +76,7 @@ const mockSchedules: MarketSchedule[] = [
     onlineEndTime: '22:00',
     onlineStartDate: new Date('2024-06-20'),
     onlineEndDate: new Date('2024-06-22'),
+    address: '789 Riverside Drive, Waterfront Park',
     description: 'Evening market for summer season with live music and food trucks.',
     isActive: false,
     isRecurring: true,

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, Trash2, Clock, Calendar as CalendarIcon, RefreshCw } from 'lucide-react'
+import { Plus, Trash2, Clock, Calendar as CalendarIcon, RefreshCw, MapPin } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
@@ -31,6 +32,7 @@ const MarketScheduleManager = () => {
     onlineEndTime: '',
     onlineStartDate: undefined as Date | undefined,
     onlineEndDate: undefined as Date | undefined,
+    address: '',
     description: '',
     isRecurring: false
   })
@@ -40,7 +42,7 @@ const MarketScheduleManager = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime || !formData.onlineStartDate || !formData.onlineEndDate) {
+    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime || !formData.onlineStartDate || !formData.onlineEndDate || !formData.address) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -54,6 +56,7 @@ const MarketScheduleManager = () => {
       onlineEndTime: formData.onlineEndTime,
       onlineStartDate: formData.onlineStartDate,
       onlineEndDate: formData.onlineEndDate,
+      address: formData.address,
       description: formData.description,
       isActive: true,
       isRecurring: formData.isRecurring
@@ -68,6 +71,7 @@ const MarketScheduleManager = () => {
       onlineEndTime: '',
       onlineStartDate: undefined,
       onlineEndDate: undefined,
+      address: '',
       description: '',
       isRecurring: false
     })
@@ -124,6 +128,16 @@ const MarketScheduleManager = () => {
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Weekly Farmers Market"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="address">Address *</Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="e.g., 123 Main Street, Downtown Plaza"
                 />
               </div>
               
@@ -347,6 +361,12 @@ const MarketScheduleManager = () => {
                         )}
                       </div>
                     </div>
+                    {schedule.address && (
+                      <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {schedule.address}
+                      </p>
+                    )}
                     {schedule.description && (
                       <p className="text-sm text-gray-600 mb-3">{schedule.description}</p>
                     )}
