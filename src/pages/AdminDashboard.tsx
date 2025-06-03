@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -74,6 +75,24 @@ const AdminDashboard = () => {
   const totalVendors = vendors.length
   const totalCustomers = customers.length
 
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':')
+    const hour12 = parseInt(hours) % 12 || 12
+    const ampm = parseInt(hours) >= 12 ? 'PM' : 'AM'
+    return `${hour12}:${minutes} ${ampm}`
+  }
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'default'
+      case 'rejected':
+        return 'destructive'
+      default:
+        return 'secondary'
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -133,7 +152,6 @@ const AdminDashboard = () => {
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="schedules">Market Schedules</TabsTrigger>
-            <TabsTrigger value="schedule">Market Schedule Manager</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -267,61 +285,63 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="schedules">
-            <Card>
-              <CardHeader>
-                <CardTitle>Market Schedules</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {schedules.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No market schedules found
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Schedule Name</TableHead>
-                        <TableHead>Market Date</TableHead>
-                        <TableHead>Market Hours</TableHead>
-                        <TableHead>Shop Hours</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {schedules.map((schedule) => (
-                        <TableRow 
-                          key={schedule.id}
-                          className="cursor-pointer hover:bg-muted/50"
-                          onClick={() => handleMarketScheduleClick(schedule)}
-                        >
-                          <TableCell className="font-medium">{schedule.name}</TableCell>
-                          <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            {schedule.startTime} - {schedule.endTime}
-                          </TableCell>
-                          <TableCell>
-                            {schedule.onlineStartTime} - {schedule.onlineEndTime}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={schedule.status === 'approved' ? 'default' : schedule.status === 'rejected' ? 'destructive' : 'secondary'}>
-                              {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+            <div className="space-y-6">
+              {/* Market Schedule Manager Component */}
+              <Card>
+                <CardContent className="p-6">
+                  <MarketScheduleManager />
+                </CardContent>
+              </Card>
 
-          <TabsContent value="schedule">
-            <Card>
-              <CardContent className="p-6">
-                <MarketScheduleManager />
-              </CardContent>
-            </Card>
+              {/* Market Schedules Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>All Market Schedules</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {schedules.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      No market schedules found
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Schedule Name</TableHead>
+                          <TableHead>Market Date</TableHead>
+                          <TableHead>Market Hours</TableHead>
+                          <TableHead>Shop Hours</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {schedules.map((schedule) => (
+                          <TableRow 
+                            key={schedule.id}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleMarketScheduleClick(schedule)}
+                          >
+                            <TableCell className="font-medium">{schedule.name}</TableCell>
+                            <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
+                            </TableCell>
+                            <TableCell>
+                              {formatTime(schedule.onlineStartTime)} - {formatTime(schedule.onlineEndTime)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={getStatusBadgeVariant(schedule.status)}>
+                                {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </main>
