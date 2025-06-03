@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -49,6 +48,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getVendorOrders, getVendorMetrics } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
+import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { toast } from 'sonner'
 
 interface VendorMetrics {
@@ -88,6 +88,7 @@ const chartConfig = {
 const VendorDashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { schedules } = useMarketSchedule()
   const [orders, setOrders] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<VendorMetrics | null>(null)
   const [loading, setLoading] = useState(true)
@@ -148,6 +149,10 @@ const VendorDashboard = () => {
 
   const handleRowClick = (order: Order) => {
     handleViewOrder(order)
+  }
+
+  const handleMarketScheduleClick = (scheduleId: string) => {
+    navigate(`/vendor/market-schedule/${scheduleId}`)
   }
 
   if (!user || user.role !== 'vendor') {
@@ -249,6 +254,7 @@ const VendorDashboard = () => {
           <TabsList>
             <TabsTrigger value="current">Current Orders ({currentOrders.length})</TabsTrigger>
             <TabsTrigger value="history">Order History ({pastOrders.length})</TabsTrigger>
+            <TabsTrigger value="schedules">Market Schedules ({schedules.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="current">
@@ -393,6 +399,56 @@ const VendorDashboard = () => {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schedules">
+            <Card>
+              <CardHeader>
+                <CardTitle>Market Schedules</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {schedules.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No market schedules found
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Schedule Name</TableHead>
+                        <TableHead>Market Date</TableHead>
+                        <TableHead>Market Hours</TableHead>
+                        <TableHead>Shop Hours</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {schedules.map((schedule) => (
+                        <TableRow 
+                          key={schedule.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleMarketScheduleClick(schedule.id)}
+                        >
+                          <TableCell className="font-medium">{schedule.name}</TableCell>
+                          <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            {schedule.startTime} - {schedule.endTime}
+                          </TableCell>
+                          <TableCell>
+                            {schedule.onlineStartTime} - {schedule.onlineEndTime}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={schedule.status === 'approved' ? 'default' : schedule.status === 'rejected' ? 'destructive' : 'secondary'}>
+                              {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
+                            </Badge>
                           </TableCell>
                         </TableRow>
                       ))}
