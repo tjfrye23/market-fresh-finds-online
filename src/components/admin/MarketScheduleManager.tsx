@@ -1,26 +1,24 @@
+
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, Trash2, Clock, Calendar, RefreshCw } from 'lucide-react'
+import { Plus, Trash2, Clock, Calendar as CalendarIcon, RefreshCw } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 const DAYS_OF_WEEK = [
-  { value: 0, label: 'Sunday' },
-  { value: 1, label: 'Monday' },
-  { value: 2, label: 'Tuesday' },
-  { value: 3, label: 'Wednesday' },
-  { value: 4, label: 'Thursday' },
-  { value: 5, label: 'Friday' },
-  { value: 6, label: 'Saturday' }
+  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 ]
 
 const MarketScheduleManager = () => {
@@ -28,7 +26,7 @@ const MarketScheduleManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
-    dayOfWeek: '',
+    marketDate: undefined as Date | undefined,
     startTime: '',
     endTime: '',
     onlineStartTime: '',
@@ -43,14 +41,14 @@ const MarketScheduleManager = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.dayOfWeek || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime) {
+    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime) {
       toast.error('Please fill in all required fields')
       return
     }
 
     addSchedule({
       name: formData.name,
-      dayOfWeek: parseInt(formData.dayOfWeek),
+      marketDate: formData.marketDate,
       startTime: formData.startTime,
       endTime: formData.endTime,
       onlineStartTime: formData.onlineStartTime,
@@ -62,7 +60,7 @@ const MarketScheduleManager = () => {
 
     setFormData({
       name: '',
-      dayOfWeek: '',
+      marketDate: undefined,
       startTime: '',
       endTime: '',
       onlineStartTime: '',
@@ -108,7 +106,7 @@ const MarketScheduleManager = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Market Schedule</h2>
-          <p className="text-gray-600">Manage recurring market schedules and shop availability</p>
+          <p className="text-gray-600">Manage market schedules and shop availability</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -133,19 +131,30 @@ const MarketScheduleManager = () => {
               </div>
               
               <div>
-                <Label htmlFor="dayOfWeek">Market Day *</Label>
-                <Select value={formData.dayOfWeek} onValueChange={(value) => setFormData(prev => ({ ...prev, dayOfWeek: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DAYS_OF_WEEK.map(day => (
-                      <SelectItem key={day.value} value={day.value.toString()}>
-                        {day.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Market Date *</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.marketDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.marketDate ? format(formData.marketDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.marketDate}
+                      onSelect={(date) => setFormData(prev => ({ ...prev, marketDate: date }))}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -268,7 +277,7 @@ const MarketScheduleManager = () => {
           <Card>
             <CardContent className="flex items-center justify-center py-8">
               <div className="text-center">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">No market schedules configured</p>
                 <p className="text-sm text-gray-400">Add a schedule to control shop availability</p>
               </div>
@@ -302,7 +311,7 @@ const MarketScheduleManager = () => {
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600">
                       <div>
-                        <span className="font-medium">Day:</span> {DAYS_OF_WEEK[schedule.dayOfWeek].label}
+                        <span className="font-medium">Date:</span> {schedule.marketDate.toLocaleDateString()}
                       </div>
                       <div>
                         <span className="font-medium">Market:</span> {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}

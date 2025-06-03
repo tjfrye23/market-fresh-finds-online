@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 export interface MarketSchedule {
   id: string
   name: string
-  dayOfWeek: number // 0 = Sunday, 1 = Monday, etc.
+  marketDate: Date // Changed from dayOfWeek to marketDate
   startTime: string // HH:MM format
   endTime: string // HH:MM format
   onlineStartTime: string // HH:MM format
@@ -33,12 +33,23 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
   useEffect(() => {
     const storedSchedules = localStorage.getItem('marketplace_schedules')
     if (storedSchedules) {
-      setSchedules(JSON.parse(storedSchedules))
+      const parsed = JSON.parse(storedSchedules)
+      // Convert marketDate strings back to Date objects
+      const schedulesWithDates = parsed.map((schedule: any) => ({
+        ...schedule,
+        marketDate: new Date(schedule.marketDate)
+      }))
+      setSchedules(schedulesWithDates)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('marketplace_schedules', JSON.stringify(schedules))
+    // Convert Date objects to strings for storage
+    const schedulesForStorage = schedules.map(schedule => ({
+      ...schedule,
+      marketDate: schedule.marketDate.toISOString()
+    }))
+    localStorage.setItem('marketplace_schedules', JSON.stringify(schedulesForStorage))
   }, [schedules])
 
   const addSchedule = (scheduleData: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => {
@@ -61,14 +72,6 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     setSchedules(prev => prev.filter(schedule => schedule.id !== id))
   }
 
-  const getNextMarketDate = (dayOfWeek: number): Date => {
-    const now = new Date()
-    const daysUntilMarket = (dayOfWeek - now.getDay() + 7) % 7 || 7
-    const marketDate = new Date(now)
-    marketDate.setDate(now.getDate() + daysUntilMarket)
-    return marketDate
-  }
-
   const getNextMarketInfo = () => {
     const activeSchedules = schedules.filter(s => s.isActive)
     if (activeSchedules.length === 0) return null
@@ -79,7 +82,18 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     let closesAt: Date | null = null
 
     activeSchedules.forEach(schedule => {
-      const marketDate = getNextMarketDate(schedule.dayOfWeek)
+      let marketDate = new Date(schedule.marketDate)
+      
+      // If the market date has passed and it's recurring, find the next occurrence
+      if (schedule.isRecurring && marketDate < now) {
+        const dayOfWeek = marketDate.getDay()
+        const currentDay = now.getDay()
+        const daysUntilNext = (dayOfWeek - currentDay + 7) % 7 || 7
+        marketDate = new Date(now)
+        marketDate.setDate(now.getDate() + daysUntilNext)
+      }
+
+      // Set the market start time
       const [startHours, startMinutes] = schedule.startTime.split(':').map(Number)
       marketDate.setHours(startHours, startMinutes, 0, 0)
 
