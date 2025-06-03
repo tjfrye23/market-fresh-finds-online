@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -183,27 +184,6 @@ const MarketScheduleManager = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="onlineStartTime">Online Start *</Label>
-                  <Input
-                    id="onlineStartTime"
-                    type="time"
-                    value={formData.onlineStartTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, onlineStartTime: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="onlineEndTime">Online End *</Label>
-                  <Input
-                    id="onlineEndTime"
-                    type="time"
-                    value={formData.onlineEndTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, onlineEndTime: e.target.value }))}
-                  />
-                </div>
-              </div>
-
               <div className="space-y-3">
                 <Label>Online Shop Date Range *</Label>
                 <div className="grid grid-cols-2 gap-2">
@@ -259,6 +239,27 @@ const MarketScheduleManager = () => {
                       </PopoverContent>
                     </Popover>
                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="onlineStartTime">Online Start *</Label>
+                  <Input
+                    id="onlineStartTime"
+                    type="time"
+                    value={formData.onlineStartTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, onlineStartTime: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="onlineEndTime">Online End *</Label>
+                  <Input
+                    id="onlineEndTime"
+                    type="time"
+                    value={formData.onlineEndTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, onlineEndTime: e.target.value }))}
+                  />
                 </div>
               </div>
 
