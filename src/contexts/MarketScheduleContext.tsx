@@ -9,6 +9,8 @@ export interface MarketSchedule {
   endTime: string // HH:MM format
   onlineStartTime: string // HH:MM format
   onlineEndTime: string // HH:MM format
+  onlineStartDate: Date // New field for online shop start date
+  onlineEndDate: Date // New field for online shop end date
   description: string
   isActive: boolean
   isRecurring: boolean
@@ -34,10 +36,12 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     const storedSchedules = localStorage.getItem('marketplace_schedules')
     if (storedSchedules) {
       const parsed = JSON.parse(storedSchedules)
-      // Convert marketDate strings back to Date objects
+      // Convert date strings back to Date objects
       const schedulesWithDates = parsed.map((schedule: any) => ({
         ...schedule,
-        marketDate: new Date(schedule.marketDate)
+        marketDate: new Date(schedule.marketDate),
+        onlineStartDate: new Date(schedule.onlineStartDate),
+        onlineEndDate: new Date(schedule.onlineEndDate)
       }))
       setSchedules(schedulesWithDates)
     }
@@ -47,7 +51,9 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     // Convert Date objects to strings for storage
     const schedulesForStorage = schedules.map(schedule => ({
       ...schedule,
-      marketDate: schedule.marketDate.toISOString()
+      marketDate: schedule.marketDate.toISOString(),
+      onlineStartDate: schedule.onlineStartDate.toISOString(),
+      onlineEndDate: schedule.onlineEndDate.toISOString()
     }))
     localStorage.setItem('marketplace_schedules', JSON.stringify(schedulesForStorage))
   }, [schedules])
@@ -100,13 +106,13 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
       if (!nextMarket || marketDate < nextMarket) {
         nextMarket = marketDate
         
-        // Calculate online opening time
-        opensAt = new Date(marketDate)
+        // Calculate online opening time using the date range
+        opensAt = new Date(schedule.onlineStartDate)
         const [onlineStartHours, onlineStartMinutes] = schedule.onlineStartTime.split(':').map(Number)
         opensAt.setHours(onlineStartHours, onlineStartMinutes, 0, 0)
 
-        // Calculate online closing time
-        closesAt = new Date(marketDate)
+        // Calculate online closing time using the date range
+        closesAt = new Date(schedule.onlineEndDate)
         const [onlineEndHours, onlineEndMinutes] = schedule.onlineEndTime.split(':').map(Number)
         closesAt.setHours(onlineEndHours, onlineEndMinutes, 0, 0)
       }

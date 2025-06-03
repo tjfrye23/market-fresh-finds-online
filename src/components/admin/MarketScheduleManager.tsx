@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useMarketSchedule, MarketSchedule } from '@/contexts/MarketScheduleContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,6 +30,8 @@ const MarketScheduleManager = () => {
     endTime: '',
     onlineStartTime: '',
     onlineEndTime: '',
+    onlineStartDate: undefined as Date | undefined,
+    onlineEndDate: undefined as Date | undefined,
     description: '',
     isActive: true,
     isRecurring: false
@@ -41,7 +42,7 @@ const MarketScheduleManager = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime) {
+    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime || !formData.onlineStartDate || !formData.onlineEndDate) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -53,6 +54,8 @@ const MarketScheduleManager = () => {
       endTime: formData.endTime,
       onlineStartTime: formData.onlineStartTime,
       onlineEndTime: formData.onlineEndTime,
+      onlineStartDate: formData.onlineStartDate,
+      onlineEndDate: formData.onlineEndDate,
       description: formData.description,
       isActive: formData.isActive,
       isRecurring: formData.isRecurring
@@ -65,6 +68,8 @@ const MarketScheduleManager = () => {
       endTime: '',
       onlineStartTime: '',
       onlineEndTime: '',
+      onlineStartDate: undefined,
+      onlineEndDate: undefined,
       description: '',
       isActive: true,
       isRecurring: false
@@ -115,7 +120,7 @@ const MarketScheduleManager = () => {
               Add Schedule
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Market Schedule</DialogTitle>
             </DialogHeader>
@@ -196,6 +201,64 @@ const MarketScheduleManager = () => {
                     value={formData.onlineEndTime}
                     onChange={(e) => setFormData(prev => ({ ...prev, onlineEndTime: e.target.value }))}
                   />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label>Online Shop Date Range *</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">Start Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal text-xs",
+                            !formData.onlineStartDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-1 h-3 w-3" />
+                          {formData.onlineStartDate ? format(formData.onlineStartDate, "MMM d") : "Start"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.onlineStartDate}
+                          onSelect={(date) => setFormData(prev => ({ ...prev, onlineStartDate: date }))}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                    <Label className="text-xs">End Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal text-xs",
+                            !formData.onlineEndDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-1 h-3 w-3" />
+                          {formData.onlineEndDate ? format(formData.onlineEndDate, "MMM d") : "End"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.onlineEndDate}
+                          onSelect={(date) => setFormData(prev => ({ ...prev, onlineEndDate: date }))}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               </div>
 
@@ -323,6 +386,11 @@ const MarketScheduleManager = () => {
                         <span className="font-medium">Online End:</span> {formatTime(schedule.onlineEndTime)}
                       </div>
                     </div>
+                    {schedule.onlineStartDate && schedule.onlineEndDate && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        <span className="font-medium">Online Period:</span> {schedule.onlineStartDate.toLocaleDateString()} - {schedule.onlineEndDate.toLocaleDateString()}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
