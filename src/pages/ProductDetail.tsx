@@ -1,8 +1,7 @@
-
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -10,14 +9,28 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/contexts/CartContext'
 import { useFavorites } from '@/contexts/FavoritesContext'
+import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { getMarketplaceProducts, getVendorByUserId } from '@/services/mockServices'
 import { toast } from 'sonner'
 
+interface MarketDayProduct {
+  productId: string
+  productName: string
+  productPrice: number
+  productUnit: string
+  productImage?: string
+  quantity: number
+}
+
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
   const { addToCart } = useCart()
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
+  const { getUpcomingMarketDays } = useMarketSchedule()
   const [quantity, setQuantity] = useState(1)
+  const [marketDayProduct, setMarketDayProduct] = useState<any>(null)
+  const [selectedMarketDay, setSelectedMarketDay] = useState<string>('')
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['products'],
@@ -32,45 +45,85 @@ const ProductDetail = () => {
     enabled: !!product?.user_id,
   })
 
+  // Get selected market day from localStorage (set by the Shop page)
+  useEffect(() => {
+    const storedMarketDay = localStorage.getItem('selectedMarketDay')
+    if (storedMarketDay) {
+      setSelectedMarketDay(storedMarketDay)
+    }
+  }, [])
+
+  // Load market day specific product data
+  useEffect(() => {
+    if (selectedMarketDay && id) {
+      const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
+      if (storedProducts) {
+        const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
+        const foundProduct = marketDayProductsData.find(mdp => mdp.productId === id)
+        
+        if (foundProduct && product) {
+          // Merge market day data with original product data
+          setMarketDayProduct({
+            ...product,
+            price: foundProduct.productPrice,
+            stock: foundProduct.quantity,
+            image: foundProduct.productImage || product.image
+          })
+        } else {
+          setMarketDayProduct(null)
+        }
+      } else {
+        setMarketDayProduct(null)
+      }
+    }
+  }, [selectedMarketDay, id, product])
+
+  const marketDays = getUpcomingMarketDays()
+  const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
+
+  // Use market day product if available, otherwise fall back to regular product
+  const displayProduct = marketDayProduct || product
+  const isMarketDaySpecific = !!marketDayProduct
+
   const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity >= 1 && newQuantity <= (product?.stock || 0)) {
+    if (newQuantity >= 1 && newQuantity <= (displayProduct?.stock || 0)) {
       setQuantity(newQuantity)
     }
   }
 
   const handleAddToCart = async () => {
-    if (!product?.stock || product.stock === 0) {
+    if (!displayProduct?.stock || displayProduct.stock === 0) {
       return
     }
 
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        unit: product.unit,
-        image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+        id: displayProduct.id,
+        name: displayProduct.name,
+        price: displayProduct.price,
+        unit: displayProduct.unit,
+        image: displayProduct.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
         farmName: vendor?.vendor_name,
       })
     }
   }
 
   const handleFavoriteToggle = () => {
-    if (!product) return
+    if (!displayProduct) return
 
-    if (isFavorite(product.id)) {
-      removeFromFavorites(product.id)
-      toast.success(`${product.name} removed from favorites`)
+    if (isFavorite(displayProduct.id)) {
+      removeFromFavorites(displayProduct.id)
+      toast.success(`${displayProduct.name} removed from favorites`)
     } else {
       addToFavorites({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        unit: product.unit,
-        image: product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+        id: displayProduct.id,
+        name: displayProduct.name,
+        price: displayProduct.price,
+        unit: displayProduct.unit,
+        image: displayProduct.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
         farmName: vendor?.vendor_name,
       })
-      toast.success(`${product.name} added to favorites`)
+      toast.success(`${displayProduct.name} added to favorites`)
     }
   }
 
@@ -116,12 +169,28 @@ const ProductDetail = () => {
             Back to Shop
           </Link>
 
+          {selectedMarketDayData && (
+            <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+              <h3 className="text-lg font-medium text-green-800 mb-1">
+                Viewing for {selectedMarketDayData.scheduleName}
+              </h3>
+              <p className="text-green-700 text-sm">
+                {selectedMarketDayData.marketDate.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Image */}
             <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
               <img
-                src={product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80'}
-                alt={product.name}
+                src={displayProduct.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80'}
+                alt={displayProduct.name}
                 className="w-full h-full object-cover"
               />
               <Button
@@ -132,7 +201,7 @@ const ProductDetail = () => {
               >
                 <Heart
                   className={`h-5 w-5 ${
-                    isFavorite(product.id)
+                    isFavorite(displayProduct.id)
                       ? 'fill-red-500 text-red-500'
                       : 'text-gray-600 hover:text-red-500'
                   }`}
@@ -143,13 +212,13 @@ const ProductDetail = () => {
             {/* Product Info */}
             <div className="flex flex-col">
               <div className="flex flex-wrap gap-2 mb-4">
-                {product.organic && (
+                {displayProduct.organic && (
                   <Badge className="bg-market-green text-white">
                     <Leaf className="mr-1 h-3 w-3" />
                     Organic
                   </Badge>
                 )}
-                {product.local && (
+                {displayProduct.local && (
                   <Badge className="bg-market-yellow text-market-brown-dark">
                     <MapPin className="mr-1 h-3 w-3" />
                     Local
@@ -157,19 +226,25 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{displayProduct.name}</h1>
               <p className="text-xl text-market-green-dark font-semibold mb-4">
-                ${product.price.toFixed(2)} per {product.unit}
+                ${displayProduct.price.toFixed(2)} per {displayProduct.unit}
               </p>
 
               <div className="mb-4">
                 <p className="text-sm text-gray-600">
-                  {product.stock > 0 ? (
-                    <span className="text-green-600">
-                      {product.stock} {product.unit}(s) available
-                    </span>
+                  {isMarketDaySpecific ? (
+                    displayProduct.stock > 0 ? (
+                      <span className="text-green-600">
+                        {displayProduct.stock} {displayProduct.unit}(s) available for this market day
+                      </span>
+                    ) : (
+                      <span className="text-red-600">Not available for this market day</span>
+                    )
                   ) : (
-                    <span className="text-red-600">Out of stock</span>
+                    <span className="text-amber-600">
+                      No specific quantity set for selected market day
+                    </span>
                   )}
                 </p>
               </div>
@@ -177,14 +252,14 @@ const ProductDetail = () => {
               <div className="mb-6">
                 <h3 className="font-medium text-gray-900 mb-2">Category</h3>
                 <Badge variant="outline" className="capitalize">
-                  {product.category}
+                  {displayProduct.category}
                 </Badge>
               </div>
 
-              {product.description && (
+              {displayProduct.description && (
                 <div className="mb-6">
                   <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                  <p className="text-gray-600 leading-relaxed">{displayProduct.description}</p>
                 </div>
               )}
 
@@ -211,7 +286,7 @@ const ProductDetail = () => {
               )}
 
               {/* Quantity Selector */}
-              {product.stock > 0 && (
+              {displayProduct.stock > 0 && (
                 <div className="mb-6">
                   <h3 className="font-medium text-gray-900 mb-2">Quantity</h3>
                   <div className="flex items-center gap-3">
@@ -234,18 +309,18 @@ const ProductDetail = () => {
                       }}
                       className="w-20 text-center"
                       min="1"
-                      max={product.stock}
+                      max={displayProduct.stock}
                     />
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuantityChange(quantity + 1)}
-                      disabled={quantity >= product.stock}
+                      disabled={quantity >= displayProduct.stock}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                     <span className="text-sm text-gray-500 ml-2">
-                      (Max: {product.stock})
+                      (Max: {displayProduct.stock})
                     </span>
                   </div>
                 </div>
@@ -255,10 +330,10 @@ const ProductDetail = () => {
                 size="lg" 
                 className="bg-market-green hover:bg-market-green-dark text-white w-full sm:w-auto"
                 onClick={handleAddToCart}
-                disabled={!product.stock || product.stock === 0}
+                disabled={!displayProduct.stock || displayProduct.stock === 0}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
-                {product.stock > 0 ? `Add ${quantity} to Cart` : 'Out of Stock'}
+                {displayProduct.stock > 0 ? `Add ${quantity} to Cart` : 'Not Available'}
               </Button>
             </div>
           </div>

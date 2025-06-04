@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
@@ -46,6 +45,15 @@ const Shop = () => {
     const initialCategories = searchParams.getAll('category')
     setCategoryFilter(initialCategories)
   }, [searchParams, setCategoryFilter])
+
+  // Store selected market day in localStorage for ProductDetail page
+  useEffect(() => {
+    if (selectedMarketDay) {
+      localStorage.setItem('selectedMarketDay', selectedMarketDay)
+    } else {
+      localStorage.removeItem('selectedMarketDay')
+    }
+  }, [selectedMarketDay])
 
   // Load products for the selected market day
   useEffect(() => {
