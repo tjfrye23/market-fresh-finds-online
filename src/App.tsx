@@ -81,6 +81,7 @@ function App() {
                     <Route path="/vendor-onboarding" element={<VendorProtectedRoute><VendorOnboarding /></VendorProtectedRoute>} />
                     <Route path="/vendor/profile" element={<VendorProtectedRoute><VendorProfile /></VendorProtectedRoute>} />
                     <Route path="/vendor/dashboard" element={<VendorProtectedRoute><VendorDashboard /></VendorProtectedRoute>} />
+                    <Route path="/vendor/orders/:id" element={<VendorProtectedRoute><OrderDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor/add-products" element={<VendorProtectedRoute><AddProducts /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId" element={<VendorProtectedRoute><MarketDayDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId/products" element={<VendorProtectedRoute><MarketDayProducts /></VendorProtectedRoute>} />
