@@ -168,7 +168,7 @@ export const mockUsers: MockUser[] = [
   },
   {
     id: 'vendor3',
-    email: 'elena@coastalherbs.com',
+    email: 'vendor@example.com',
     fullName: 'Elena Rodriguez',
     role: 'vendor',
     app_metadata: {},
