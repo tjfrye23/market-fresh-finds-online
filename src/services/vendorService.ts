@@ -1,4 +1,3 @@
-
 import { Order, getOrders } from './orderService'
 
 interface VendorMetrics {
@@ -10,13 +9,11 @@ interface VendorMetrics {
 
 export const getVendorOrders = async (vendorId: string): Promise<Order[]> => {
   // In a real app, this would filter orders by vendor
-  // For now, we'll return all orders as demo data
+  // For now, we'll return all orders as demo data since we don't have proper vendor linking
   const allOrders = getOrders()
   
-  // Simulate vendor-specific orders
-  return allOrders.filter(order => 
-    order.items.some(item => item.farmName === 'Green Valley Farm' || item.farmName === 'Sunny Acres')
-  )
+  // Return all orders for demo purposes
+  return allOrders
 }
 
 export const getVendorMetrics = async (vendorId: string): Promise<VendorMetrics> => {
