@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export interface MarketSchedule {
@@ -239,20 +238,28 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     }
     setSchedules(prev => [...prev, newSchedule])
     
-    // Generate market days for the new schedule
-    const newMarketDays = generateMarketDays(newSchedule)
-    setMarketDays(prev => [...prev, ...newMarketDays])
+    // Don't generate market days immediately - wait for approval
   }
 
   const updateSchedule = (id: string, updates: Partial<MarketSchedule>) => {
+    const oldSchedule = schedules.find(s => s.id === id)
+    const newSchedule = { ...oldSchedule, ...updates } as MarketSchedule
+    
     setSchedules(prev => prev.map(schedule => 
-      schedule.id === id ? { ...schedule, ...updates } : schedule
+      schedule.id === id ? newSchedule : schedule
     ))
     
-    // If schedule is updated, regenerate market days
-    const updatedSchedule = schedules.find(s => s.id === id)
-    if (updatedSchedule) {
-      const newSchedule = { ...updatedSchedule, ...updates }
+    // If schedule status is being changed to 'approved', generate market days
+    if (oldSchedule?.status !== 'approved' && updates.status === 'approved') {
+      const newMarketDays = generateMarketDays(newSchedule)
+      setMarketDays(prev => [...prev, ...newMarketDays])
+    }
+    // If schedule was approved and is being changed to something else, remove market days
+    else if (oldSchedule?.status === 'approved' && updates.status && updates.status !== 'approved') {
+      setMarketDays(prev => prev.filter(day => day.scheduleId !== id))
+    }
+    // If schedule is already approved and other fields are updated, regenerate market days
+    else if (oldSchedule?.status === 'approved' && newSchedule.status === 'approved') {
       // Remove old market days for this schedule
       setMarketDays(prev => prev.filter(day => day.scheduleId !== id))
       // Generate new market days
