@@ -1,5 +1,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Edit, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ interface ProductListProps {
 
 const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: string) => {
@@ -41,6 +43,10 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       deleteProductMutation.mutate(productId)
     }
+  }
+
+  const handleRowClick = (product: Product) => {
+    navigate(`/shop/${product.id}`)
   }
 
   if (isLoading) {
@@ -78,7 +84,11 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
         </TableHeader>
         <TableBody>
           {products.map((product) => (
-            <TableRow key={product.id}>
+            <TableRow 
+              key={product.id}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => handleRowClick(product)}
+            >
               <TableCell className="flex items-center">
                 {product.image ? (
                   <img
@@ -127,7 +137,10 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
                   variant="ghost"
                   size="sm"
                   className="text-indigo-600 hover:text-indigo-900"
-                  onClick={() => onEdit(product)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit(product)
+                  }}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -135,7 +148,10 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
                   variant="ghost"
                   size="sm"
                   className="text-red-600 hover:text-red-900"
-                  onClick={() => handleDelete(product.id)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDelete(product.id)
+                  }}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
