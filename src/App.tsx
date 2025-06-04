@@ -29,7 +29,6 @@ import CustomerDetails from './pages/CustomerDetails'
 import VendorOnboarding from './pages/VendorOnboarding'
 import VendorProfile from './pages/VendorProfile'
 import VendorDashboard from './pages/VendorDashboard'
-import ManageProducts from './pages/ManageProducts'
 import AddProducts from './pages/AddProducts'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminVendorDetails from './pages/AdminVendorDetails'
@@ -82,7 +81,6 @@ function App() {
                     <Route path="/vendor-onboarding" element={<VendorProtectedRoute><VendorOnboarding /></VendorProtectedRoute>} />
                     <Route path="/vendor/profile" element={<VendorProtectedRoute><VendorProfile /></VendorProtectedRoute>} />
                     <Route path="/vendor/dashboard" element={<VendorProtectedRoute><VendorDashboard /></VendorProtectedRoute>} />
-                    <Route path="/vendor/manage-products" element={<VendorProtectedRoute><ManageProducts /></VendorProtectedRoute>} />
                     <Route path="/vendor/add-products" element={<VendorProtectedRoute><AddProducts /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId" element={<VendorProtectedRoute><MarketDayDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId/products" element={<VendorProtectedRoute><MarketDayProducts /></VendorProtectedRoute>} />
