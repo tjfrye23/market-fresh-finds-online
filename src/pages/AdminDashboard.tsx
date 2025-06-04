@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -173,7 +174,7 @@ const AdminDashboard = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 text-left">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
           <p className="text-gray-600">Manage your marketplace</p>
         </div>
@@ -234,22 +235,22 @@ const AdminDashboard = () => {
           <TabsContent value="orders">
             <Card>
               <CardHeader>
-                <CardTitle>All Orders</CardTitle>
+                <CardTitle className="text-left">All Orders</CardTitle>
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No orders found
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Order #</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Total</TableHead>
+                        <TableHead className="text-left">Order #</TableHead>
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Customer</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
+                        <TableHead className="text-left">Total</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -259,15 +260,15 @@ const AdminDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleOrderClick(order)}
                         >
-                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                          <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                          <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{order.orderNumber}</TableCell>
+                          <TableCell className="text-left">{new Date(order.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-left">{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
+                          <TableCell className="text-left">
                             <Badge variant={order.status === 'processed' ? 'default' : 'secondary'}>
                               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </Badge>
                           </TableCell>
-                          <TableCell>${order.total.toFixed(2)}</TableCell>
+                          <TableCell className="text-left">${order.total.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -280,21 +281,21 @@ const AdminDashboard = () => {
           <TabsContent value="vendors">
             <Card>
               <CardHeader>
-                <CardTitle>Vendors</CardTitle>
+                <CardTitle className="text-left">Vendors</CardTitle>
               </CardHeader>
               <CardContent>
                 {vendors.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No vendors found
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Vendor Name</TableHead>
-                        <TableHead>Owner</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead className="text-left">Vendor Name</TableHead>
+                        <TableHead className="text-left">Owner</TableHead>
+                        <TableHead className="text-left">Location</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -304,10 +305,10 @@ const AdminDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleVendorClick(vendor)}
                         >
-                          <TableCell className="font-medium">{vendor.vendor_name}</TableCell>
-                          <TableCell>{vendor.owner_name}</TableCell>
-                          <TableCell>{vendor.location || 'Not specified'}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{vendor.vendor_name}</TableCell>
+                          <TableCell className="text-left">{vendor.owner_name}</TableCell>
+                          <TableCell className="text-left">{vendor.location || 'Not specified'}</TableCell>
+                          <TableCell className="text-left">
                             <Badge variant={vendor.status === 'active' ? 'default' : vendor.status === 'pending' ? 'secondary' : 'destructive'}>
                               {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
                             </Badge>
@@ -324,20 +325,20 @@ const AdminDashboard = () => {
           <TabsContent value="customers">
             <Card>
               <CardHeader>
-                <CardTitle>Customers</CardTitle>
+                <CardTitle className="text-left">Customers</CardTitle>
               </CardHeader>
               <CardContent>
                 {customers.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No customers found
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead className="text-left">Name</TableHead>
+                        <TableHead className="text-left">Email</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -347,9 +348,9 @@ const AdminDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleCustomerClick(customer)}
                         >
-                          <TableCell className="font-medium">{customer.fullName}</TableCell>
-                          <TableCell>{customer.email}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{customer.fullName}</TableCell>
+                          <TableCell className="text-left">{customer.email}</TableCell>
+                          <TableCell className="text-left">
                             <Badge variant="default">Active</Badge>
                           </TableCell>
                         </TableRow>
@@ -367,7 +368,7 @@ const AdminDashboard = () => {
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Market Schedules</CardTitle>
+                    <CardTitle className="text-left">Market Schedules</CardTitle>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
                         <Button>
@@ -558,19 +559,19 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {schedules.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-left py-8 text-gray-500">
                       No market schedules found
                     </div>
                   ) : (
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Schedule Name</TableHead>
-                          <TableHead>Address</TableHead>
-                          <TableHead>Market Date</TableHead>
-                          <TableHead>Market Hours</TableHead>
-                          <TableHead>Shop Hours</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead className="text-left">Schedule Name</TableHead>
+                          <TableHead className="text-left">Address</TableHead>
+                          <TableHead className="text-left">Market Date</TableHead>
+                          <TableHead className="text-left">Market Hours</TableHead>
+                          <TableHead className="text-left">Shop Hours</TableHead>
+                          <TableHead className="text-left">Status</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -580,16 +581,16 @@ const AdminDashboard = () => {
                             className="cursor-pointer hover:bg-muted/50 transition-colors"
                             onClick={() => handleMarketScheduleClick(schedule)}
                           >
-                            <TableCell className="font-medium">{schedule.name}</TableCell>
-                            <TableCell>{schedule.address}</TableCell>
-                            <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
-                            <TableCell>
+                            <TableCell className="font-medium text-left">{schedule.name}</TableCell>
+                            <TableCell className="text-left">{schedule.address}</TableCell>
+                            <TableCell className="text-left">{schedule.marketDate.toLocaleDateString()}</TableCell>
+                            <TableCell className="text-left">
                               {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-left">
                               {formatTime(schedule.onlineStartTime)} - {formatTime(schedule.onlineEndTime)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-left">
                               <Badge variant={getStatusBadgeVariant(schedule.status)}>
                                 {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
                               </Badge>
@@ -607,38 +608,38 @@ const AdminDashboard = () => {
           <TabsContent value="market-days">
             <Card>
               <CardHeader>
-                <CardTitle>Market Days - Next 4 Weeks</CardTitle>
+                <CardTitle className="text-left">Market Days - Next 4 Weeks</CardTitle>
               </CardHeader>
               <CardContent>
                 {upcomingMarketDays.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No upcoming market days found
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Market Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Market Hours</TableHead>
-                        <TableHead>Online Hours</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead className="text-left">Market Name</TableHead>
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Market Hours</TableHead>
+                        <TableHead className="text-left">Online Hours</TableHead>
+                        <TableHead className="text-left">Address</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {upcomingMarketDays.map((marketDay) => (
                         <TableRow key={marketDay.id}>
-                          <TableCell className="font-medium">{marketDay.scheduleName}</TableCell>
-                          <TableCell>{marketDay.marketDate.toLocaleDateString()}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{marketDay.scheduleName}</TableCell>
+                          <TableCell className="text-left">{marketDay.marketDate.toLocaleDateString()}</TableCell>
+                          <TableCell className="text-left">
                             {formatTime(marketDay.startTime)} - {formatTime(marketDay.endTime)}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             {formatTime(marketDay.onlineStartTime)} - {formatTime(marketDay.onlineEndTime)}
                           </TableCell>
-                          <TableCell>{marketDay.address}</TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">{marketDay.address}</TableCell>
+                          <TableCell className="text-left">
                             <Badge variant={getStatusBadgeVariant(marketDay.status)}>
                               {marketDay.status.charAt(0).toUpperCase() + marketDay.status.slice(1)}
                             </Badge>
