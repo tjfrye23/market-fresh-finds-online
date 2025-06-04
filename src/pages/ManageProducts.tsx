@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuth } from '@/contexts/AuthContext'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -43,7 +43,17 @@ const ManageProducts = () => {
 
         <div className="page-container py-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Your Shop</h2>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/vendor/dashboard')}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Dashboard
+              </Button>
+              <h2 className="text-2xl font-semibold">Your Shop</h2>
+            </div>
 
             <div className="flex gap-2">
               <Button
