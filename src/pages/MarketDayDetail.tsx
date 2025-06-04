@@ -13,16 +13,35 @@ import {
   Clock,
   MapPin,
   ArrowLeft,
-  Globe
+  Globe,
+  Package
 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+interface MarketDayProduct {
+  productId: string
+  productName: string
+  productPrice: number
+  productUnit: string
+  productImage?: string
+  quantity: number
+}
 
 const MarketDayDetail = () => {
   const { marketDayId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { marketDays } = useMarketSchedule()
+  const [marketDayProducts, setMarketDayProducts] = useState<MarketDayProduct[]>([])
 
   const marketDay = marketDays.find(day => day.id === marketDayId)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(`market_day_products_${marketDayId}`)
+    if (stored) {
+      setMarketDayProducts(JSON.parse(stored))
+    }
+  }, [marketDayId])
 
   if (!user || user.role !== 'vendor') {
     return <Navigate to="/auth" replace />
@@ -167,8 +186,9 @@ const MarketDayDetail = () => {
                   <Button 
                     variant="outline" 
                     className="w-full text-left justify-start"
-                    onClick={() => navigate('/vendor/add-products')}
+                    onClick={() => navigate(`/vendor/market-day/${marketDayId}/products`)}
                   >
+                    <Package className="h-4 w-4 mr-2" />
                     Manage Products for this Market
                   </Button>
                   <Button 
@@ -183,6 +203,74 @@ const MarketDayDetail = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Market Day Products */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-left">
+              <Package className="h-5 w-5" />
+              Products for This Market Day
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {marketDayProducts.length === 0 ? (
+              <div className="text-center py-8">
+                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products added yet</h3>
+                <p className="text-gray-500 mb-6">Add products from your profile to this market day.</p>
+                <Button onClick={() => navigate(`/vendor/market-day/${marketDayId}/products`)}>
+                  <Package className="h-4 w-4 mr-2" />
+                  Add Products
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-600 text-left">
+                    {marketDayProducts.length} product{marketDayProducts.length !== 1 ? 's' : ''} added
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/vendor/market-day/${marketDayId}/products`)}
+                  >
+                    Edit Products
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {marketDayProducts.map((product) => (
+                    <div key={product.productId} className="border rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        {product.productImage ? (
+                          <img 
+                            src={product.productImage} 
+                            alt={product.productName}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                            <Package className="h-6 w-6 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-medium text-left">{product.productName}</h4>
+                          <p className="text-sm text-gray-600 text-left">
+                            ${product.productPrice.toFixed(2)} per {product.productUnit}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 rounded p-2">
+                        <p className="text-sm text-gray-600 text-left">
+                          Quantity: <span className="font-medium">{product.quantity} {product.productUnit}</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Additional Information */}
         <Card className="mt-6">
