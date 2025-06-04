@@ -475,6 +475,7 @@ const VendorDashboard = () => {
                         <TableHead>Schedule Name</TableHead>
                         <TableHead>Market Date</TableHead>
                         <TableHead>Market Hours</TableHead>
+                        <TableHead>Address</TableHead>
                         <TableHead>Online Opens</TableHead>
                         <TableHead>Online Closes</TableHead>
                         <TableHead>Status</TableHead>
@@ -491,6 +492,11 @@ const VendorDashboard = () => {
                           <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
                           <TableCell>
                             {schedule.startTime} - {schedule.endTime}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm max-w-xs">
+                              {schedule.address}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="text-sm">
