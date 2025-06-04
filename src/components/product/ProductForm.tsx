@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -46,6 +47,7 @@ const ProductForm = ({
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -88,23 +90,26 @@ const ProductForm = ({
         toast.success('Product created successfully')
         onSuccess(variables)
       }
+      setIsSubmitting(false)
     },
     onError: (error) => {
       console.error('Error saving product:', error)
       toast.error(`Error: ${error.message}`)
+      setIsSubmitting(false)
     },
   })
 
   const onSubmit = (values: ProductFormValues) => {
-    console.log('Form submitted, isPending:', saveProductMutation.isPending)
+    console.log('Form submitted, isSubmitting:', isSubmitting, 'isPending:', saveProductMutation.isPending)
     
-    // Prevent double submission - only check isPending status
-    if (saveProductMutation.isPending) {
-      console.log('Preventing double submission - mutation already pending')
+    // Prevent double submission with both local state and mutation state
+    if (isSubmitting || saveProductMutation.isPending) {
+      console.log('Preventing double submission - already processing')
       return
     }
 
     console.log('Submitting product form with values:', values)
+    setIsSubmitting(true)
     saveProductMutation.mutate(values)
   }
 
@@ -288,9 +293,9 @@ const ProductForm = ({
           </Button>
           <Button
             type="submit"
-            disabled={saveProductMutation.isPending}
+            disabled={isSubmitting || saveProductMutation.isPending}
           >
-            {saveProductMutation.isPending ? 'Saving...' : submitButtonText}
+            {(isSubmitting || saveProductMutation.isPending) ? 'Saving...' : submitButtonText}
           </Button>
         </div>
       </form>
