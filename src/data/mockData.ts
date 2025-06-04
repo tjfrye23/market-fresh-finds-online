@@ -148,7 +148,7 @@ export const mockProducts: MockProduct[] = [
 export const mockUsers: MockUser[] = [
   {
     id: 'vendor1',
-    email: 'test@example.com',
+    email: 'admin@example.com',
     fullName: 'Thomas',
     role: 'admin',
     app_metadata: {},
@@ -178,7 +178,7 @@ export const mockUsers: MockUser[] = [
   },
   {
     id: 'user1',
-    email: 'john@example.com',
+    email: 'user@example.com',
     fullName: 'John Doe',
     role: 'user',
     app_metadata: {},
