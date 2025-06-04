@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -173,6 +172,10 @@ const VendorDashboard = () => {
 
   const resetProductForm = () => {
     setEditingProduct(null)
+  }
+
+  const handleAddNewProducts = () => {
+    navigate('/vendor/add-products')
   }
 
   if (!user || user.role !== 'vendor') {
@@ -435,12 +438,21 @@ const VendorDashboard = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Your Products</CardTitle>
-                  <ProductDialog
-                    isOpen={isProductDialogOpen}
-                    onOpenChange={setIsProductDialogOpen}
-                    editingProduct={editingProduct}
-                    onResetForm={resetProductForm}
-                  />
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleAddNewProducts}
+                      className="flex items-center gap-2"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Add New Products
+                    </Button>
+                    <ProductDialog
+                      isOpen={isProductDialogOpen}
+                      onOpenChange={setIsProductDialogOpen}
+                      editingProduct={editingProduct}
+                      onResetForm={resetProductForm}
+                    />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
