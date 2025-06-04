@@ -52,11 +52,11 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <MarketScheduleProvider>
-              <Router>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <MarketScheduleProvider>
                 <div className="min-h-screen bg-white">
                   <Routes>
                     {/* Public routes */}
@@ -98,11 +98,11 @@ function App() {
                   </Routes>
                 </div>
                 <Toaster />
-              </Router>
-            </MarketScheduleProvider>
-          </FavoritesProvider>
-        </CartProvider>
-      </AuthProvider>
+              </MarketScheduleProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   )
 }
