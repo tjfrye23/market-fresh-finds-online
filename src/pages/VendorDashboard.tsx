@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -94,7 +93,7 @@ const chartConfig = {
 const VendorDashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { schedules } = useMarketSchedule()
+  const { schedules, getVendorMarketDays } = useMarketSchedule()
   const [orders, setOrders] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<VendorMetrics | null>(null)
   const [loading, setLoading] = useState(true)
@@ -107,6 +106,9 @@ const VendorDashboard = () => {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const { data: products = [], isLoading: productsLoading } = useVendorProducts(user?.id || '')
+
+  // Get vendor's market days
+  const vendorMarketDays = user?.id ? getVendorMarketDays(user.id) : []
 
   useEffect(() => {
     if (user?.id) {
@@ -279,6 +281,7 @@ const VendorDashboard = () => {
             <TabsTrigger value="current">Current Orders ({currentOrders.length})</TabsTrigger>
             <TabsTrigger value="history">Order History ({pastOrders.length})</TabsTrigger>
             <TabsTrigger value="products">Manage Products ({products.length})</TabsTrigger>
+            <TabsTrigger value="market-days">Market Days ({vendorMarketDays.length})</TabsTrigger>
             <TabsTrigger value="schedules">Market Schedules ({schedules.length})</TabsTrigger>
           </TabsList>
 
@@ -454,6 +457,84 @@ const VendorDashboard = () => {
                   onEdit={handleEditProduct}
                   isLoading={productsLoading}
                 />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="market-days">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Market Days</CardTitle>
+                <p className="text-sm text-gray-600">
+                  Market days from schedules you're subscribed to (next 4 weeks)
+                </p>
+              </CardHeader>
+              <CardContent>
+                {vendorMarketDays.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <div className="mb-4">
+                      <Calendar className="h-12 w-12 mx-auto text-gray-300" />
+                    </div>
+                    <p className="mb-2">No upcoming market days</p>
+                    <p className="text-sm">Subscribe to market schedules to see your market days here.</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Market Name</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Market Hours</TableHead>
+                        <TableHead>Online Hours</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vendorMarketDays.map((marketDay) => (
+                        <TableRow 
+                          key={marketDay.id}
+                          className="hover:bg-muted/50"
+                        >
+                          <TableCell className="font-medium">{marketDay.scheduleName}</TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div>{marketDay.marketDate.toLocaleDateString()}</div>
+                              <div className="text-gray-500">{marketDay.marketDate.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {marketDay.startTime} - {marketDay.endTime}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div>{marketDay.onlineStartTime} - {marketDay.onlineEndTime}</div>
+                              <div className="text-gray-500">
+                                {marketDay.onlineStartDate.toLocaleDateString()} - {marketDay.onlineEndDate.toLocaleDateString()}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm max-w-xs">
+                              {marketDay.address}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={
+                              marketDay.status === 'completed' ? 'secondary' :
+                              marketDay.status === 'active' ? 'default' :
+                              marketDay.status === 'cancelled' ? 'destructive' : 'outline'
+                            }>
+                              {marketDay.status.charAt(0).toUpperCase() + marketDay.status.slice(1)}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

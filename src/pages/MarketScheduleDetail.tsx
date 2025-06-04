@@ -38,7 +38,14 @@ type EditScheduleFormData = z.infer<typeof editScheduleSchema>
 const MarketScheduleDetail = () => {
   const { scheduleId } = useParams<{ scheduleId: string }>()
   const navigate = useNavigate()
-  const { schedules, updateSchedule, deleteSchedule } = useMarketSchedule()
+  const { 
+    schedules, 
+    updateSchedule, 
+    deleteSchedule, 
+    subscribeToSchedule, 
+    unsubscribeFromSchedule, 
+    isVendorSubscribed 
+  } = useMarketSchedule()
   const { user, isAdmin } = useAuth()
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
@@ -49,6 +56,10 @@ const MarketScheduleDetail = () => {
   console.log("Schedule ID from URL:", scheduleId)
   console.log("Available schedules:", schedules.map(s => s.id))
   console.log("Found schedule:", schedule)
+
+  const isSubscribed = user?.role === 'vendor' && user.id && schedule 
+    ? isVendorSubscribed(user.id, schedule.id) 
+    : false
 
   const form = useForm<EditScheduleFormData>({
     resolver: zodResolver(editScheduleSchema),
@@ -112,6 +123,26 @@ const MarketScheduleDetail = () => {
     })
   }
 
+  const handleSubscribe = () => {
+    if (user?.id && schedule) {
+      subscribeToSchedule(user.id, schedule.id)
+      toast({
+        title: "Subscribed",
+        description: `You are now subscribed to ${schedule.name}`,
+      })
+    }
+  }
+
+  const handleUnsubscribe = () => {
+    if (user?.id && schedule) {
+      unsubscribeFromSchedule(user.id, schedule.id)
+      toast({
+        title: "Unsubscribed",
+        description: `You have unsubscribed from ${schedule.name}`,
+      })
+    }
+  }
+
   const onSubmit = (data: EditScheduleFormData) => {
     updateSchedule(schedule.id, {
       name: data.name,
@@ -167,38 +198,96 @@ const MarketScheduleDetail = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{schedule.name}</h1>
               <p className="text-gray-600">Market schedule details</p>
             </div>
-            {isAdmin && !isEditing && (
-              <div className="flex gap-2">
-                <Button onClick={() => setIsEditing(true)} variant="outline">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Schedule
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Schedule
+            <div className="flex gap-2">
+              {/* Vendor Subscription Controls */}
+              {user?.role === 'vendor' && schedule.status === 'approved' && (
+                <>
+                  {isSubscribed ? (
+                    <Button onClick={handleUnsubscribe} variant="outline">
+                      Unsubscribe
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Market Schedule</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete "{schedule.name}"? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            )}
+                  ) : (
+                    <Button onClick={handleSubscribe}>
+                      Subscribe to Market
+                    </Button>
+                  )}
+                </>
+              )}
+              
+              {/* Admin Controls */}
+              {isAdmin && !isEditing && (
+                <>
+                  <Button onClick={() => setIsEditing(true)} variant="outline">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Schedule
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Schedule
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Market Schedule</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{schedule.name}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Subscription Status for Vendors */}
+        {user?.role === 'vendor' && schedule.status === 'approved' && (
+          <div className="mb-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Subscription Status</p>
+                    <p className="text-sm text-gray-600">
+                      {isSubscribed 
+                        ? "You are subscribed to this market schedule" 
+                        : "Subscribe to receive market days and participate in this market"
+                      }
+                    </p>
+                  </div>
+                  <Badge variant={isSubscribed ? "default" : "secondary"}>
+                    {isSubscribed ? "Subscribed" : "Not Subscribed"}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Warning for non-approved schedules */}
+        {schedule.status !== 'approved' && (
+          <div className="mb-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 text-amber-600">
+                  <Badge variant="secondary">{schedule.status}</Badge>
+                  <p className="text-sm">
+                    This market schedule is {schedule.status} and not available for subscription.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="grid gap-6">
           {/* Edit Form */}

@@ -35,15 +35,26 @@ export interface MarketDay {
   createdAt: string
 }
 
+export interface VendorSubscription {
+  vendorId: string
+  scheduleId: string
+  subscribedAt: string
+}
+
 interface MarketScheduleContextType {
   schedules: MarketSchedule[]
   marketDays: MarketDay[]
+  vendorSubscriptions: VendorSubscription[]
   addSchedule: (schedule: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => void
   updateSchedule: (id: string, updates: Partial<MarketSchedule>) => void
   deleteSchedule: (id: string) => void
   getUpcomingMarketDays: () => MarketDay[]
   isShopOpen: () => boolean
   getNextMarketInfo: () => { nextMarket: Date | null; opensAt: Date | null; closesAt: Date | null } | null
+  subscribeToSchedule: (vendorId: string, scheduleId: string) => void
+  unsubscribeFromSchedule: (vendorId: string, scheduleId: string) => void
+  isVendorSubscribed: (vendorId: string, scheduleId: string) => boolean
+  getVendorMarketDays: (vendorId: string) => MarketDay[]
 }
 
 const MarketScheduleContext = createContext<MarketScheduleContextType | undefined>(undefined)
@@ -175,10 +186,12 @@ const generateMarketDays = (schedule: MarketSchedule): MarketDay[] => {
 export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [schedules, setSchedules] = useState<MarketSchedule[]>([])
   const [marketDays, setMarketDays] = useState<MarketDay[]>([])
+  const [vendorSubscriptions, setVendorSubscriptions] = useState<VendorSubscription[]>([])
 
   useEffect(() => {
     const storedSchedules = localStorage.getItem('marketplace_schedules')
     const storedMarketDays = localStorage.getItem('marketplace_market_days')
+    const storedSubscriptions = localStorage.getItem('marketplace_vendor_subscriptions')
     
     if (storedSchedules) {
       const parsed = JSON.parse(storedSchedules)
@@ -205,6 +218,10 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
       }))
       setMarketDays(marketDaysWithDates)
     }
+
+    if (storedSubscriptions) {
+      setVendorSubscriptions(JSON.parse(storedSubscriptions))
+    }
   }, [])
 
   useEffect(() => {
@@ -228,6 +245,10 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     }))
     localStorage.setItem('marketplace_market_days', JSON.stringify(marketDaysForStorage))
   }, [marketDays])
+
+  useEffect(() => {
+    localStorage.setItem('marketplace_vendor_subscriptions', JSON.stringify(vendorSubscriptions))
+  }, [vendorSubscriptions])
 
   const addSchedule = (scheduleData: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => {
     const newSchedule: MarketSchedule = {
@@ -272,6 +293,49 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     setSchedules(prev => prev.filter(schedule => schedule.id !== id))
     // Remove associated market days
     setMarketDays(prev => prev.filter(day => day.scheduleId !== id))
+  }
+
+  const subscribeToSchedule = (vendorId: string, scheduleId: string) => {
+    const existingSubscription = vendorSubscriptions.find(
+      sub => sub.vendorId === vendorId && sub.scheduleId === scheduleId
+    )
+    
+    if (!existingSubscription) {
+      const newSubscription: VendorSubscription = {
+        vendorId,
+        scheduleId,
+        subscribedAt: new Date().toISOString()
+      }
+      setVendorSubscriptions(prev => [...prev, newSubscription])
+    }
+  }
+
+  const unsubscribeFromSchedule = (vendorId: string, scheduleId: string) => {
+    setVendorSubscriptions(prev => 
+      prev.filter(sub => !(sub.vendorId === vendorId && sub.scheduleId === scheduleId))
+    )
+  }
+
+  const isVendorSubscribed = (vendorId: string, scheduleId: string): boolean => {
+    return vendorSubscriptions.some(
+      sub => sub.vendorId === vendorId && sub.scheduleId === scheduleId
+    )
+  }
+
+  const getVendorMarketDays = (vendorId: string): MarketDay[] => {
+    const vendorScheduleIds = vendorSubscriptions
+      .filter(sub => sub.vendorId === vendorId)
+      .map(sub => sub.scheduleId)
+    
+    const fourWeeksFromNow = new Date()
+    fourWeeksFromNow.setDate(fourWeeksFromNow.getDate() + 28)
+    
+    return marketDays
+      .filter(day => 
+        vendorScheduleIds.includes(day.scheduleId) && 
+        day.marketDate <= fourWeeksFromNow
+      )
+      .sort((a, b) => a.marketDate.getTime() - b.marketDate.getTime())
   }
 
   const getUpcomingMarketDays = () => {
@@ -338,12 +402,17 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     <MarketScheduleContext.Provider value={{
       schedules,
       marketDays,
+      vendorSubscriptions,
       addSchedule,
       updateSchedule,
       deleteSchedule,
       getUpcomingMarketDays,
       isShopOpen,
-      getNextMarketInfo
+      getNextMarketInfo,
+      subscribeToSchedule,
+      unsubscribeFromSchedule,
+      isVendorSubscribed,
+      getVendorMarketDays
     }}>
       {children}
     </MarketScheduleContext.Provider>
