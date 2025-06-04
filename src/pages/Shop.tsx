@@ -12,12 +12,22 @@ import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import ShopAvailabilityBanner from '@/components/ShopAvailabilityBanner'
 import { useShopFilters } from '@/hooks/useShopFilters'
 
+interface MarketDayProduct {
+  productId: string
+  productName: string
+  productPrice: number
+  productUnit: string
+  productImage?: string
+  quantity: number
+}
+
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState(mockProducts)
   const [vendors, setVendors] = useState(mockVendors)
   const [filterVisible, setFilterVisible] = useState(false)
   const [selectedMarketDay, setSelectedMarketDay] = useState<string>('')
+  const [marketDayProducts, setMarketDayProducts] = useState<any[]>([])
   const { isShopOpen, getUpcomingMarketDays } = useMarketSchedule()
   
   const {
@@ -37,12 +47,45 @@ const Shop = () => {
     setCategoryFilter(initialCategories)
   }, [searchParams, setCategoryFilter])
 
+  // Load products for the selected market day
+  useEffect(() => {
+    if (selectedMarketDay) {
+      const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
+      if (storedProducts) {
+        const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
+        
+        // Convert market day products back to the format expected by ProductGrid
+        const productsForMarketDay = marketDayProductsData.map(mdp => {
+          // Find the original product to get additional details
+          const originalProduct = mockProducts.find(p => p.id === mdp.productId)
+          return {
+            id: mdp.productId,
+            name: mdp.productName,
+            price: mdp.productPrice,
+            unit: mdp.productUnit,
+            image: mdp.productImage || originalProduct?.image,
+            category: originalProduct?.category || 'Other',
+            organic: originalProduct?.organic || false,
+            local: originalProduct?.local || false,
+            user_id: originalProduct?.user_id || '',
+            description: originalProduct?.description,
+            stock: mdp.quantity,
+            created_at: originalProduct?.created_at || new Date().toISOString(),
+            updated_at: originalProduct?.updated_at || new Date().toISOString(),
+          }
+        })
+        
+        setMarketDayProducts(productsForMarketDay)
+      } else {
+        setMarketDayProducts([])
+      }
+    } else {
+      setMarketDayProducts([])
+    }
+  }, [selectedMarketDay])
+
   const marketDays = getUpcomingMarketDays()
   const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
-  
-  // For now, simulate that no vendors have added products to specific market days
-  // This will show an empty list for all market days until vendors actually add products
-  const marketDayProducts = selectedMarketDay ? [] : []
 
   const filteredProducts = getFilteredAndSortedProducts(marketDayProducts)
 
