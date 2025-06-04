@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -11,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { ArrowLeft, Calendar, Clock, RefreshCw, Store, Settings, Edit, Save, X } from 'lucide-react'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { ArrowLeft, Calendar, Clock, RefreshCw, Store, Settings, Edit, Save, X, Trash2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,7 +38,7 @@ type EditScheduleFormData = z.infer<typeof editScheduleSchema>
 const MarketScheduleDetail = () => {
   const { scheduleId } = useParams<{ scheduleId: string }>()
   const navigate = useNavigate()
-  const { schedules, updateSchedule } = useMarketSchedule()
+  const { schedules, updateSchedule, deleteSchedule } = useMarketSchedule()
   const { user, isAdmin } = useAuth()
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
@@ -140,6 +140,15 @@ const MarketScheduleDetail = () => {
     setIsEditing(false)
   }
 
+  const handleDelete = () => {
+    deleteSchedule(schedule.id)
+    toast({
+      title: "Schedule Deleted",
+      description: "Market schedule has been successfully deleted",
+    })
+    navigate('/admin/dashboard')
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -159,10 +168,34 @@ const MarketScheduleDetail = () => {
               <p className="text-gray-600">Market schedule details</p>
             </div>
             {isAdmin && !isEditing && (
-              <Button onClick={() => setIsEditing(true)} variant="outline">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Schedule
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => setIsEditing(true)} variant="outline">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Schedule
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Schedule
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Market Schedule</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete "{schedule.name}"? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             )}
           </div>
         </div>
