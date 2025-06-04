@@ -88,7 +88,7 @@ const ProductCard = ({
       </div>
 
       <div className="p-4">
-        <Link to={`/shop/${id}`}>
+        <Link to={`/product/${id}`}>
           <h3 className="font-medium text-lg mb-1 hover:text-market-green transition-colors">
             {name}
           </h3>
