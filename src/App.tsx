@@ -84,6 +84,7 @@ function App() {
                     <Route path="/vendor/add-products" element={<VendorProtectedRoute><AddProducts /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId" element={<VendorProtectedRoute><MarketDayDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId/products" element={<VendorProtectedRoute><MarketDayProducts /></VendorProtectedRoute>} />
+                    <Route path="/vendor/market-schedule/:id" element={<VendorProtectedRoute><MarketScheduleDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor-details/:id" element={<VendorDetails />} />
 
                     {/* Admin routes */}
