@@ -68,7 +68,7 @@ const ProductForm = ({
       const productData = {
         ...values,
         price: parseFloat(values.price),
-        stock: parseInt(values.stock),
+        stock: editingProduct ? parseInt(values.stock) : 10, // Default stock for new products
         image: uploadedImage || values.image,
         id: editingProduct?.id,
       }
@@ -181,24 +181,26 @@ const ProductForm = ({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="stock"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Stock Quantity</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {editingProduct && (
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         <FormField
