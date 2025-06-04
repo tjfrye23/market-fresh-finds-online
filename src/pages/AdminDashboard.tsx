@@ -291,13 +291,6 @@ const AdminDashboard = () => {
 
           <TabsContent value="schedules">
             <div className="space-y-6">
-              {/* Market Schedule Manager Component */}
-              <Card>
-                <CardContent className="p-6">
-                  <MarketScheduleManager />
-                </CardContent>
-              </Card>
-
               {/* Market Schedules Table */}
               <Card>
                 <CardHeader>
