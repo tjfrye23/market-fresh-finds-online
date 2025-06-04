@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -37,7 +36,7 @@ const editScheduleSchema = z.object({
 type EditScheduleFormData = z.infer<typeof editScheduleSchema>
 
 const MarketScheduleDetail = () => {
-  const { scheduleId } = useParams<{ scheduleId: string }>()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { 
     schedules, 
@@ -51,11 +50,12 @@ const MarketScheduleDetail = () => {
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
   
-  // Find the schedule by ID
-  const schedule = schedules.find(s => s.id === scheduleId)
+  console.log("Schedule ID from URL:", id)
+  console.log("Available schedules:", schedules.map(s => ({ id: s.id, name: s.name })))
   
-  console.log("Schedule ID from URL:", scheduleId)
-  console.log("Available schedules:", schedules.map(s => s.id))
+  // Find the schedule by ID
+  const schedule = schedules.find(s => s.id === id)
+  
   console.log("Found schedule:", schedule)
 
   const isSubscribed = user?.role === 'vendor' && user.id && schedule 
@@ -87,9 +87,15 @@ const MarketScheduleDetail = () => {
         <main className="flex-grow container mx-auto px-4 py-8">
           <div className="text-left">
             <h1 className="text-2xl font-bold mb-4">Market Schedule Not Found</h1>
-            <Button onClick={() => navigate(-1)}>
+            <p className="text-gray-600 mb-4">
+              Could not find market schedule with ID: {id}
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              Available schedule IDs: {schedules.map(s => s.id).join(', ')}
+            </p>
+            <Button onClick={() => navigate('/admin/dashboard')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Go Back
+              Back to Dashboard
             </Button>
           </div>
         </main>
