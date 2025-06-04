@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -84,7 +85,7 @@ const MarketScheduleDetail = () => {
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow container mx-auto px-4 py-8">
-          <div className="text-center">
+          <div className="text-left">
             <h1 className="text-2xl font-bold mb-4">Market Schedule Not Found</h1>
             <Button onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -186,15 +187,16 @@ const MarketScheduleDetail = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 text-left">
               <Button 
                 variant="outline" 
                 onClick={() => navigate(user?.role === 'vendor' ? '/vendor/dashboard' : '/admin/dashboard')}
+                className="self-start"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
-              <div>
+              <div className="text-left">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{schedule.name}</h1>
                 <p className="text-gray-600">Market schedule details</p>
               </div>
@@ -255,7 +257,7 @@ const MarketScheduleDetail = () => {
           <div className="mb-6">
             <Card>
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between text-left">
                   <div>
                     <p className="font-medium">Subscription Status</p>
                     <p className="text-sm text-gray-600">
@@ -279,7 +281,7 @@ const MarketScheduleDetail = () => {
           <div className="mb-6">
             <Card>
               <CardContent className="pt-6">
-                <div className="flex items-center gap-2 text-amber-600">
+                <div className="flex items-center gap-2 text-amber-600 text-left">
                   <Badge variant="secondary">{schedule.status}</Badge>
                   <p className="text-sm">
                     This market schedule is {schedule.status} and not available for subscription.
@@ -533,7 +535,7 @@ const MarketScheduleDetail = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -588,7 +590,7 @@ const MarketScheduleDetail = () => {
                   Schedule Status
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-left">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
