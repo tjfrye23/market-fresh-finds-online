@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -194,7 +195,7 @@ const VendorDashboard = () => {
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
-          <div className="text-center">Loading dashboard...</div>
+          <div className="text-left">Loading dashboard...</div>
         </div>
         <Footer />
       </div>
@@ -210,50 +211,50 @@ const VendorDashboard = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendor Dashboard</h1>
-          <p className="text-gray-600">Manage your orders and track your performance</p>
+        <div className="mb-8 text-left">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 text-left">Vendor Dashboard</h1>
+          <p className="text-gray-600 text-left">Manage your orders and track your performance</p>
         </div>
 
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium text-left">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${metrics?.totalRevenue.toFixed(2) || '0.00'}</div>
+              <div className="text-2xl font-bold text-left">${metrics?.totalRevenue.toFixed(2) || '0.00'}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <CardTitle className="text-sm font-medium text-left">Total Orders</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metrics?.totalOrders || 0}</div>
+              <div className="text-2xl font-bold text-left">{metrics?.totalOrders || 0}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
+              <CardTitle className="text-sm font-medium text-left">Avg Order Value</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${metrics?.avgOrderValue.toFixed(2) || '0.00'}</div>
+              <div className="text-2xl font-bold text-left">${metrics?.avgOrderValue.toFixed(2) || '0.00'}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Orders</CardTitle>
+              <CardTitle className="text-sm font-medium text-left">Active Orders</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{currentOrders.length}</div>
+              <div className="text-2xl font-bold text-left">{currentOrders.length}</div>
             </CardContent>
           </Card>
         </div>
@@ -262,7 +263,7 @@ const VendorDashboard = () => {
         {metrics?.monthlyRevenue && metrics.monthlyRevenue.length > 0 && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Monthly Revenue</CardTitle>
+              <CardTitle className="text-left">Monthly Revenue</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig}>
@@ -292,23 +293,23 @@ const VendorDashboard = () => {
           <TabsContent value="current">
             <Card>
               <CardHeader>
-                <CardTitle>Current Orders</CardTitle>
+                <CardTitle className="text-left">Current Orders</CardTitle>
               </CardHeader>
               <CardContent>
                 {currentOrders.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No current orders
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Order #</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-left">Order #</TableHead>
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Customer</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
+                        <TableHead className="text-left">Total</TableHead>
+                        <TableHead className="text-left">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -318,16 +319,16 @@ const VendorDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleRowClick(order)}
                         >
-                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                          <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                          <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{order.orderNumber}</TableCell>
+                          <TableCell className="text-left">{new Date(order.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-left">{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
+                          <TableCell className="text-left">
                             <Badge className={getStatusColor(order.status)}>
                               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </Badge>
                           </TableCell>
-                          <TableCell>${order.total.toFixed(2)}</TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">${order.total.toFixed(2)}</TableCell>
+                          <TableCell className="text-left">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button 
@@ -368,23 +369,23 @@ const VendorDashboard = () => {
           <TabsContent value="history">
             <Card>
               <CardHeader>
-                <CardTitle>Order History</CardTitle>
+                <CardTitle className="text-left">Order History</CardTitle>
               </CardHeader>
               <CardContent>
                 {pastOrders.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No completed orders yet
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Order #</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-left">Order #</TableHead>
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Customer</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
+                        <TableHead className="text-left">Total</TableHead>
+                        <TableHead className="text-left">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -394,16 +395,16 @@ const VendorDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleRowClick(order)}
                         >
-                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                          <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                          <TableCell>{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{order.orderNumber}</TableCell>
+                          <TableCell className="text-left">{new Date(order.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-left">{order.customerInfo.firstName} {order.customerInfo.lastName}</TableCell>
+                          <TableCell className="text-left">
                             <Badge className={getStatusColor(order.status)}>
                               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </Badge>
                           </TableCell>
-                          <TableCell>${order.total.toFixed(2)}</TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">${order.total.toFixed(2)}</TableCell>
+                          <TableCell className="text-left">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button 
@@ -445,7 +446,7 @@ const VendorDashboard = () => {
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Your Products</CardTitle>
+                  <CardTitle className="text-left">Your Products</CardTitle>
                   <Button
                     onClick={handleAddNewProducts}
                     className="flex items-center gap-2"
@@ -468,30 +469,30 @@ const VendorDashboard = () => {
           <TabsContent value="market-days">
             <Card>
               <CardHeader>
-                <CardTitle>Your Market Days</CardTitle>
-                <p className="text-sm text-gray-600">
+                <CardTitle className="text-left">Your Market Days</CardTitle>
+                <p className="text-sm text-gray-600 text-left">
                   Market days from schedules you're subscribed to (next 4 weeks)
                 </p>
               </CardHeader>
               <CardContent>
                 {vendorMarketDays.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     <div className="mb-4">
-                      <Calendar className="h-12 w-12 mx-auto text-gray-300" />
+                      <Calendar className="h-12 w-12 text-gray-300" />
                     </div>
-                    <p className="mb-2">No upcoming market days</p>
-                    <p className="text-sm">Subscribe to market schedules to see your market days here.</p>
+                    <p className="mb-2 text-left">No upcoming market days</p>
+                    <p className="text-sm text-left">Subscribe to market schedules to see your market days here.</p>
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Market Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Market Hours</TableHead>
-                        <TableHead>Online Hours</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead className="text-left">Market Name</TableHead>
+                        <TableHead className="text-left">Date</TableHead>
+                        <TableHead className="text-left">Market Hours</TableHead>
+                        <TableHead className="text-left">Online Hours</TableHead>
+                        <TableHead className="text-left">Address</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -501,19 +502,19 @@ const VendorDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleMarketDayClick(marketDay.id)}
                         >
-                          <TableCell className="font-medium">{marketDay.scheduleName}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{marketDay.scheduleName}</TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm">
                               <div>{marketDay.marketDate.toLocaleDateString()}</div>
                               <div className="text-gray-500">{marketDay.marketDate.toLocaleDateString('en-US', { weekday: 'short' })}</div>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm">
                               {marketDay.startTime} - {marketDay.endTime}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm">
                               <div>{marketDay.onlineStartTime} - {marketDay.onlineEndTime}</div>
                               <div className="text-gray-500">
@@ -521,12 +522,12 @@ const VendorDashboard = () => {
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm max-w-xs">
                               {marketDay.address}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <Badge variant={
                               marketDay.status === 'completed' ? 'secondary' :
                               marketDay.status === 'active' ? 'default' :
@@ -547,24 +548,24 @@ const VendorDashboard = () => {
           <TabsContent value="schedules">
             <Card>
               <CardHeader>
-                <CardTitle>Market Schedules</CardTitle>
+                <CardTitle className="text-left">Market Schedules</CardTitle>
               </CardHeader>
               <CardContent>
                 {schedules.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-left py-8 text-gray-500">
                     No market schedules found
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Schedule Name</TableHead>
-                        <TableHead>Market Date</TableHead>
-                        <TableHead>Market Hours</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Online Opens</TableHead>
-                        <TableHead>Online Closes</TableHead>
-                        <TableHead>Status</TableHead>
+                        <TableHead className="text-left">Schedule Name</TableHead>
+                        <TableHead className="text-left">Market Date</TableHead>
+                        <TableHead className="text-left">Market Hours</TableHead>
+                        <TableHead className="text-left">Address</TableHead>
+                        <TableHead className="text-left">Online Opens</TableHead>
+                        <TableHead className="text-left">Online Closes</TableHead>
+                        <TableHead className="text-left">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -574,29 +575,29 @@ const VendorDashboard = () => {
                           className="cursor-pointer hover:bg-muted/50"
                           onClick={() => handleMarketScheduleClick(schedule.id)}
                         >
-                          <TableCell className="font-medium">{schedule.name}</TableCell>
-                          <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
-                          <TableCell>
+                          <TableCell className="font-medium text-left">{schedule.name}</TableCell>
+                          <TableCell className="text-left">{schedule.marketDate.toLocaleDateString()}</TableCell>
+                          <TableCell className="text-left">
                             {schedule.startTime} - {schedule.endTime}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm max-w-xs">
                               {schedule.address}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm">
                               <div>{schedule.onlineStartDate.toLocaleDateString()}</div>
                               <div className="text-gray-500">{schedule.onlineStartTime}</div>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <div className="text-sm">
                               <div>{schedule.onlineEndDate.toLocaleDateString()}</div>
                               <div className="text-gray-500">{schedule.onlineEndTime}</div>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-left">
                             <Badge variant={schedule.status === 'approved' ? 'default' : schedule.status === 'rejected' ? 'destructive' : 'secondary'}>
                               {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
                             </Badge>
@@ -615,8 +616,8 @@ const VendorDashboard = () => {
         <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
           <DialogContent className="bg-white">
             <DialogHeader>
-              <DialogTitle>Update Order Status</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-left">Update Order Status</DialogTitle>
+              <DialogDescription className="text-left">
                 Update the status for order {selectedOrder?.orderNumber}
               </DialogDescription>
             </DialogHeader>
