@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
 import {
@@ -104,10 +103,8 @@ const ShopFilters = ({
       
       {/* Filters panel */}
       <div className={`
-        ${/* Mobile styles */}
         fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 lg:hidden
         ${filterVisible ? 'translate-x-0' : '-translate-x-full'}
-        ${/* Desktop styles */}
         lg:static lg:w-full lg:transform-none lg:z-auto lg:h-auto lg:block lg:translate-x-0
       `}>
         <div className="bg-white shadow-md rounded-lg p-6 h-full lg:h-auto overflow-y-auto">
