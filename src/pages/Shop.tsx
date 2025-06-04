@@ -38,7 +38,18 @@ const Shop = () => {
   }, [searchParams, setCategoryFilter])
 
   const marketDays = getUpcomingMarketDays()
-  const filteredProducts = getFilteredAndSortedProducts(products)
+  const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
+  
+  // Filter products by selected market day - for now, we'll simulate this
+  // In a real app, this would come from the backend based on vendor subscriptions
+  const marketDayProducts = selectedMarketDay ? products.filter(product => {
+    // Simulate that vendors have added products to specific market days
+    // This would be replaced with actual backend logic
+    const vendor = vendors.find(v => v.user_id === product.user_id)
+    return vendor?.status === 'active'
+  }) : []
+
+  const filteredProducts = getFilteredAndSortedProducts(marketDayProducts)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -82,6 +93,7 @@ const Shop = () => {
                   products={filteredProducts} 
                   vendors={vendors}
                   isLoading={false}
+                  selectedMarketDay={selectedMarketDayData}
                 />
               ) : (
                 <div className="bg-gray-50 p-8 rounded-lg text-center">

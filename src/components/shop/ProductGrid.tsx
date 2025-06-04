@@ -1,5 +1,7 @@
+
 import ProductCard from '@/components/ProductCard'
 import { Product } from '@/components/product/types'
+import { MarketDay } from '@/contexts/MarketScheduleContext'
 
 interface Vendor {
   id: string
@@ -12,9 +14,10 @@ interface ProductGridProps {
   products: Product[]
   vendors: Vendor[]
   isLoading: boolean
+  selectedMarketDay?: MarketDay
 }
 
-const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
+const ProductGrid = ({ products, vendors, isLoading, selectedMarketDay }: ProductGridProps) => {
   const getProductWithVendorInfo = (product: any) => {
     const vendor = vendors.find(v => v.user_id === product.user_id)
     return {
@@ -42,39 +45,60 @@ const ProductGrid = ({ products, vendors, isLoading }: ProductGridProps) => {
     return (
       <div className="bg-gray-50 p-8 rounded-lg text-center">
         <h3 className="text-lg font-medium mb-2">
-          No products available
+          No products available for this market day
         </h3>
-        <p className="text-gray-500">
-          {products.length > 0 
-            ? "All products are currently under vendor review." 
-            : "Try adjusting your filters to find what you're looking for."
+        <p className="text-gray-500 mb-4">
+          {selectedMarketDay 
+            ? `No vendors have added products for ${selectedMarketDay.scheduleName} on ${selectedMarketDay.marketDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`
+            : "No products are currently available for the selected market day."
           }
+        </p>
+        <p className="text-sm text-gray-400">
+          Try selecting a different market day or check back later as vendors may add more products.
         </p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {activeProducts.map((product) => {
-        const productWithVendor = getProductWithVendorInfo(product)
-        return (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            price={product.price}
-            unit={product.unit}
-            image={
-              product.image ||
-              'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80'
-            }
-            organic={product.organic || false}
-            local={product.local || false}
-            farmName={productWithVendor.farmName}
-          />
-        )
-      })}
+    <div>
+      {selectedMarketDay && (
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <h3 className="text-lg font-medium text-green-800 mb-1">
+            Products for {selectedMarketDay.scheduleName}
+          </h3>
+          <p className="text-green-700 text-sm">
+            {selectedMarketDay.marketDate.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })} • {activeProducts.length} product{activeProducts.length !== 1 ? 's' : ''} available
+          </p>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {activeProducts.map((product) => {
+          const productWithVendor = getProductWithVendorInfo(product)
+          return (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              unit={product.unit}
+              image={
+                product.image ||
+                'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80'
+              }
+              organic={product.organic || false}
+              local={product.local || false}
+              farmName={productWithVendor.farmName}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }
