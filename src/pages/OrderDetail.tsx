@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -34,7 +35,7 @@ const updateOrderStatus = (orderId: string, newStatus: 'processing' | 'processed
 }
 
 const OrderDetail = () => {
-  const { orderId } = useParams()
+  const { id: orderId } = useParams()
   const navigate = useNavigate()
   const { user, isAdmin } = useAuth()
   const [order, setOrder] = useState<Order | null>(null)
@@ -44,14 +45,18 @@ const OrderDetail = () => {
   const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
+    console.log('OrderDetail useEffect - orderId:', orderId, 'user:', user?.id, 'isAdmin:', isAdmin)
+    
     if (user?.id && orderId) {
       if (isAdmin) {
         // Admin can see all orders
         const allStoredOrders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]')
+        console.log('Admin - all stored orders:', allStoredOrders)
         const sortedOrders = allStoredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         setAllOrders(sortedOrders)
         
         const foundOrder = sortedOrders.find(o => o.id === orderId)
+        console.log('Admin - found order:', foundOrder)
         setOrder(foundOrder || null)
         if (foundOrder) {
           setSelectedStatus(foundOrder.status)
@@ -60,10 +65,12 @@ const OrderDetail = () => {
       } else {
         // Vendor can only see their orders
         getVendorOrders(user.id).then(orders => {
+          console.log('Vendor - orders from service:', orders)
           const sortedOrders = orders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           setAllOrders(sortedOrders)
           
           const foundOrder = sortedOrders.find(o => o.id === orderId)
+          console.log('Vendor - found order:', foundOrder)
           setOrder(foundOrder || null)
           if (foundOrder) {
             setSelectedStatus(foundOrder.status)
