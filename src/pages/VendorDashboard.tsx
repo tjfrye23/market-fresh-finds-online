@@ -438,21 +438,13 @@ const VendorDashboard = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Your Products</CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleAddNewProducts}
-                      className="flex items-center gap-2"
-                    >
-                      <PlusCircle className="h-4 w-4" />
-                      Add New Products
-                    </Button>
-                    <ProductDialog
-                      isOpen={isProductDialogOpen}
-                      onOpenChange={setIsProductDialogOpen}
-                      editingProduct={editingProduct}
-                      onResetForm={resetProductForm}
-                    />
-                  </div>
+                  <Button
+                    onClick={handleAddNewProducts}
+                    className="flex items-center gap-2"
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    Add New Products
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
@@ -551,6 +543,14 @@ const VendorDashboard = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Product Edit Dialog */}
+        <ProductDialog
+          isOpen={isProductDialogOpen}
+          onOpenChange={setIsProductDialogOpen}
+          editingProduct={editingProduct}
+          onResetForm={resetProductForm}
+        />
       </main>
       <Footer />
     </div>
