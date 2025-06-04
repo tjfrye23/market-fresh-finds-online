@@ -77,7 +77,6 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
             <TableHead>Product</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>Stock</TableHead>
             <TableHead>Features</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -112,11 +111,6 @@ const ProductList = ({ products, onEdit, isLoading }: ProductListProps) => {
               <TableCell>
                 {CATEGORIES.find((c) => c.value === product.category)?.label ||
                   product.category}
-              </TableCell>
-              <TableCell>
-                <span className={`${product.stock <= 5 ? 'text-red-600 font-semibold' : 'text-gray-900'}`}>
-                  {product.stock}
-                </span>
               </TableCell>
               <TableCell>
                 <div className="flex space-x-2">
