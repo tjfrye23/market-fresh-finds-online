@@ -142,6 +142,11 @@ function App() {
                     <AdminVendorDetails />
                   </ProtectedRoute>
                 } />
+                <Route path="/admin/market-schedule/:scheduleId" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <MarketScheduleDetail />
+                  </ProtectedRoute>
+                } />
                 
                 {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
