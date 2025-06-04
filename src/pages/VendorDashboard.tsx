@@ -168,6 +168,10 @@ const VendorDashboard = () => {
     navigate(`/vendor/market-day/${marketDayId}`)
   }
 
+  const handleMarketScheduleClick = (scheduleId: string) => {
+    navigate(`/vendor/market-schedule/${scheduleId}`)
+  }
+
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product)
     setIsProductDialogOpen(true)
