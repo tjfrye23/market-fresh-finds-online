@@ -54,7 +54,7 @@ const ProductGrid = ({ products, vendors, isLoading, selectedMarketDay }: Produc
           }
         </p>
         <p className="text-sm text-gray-400">
-          Try selecting a different market day or check back later as vendors may add more products.
+          Vendors need to add their products to this specific market day for them to appear here. Check back later as vendors may add more products.
         </p>
       </div>
     )

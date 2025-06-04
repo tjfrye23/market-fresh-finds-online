@@ -40,14 +40,9 @@ const Shop = () => {
   const marketDays = getUpcomingMarketDays()
   const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
   
-  // Filter products by selected market day - for now, we'll simulate this
-  // In a real app, this would come from the backend based on vendor subscriptions
-  const marketDayProducts = selectedMarketDay ? products.filter(product => {
-    // Simulate that vendors have added products to specific market days
-    // This would be replaced with actual backend logic
-    const vendor = vendors.find(v => v.user_id === product.user_id)
-    return vendor?.status === 'active'
-  }) : []
+  // For now, simulate that no vendors have added products to specific market days
+  // This will show an empty list for all market days until vendors actually add products
+  const marketDayProducts = selectedMarketDay ? [] : []
 
   const filteredProducts = getFilteredAndSortedProducts(marketDayProducts)
 
