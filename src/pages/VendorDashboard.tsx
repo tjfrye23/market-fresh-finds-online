@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -474,7 +475,8 @@ const VendorDashboard = () => {
                         <TableHead>Schedule Name</TableHead>
                         <TableHead>Market Date</TableHead>
                         <TableHead>Market Hours</TableHead>
-                        <TableHead>Shop Hours</TableHead>
+                        <TableHead>Online Opens</TableHead>
+                        <TableHead>Online Closes</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -491,7 +493,16 @@ const VendorDashboard = () => {
                             {schedule.startTime} - {schedule.endTime}
                           </TableCell>
                           <TableCell>
-                            {schedule.onlineStartTime} - {schedule.onlineEndTime}
+                            <div className="text-sm">
+                              <div>{schedule.onlineStartDate.toLocaleDateString()}</div>
+                              <div className="text-gray-500">{schedule.onlineStartTime}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div>{schedule.onlineEndDate.toLocaleDateString()}</div>
+                              <div className="text-gray-500">{schedule.onlineEndTime}</div>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Badge variant={schedule.status === 'approved' ? 'default' : schedule.status === 'rejected' ? 'destructive' : 'secondary'}>
