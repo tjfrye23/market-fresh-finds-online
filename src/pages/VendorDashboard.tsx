@@ -164,8 +164,8 @@ const VendorDashboard = () => {
     handleViewOrder(order)
   }
 
-  const handleMarketScheduleClick = (scheduleId: string) => {
-    navigate(`/vendor/market-schedule/${scheduleId}`)
+  const handleMarketDayClick = (marketDayId: string) => {
+    navigate(`/vendor/market-day/${marketDayId}`)
   }
 
   const handleEditProduct = (product: Product) => {
@@ -494,7 +494,8 @@ const VendorDashboard = () => {
                       {vendorMarketDays.map((marketDay) => (
                         <TableRow 
                           key={marketDay.id}
-                          className="hover:bg-muted/50"
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleMarketDayClick(marketDay.id)}
                         >
                           <TableCell className="font-medium">{marketDay.scheduleName}</TableCell>
                           <TableCell>
