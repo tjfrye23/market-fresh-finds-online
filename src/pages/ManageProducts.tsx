@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuth } from '@/contexts/AuthContext'
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import PageHeader from '@/components/PageHeader'
@@ -43,12 +45,22 @@ const ManageProducts = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Your Shop</h2>
 
-            <ProductDialog
-              isOpen={isDialogOpen}
-              onOpenChange={setIsDialogOpen}
-              editingProduct={editingProduct}
-              onResetForm={resetForm}
-            />
+            <div className="flex gap-2">
+              <Button
+                onClick={() => navigate('/vendor/add-products')}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Products
+              </Button>
+
+              <ProductDialog
+                isOpen={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                editingProduct={editingProduct}
+                onResetForm={resetForm}
+              />
+            </div>
           </div>
 
           <ProductList
