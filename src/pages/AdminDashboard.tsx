@@ -41,7 +41,7 @@ import { Calendar as CalendarIcon, RefreshCw } from 'lucide-react'
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
-  const { schedules, addSchedule } = useMarketSchedule()
+  const { schedules, marketDays, addSchedule, getUpcomingMarketDays } = useMarketSchedule()
   const [orders, setOrders] = useState([])
   const [vendors, setVendors] = useState([])
   const [customers, setCustomers] = useState([])
@@ -154,13 +154,20 @@ const AdminDashboard = () => {
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'approved':
+      case 'scheduled':
+      case 'active':
         return 'default'
       case 'rejected':
+      case 'cancelled':
         return 'destructive'
+      case 'completed':
+        return 'outline'
       default:
         return 'secondary'
     }
   }
+
+  const upcomingMarketDays = getUpcomingMarketDays()
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -221,6 +228,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="schedules">Market Schedules</TabsTrigger>
+            <TabsTrigger value="market-days">Market Days</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -594,6 +602,54 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="market-days">
+            <Card>
+              <CardHeader>
+                <CardTitle>Market Days - Next 4 Weeks</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {upcomingMarketDays.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No upcoming market days found
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Market Name</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Market Hours</TableHead>
+                        <TableHead>Online Hours</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {upcomingMarketDays.map((marketDay) => (
+                        <TableRow key={marketDay.id}>
+                          <TableCell className="font-medium">{marketDay.scheduleName}</TableCell>
+                          <TableCell>{marketDay.marketDate.toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            {formatTime(marketDay.startTime)} - {formatTime(marketDay.endTime)}
+                          </TableCell>
+                          <TableCell>
+                            {formatTime(marketDay.onlineStartTime)} - {formatTime(marketDay.onlineEndTime)}
+                          </TableCell>
+                          <TableCell>{marketDay.address}</TableCell>
+                          <TableCell>
+                            <Badge variant={getStatusBadgeVariant(marketDay.status)}>
+                              {marketDay.status.charAt(0).toUpperCase() + marketDay.status.slice(1)}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>

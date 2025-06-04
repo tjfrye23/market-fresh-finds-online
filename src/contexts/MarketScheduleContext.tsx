@@ -19,11 +19,30 @@ export interface MarketSchedule {
   createdAt: string
 }
 
+export interface MarketDay {
+  id: string
+  scheduleId: string
+  scheduleName: string
+  marketDate: Date
+  startTime: string
+  endTime: string
+  onlineStartTime: string
+  onlineEndTime: string
+  onlineStartDate: Date
+  onlineEndDate: Date
+  address: string
+  description: string
+  status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+  createdAt: string
+}
+
 interface MarketScheduleContextType {
   schedules: MarketSchedule[]
+  marketDays: MarketDay[]
   addSchedule: (schedule: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => void
   updateSchedule: (id: string, updates: Partial<MarketSchedule>) => void
   deleteSchedule: (id: string) => void
+  getUpcomingMarketDays: () => MarketDay[]
   isShopOpen: () => boolean
   getNextMarketInfo: () => { nextMarket: Date | null; opensAt: Date | null; closesAt: Date | null } | null
 }
@@ -85,11 +104,83 @@ const mockSchedules: MarketSchedule[] = [
   }
 ]
 
+const generateMarketDays = (schedule: MarketSchedule): MarketDay[] => {
+  const marketDays: MarketDay[] = []
+  const today = new Date()
+  
+  if (!schedule.isRecurring) {
+    // Create single market day
+    marketDays.push({
+      id: `${schedule.id}-${schedule.marketDate.getTime()}`,
+      scheduleId: schedule.id,
+      scheduleName: schedule.name,
+      marketDate: new Date(schedule.marketDate),
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      onlineStartTime: schedule.onlineStartTime,
+      onlineEndTime: schedule.onlineEndTime,
+      onlineStartDate: new Date(schedule.onlineStartDate),
+      onlineEndDate: new Date(schedule.onlineEndDate),
+      address: schedule.address,
+      description: schedule.description,
+      status: schedule.marketDate < today ? 'completed' : 'scheduled',
+      createdAt: new Date().toISOString()
+    })
+  } else {
+    // Create market days for 4 weeks out
+    const dayOfWeek = schedule.marketDate.getDay()
+    const startDate = new Date(today)
+    
+    // Find the next occurrence of this day of the week
+    const daysUntilNext = (dayOfWeek - startDate.getDay() + 7) % 7
+    if (daysUntilNext === 0 && startDate.getTime() < schedule.marketDate.getTime()) {
+      startDate.setDate(startDate.getDate() + 7)
+    } else {
+      startDate.setDate(startDate.getDate() + daysUntilNext)
+    }
+    
+    // Generate 4 weeks of market days
+    for (let week = 0; week < 4; week++) {
+      const marketDate = new Date(startDate)
+      marketDate.setDate(startDate.getDate() + (week * 7))
+      
+      // Calculate online dates based on the original offset
+      const originalOffset = schedule.onlineStartDate.getTime() - schedule.marketDate.getTime()
+      const onlineStartDate = new Date(marketDate.getTime() + originalOffset)
+      
+      const originalEndOffset = schedule.onlineEndDate.getTime() - schedule.marketDate.getTime()
+      const onlineEndDate = new Date(marketDate.getTime() + originalEndOffset)
+      
+      marketDays.push({
+        id: `${schedule.id}-${marketDate.getTime()}`,
+        scheduleId: schedule.id,
+        scheduleName: schedule.name,
+        marketDate: marketDate,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        onlineStartTime: schedule.onlineStartTime,
+        onlineEndTime: schedule.onlineEndTime,
+        onlineStartDate: onlineStartDate,
+        onlineEndDate: onlineEndDate,
+        address: schedule.address,
+        description: schedule.description,
+        status: marketDate < today ? 'completed' : 'scheduled',
+        createdAt: new Date().toISOString()
+      })
+    }
+  }
+  
+  return marketDays
+}
+
 export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [schedules, setSchedules] = useState<MarketSchedule[]>([])
+  const [marketDays, setMarketDays] = useState<MarketDay[]>([])
 
   useEffect(() => {
     const storedSchedules = localStorage.getItem('marketplace_schedules')
+    const storedMarketDays = localStorage.getItem('marketplace_market_days')
+    
     if (storedSchedules) {
       const parsed = JSON.parse(storedSchedules)
       // Convert date strings back to Date objects
@@ -104,6 +195,17 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
       // If no stored schedules, use mock data
       setSchedules(mockSchedules)
     }
+    
+    if (storedMarketDays) {
+      const parsed = JSON.parse(storedMarketDays)
+      const marketDaysWithDates = parsed.map((day: any) => ({
+        ...day,
+        marketDate: new Date(day.marketDate),
+        onlineStartDate: new Date(day.onlineStartDate),
+        onlineEndDate: new Date(day.onlineEndDate)
+      }))
+      setMarketDays(marketDaysWithDates)
+    }
   }, [])
 
   useEffect(() => {
@@ -117,6 +219,17 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
     localStorage.setItem('marketplace_schedules', JSON.stringify(schedulesForStorage))
   }, [schedules])
 
+  useEffect(() => {
+    // Convert Date objects to strings for storage
+    const marketDaysForStorage = marketDays.map(day => ({
+      ...day,
+      marketDate: day.marketDate.toISOString(),
+      onlineStartDate: day.onlineStartDate.toISOString(),
+      onlineEndDate: day.onlineEndDate.toISOString()
+    }))
+    localStorage.setItem('marketplace_market_days', JSON.stringify(marketDaysForStorage))
+  }, [marketDays])
+
   const addSchedule = (scheduleData: Omit<MarketSchedule, 'id' | 'createdAt' | 'status'>) => {
     const newSchedule: MarketSchedule = {
       ...scheduleData,
@@ -125,16 +238,42 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
       createdAt: new Date().toISOString()
     }
     setSchedules(prev => [...prev, newSchedule])
+    
+    // Generate market days for the new schedule
+    const newMarketDays = generateMarketDays(newSchedule)
+    setMarketDays(prev => [...prev, ...newMarketDays])
   }
 
   const updateSchedule = (id: string, updates: Partial<MarketSchedule>) => {
     setSchedules(prev => prev.map(schedule => 
       schedule.id === id ? { ...schedule, ...updates } : schedule
     ))
+    
+    // If schedule is updated, regenerate market days
+    const updatedSchedule = schedules.find(s => s.id === id)
+    if (updatedSchedule) {
+      const newSchedule = { ...updatedSchedule, ...updates }
+      // Remove old market days for this schedule
+      setMarketDays(prev => prev.filter(day => day.scheduleId !== id))
+      // Generate new market days
+      const newMarketDays = generateMarketDays(newSchedule)
+      setMarketDays(prev => [...prev, ...newMarketDays])
+    }
   }
 
   const deleteSchedule = (id: string) => {
     setSchedules(prev => prev.filter(schedule => schedule.id !== id))
+    // Remove associated market days
+    setMarketDays(prev => prev.filter(day => day.scheduleId !== id))
+  }
+
+  const getUpcomingMarketDays = () => {
+    const fourWeeksFromNow = new Date()
+    fourWeeksFromNow.setDate(fourWeeksFromNow.getDate() + 28)
+    
+    return marketDays
+      .filter(day => day.marketDate <= fourWeeksFromNow)
+      .sort((a, b) => a.marketDate.getTime() - b.marketDate.getTime())
   }
 
   const getNextMarketInfo = () => {
@@ -191,9 +330,11 @@ export const MarketScheduleProvider: React.FC<{ children: React.ReactNode }> = (
   return (
     <MarketScheduleContext.Provider value={{
       schedules,
+      marketDays,
       addSchedule,
       updateSchedule,
       deleteSchedule,
+      getUpcomingMarketDays,
       isShopOpen,
       getNextMarketInfo
     }}>
