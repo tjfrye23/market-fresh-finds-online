@@ -321,7 +321,7 @@ const VendorProfile = () => {
                     variant="outline"
                     onClick={
                       isNewProfile
-                        ? () => navigate('/vendor/manage-products')
+                        ? () => navigate('/vendor/dashboard')
                         : cancelEditing
                     }
                     type="button"
@@ -411,11 +411,11 @@ const VendorProfile = () => {
 
                 <div className="pt-6">
                   <Button
-                    onClick={() => navigate('/vendor/manage-products')}
+                    onClick={() => navigate('/vendor/dashboard')}
                     variant="outline"
                     className="w-full sm:w-auto"
                   >
-                    Manage Your Products
+                    Back to Dashboard
                   </Button>
                 </div>
               </div>

@@ -50,6 +50,10 @@ import { getVendorOrders, getVendorMetrics } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import { toast } from 'sonner'
+import ProductList from '@/components/product/ProductList'
+import ProductDialog from '@/components/product/ProductDialog'
+import { Product } from '@/components/product/types'
+import { useVendorProducts } from '@/hooks/useVendorProducts'
 
 interface VendorMetrics {
   totalRevenue: number
@@ -96,6 +100,11 @@ const VendorDashboard = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<'processing' | 'processed'>('processing')
   const [isUpdating, setIsUpdating] = useState(false)
+  
+  // Product management state
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const { data: products = [], isLoading: productsLoading } = useVendorProducts(user?.id || '')
 
   useEffect(() => {
     if (user?.id) {
@@ -153,6 +162,15 @@ const VendorDashboard = () => {
 
   const handleMarketScheduleClick = (scheduleId: string) => {
     navigate(`/vendor/market-schedule/${scheduleId}`)
+  }
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product)
+    setIsProductDialogOpen(true)
+  }
+
+  const resetProductForm = () => {
+    setEditingProduct(null)
   }
 
   if (!user || user.role !== 'vendor') {
@@ -254,6 +272,7 @@ const VendorDashboard = () => {
           <TabsList>
             <TabsTrigger value="current">Current Orders ({currentOrders.length})</TabsTrigger>
             <TabsTrigger value="history">Order History ({pastOrders.length})</TabsTrigger>
+            <TabsTrigger value="products">Manage Products ({products.length})</TabsTrigger>
             <TabsTrigger value="schedules">Market Schedules ({schedules.length})</TabsTrigger>
           </TabsList>
 
@@ -405,6 +424,29 @@ const VendorDashboard = () => {
                     </TableBody>
                   </Table>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Your Products</CardTitle>
+                  <ProductDialog
+                    isOpen={isProductDialogOpen}
+                    onOpenChange={setIsProductDialogOpen}
+                    editingProduct={editingProduct}
+                    onResetForm={resetProductForm}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ProductList
+                  products={products}
+                  onEdit={handleEditProduct}
+                  isLoading={productsLoading}
+                />
               </CardContent>
             </Card>
           </TabsContent>
