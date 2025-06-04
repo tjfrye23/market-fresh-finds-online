@@ -47,6 +47,7 @@ const ProductForm = ({
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -65,32 +66,49 @@ const ProductForm = ({
 
   const saveProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
+      console.log('saveProductMutation starting for:', editingProduct ? 'update' : 'create')
+      
       const productData = {
         ...values,
         price: parseFloat(values.price),
-        stock: editingProduct ? parseInt(values.stock) : 10, // Default stock for new products
+        stock: editingProduct ? parseInt(values.stock) : 10,
         image: uploadedImage || values.image,
         id: editingProduct?.id,
       }
 
-      return await saveProduct(productData, user?.id || '')
+      const result = await saveProduct(productData, user?.id || '')
+      console.log('saveProductMutation completed, result:', result)
+      return result
     },
     onSuccess: (data, variables) => {
+      console.log('saveProductMutation onSuccess called')
       queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
       
       if (editingProduct) {
         toast.success('Product updated successfully')
       } else {
+        toast.success('Product created successfully')
         onSuccess(variables)
       }
+      setIsSaving(false)
     },
     onError: (error) => {
       console.error('Error saving product:', error)
       toast.error(`Error: ${error.message}`)
+      setIsSaving(false)
     },
   })
 
   const onSubmit = (values: ProductFormValues) => {
+    console.log('Form submitted, isSaving:', isSaving, 'isPending:', saveProductMutation.isPending)
+    
+    // Prevent double submission
+    if (isSaving || saveProductMutation.isPending) {
+      console.log('Preventing double submission')
+      return
+    }
+
+    setIsSaving(true)
     saveProductMutation.mutate(values)
   }
 
@@ -274,9 +292,9 @@ const ProductForm = ({
           </Button>
           <Button
             type="submit"
-            disabled={saveProductMutation.isPending}
+            disabled={isSaving || saveProductMutation.isPending}
           >
-            {saveProductMutation.isPending ? 'Saving...' : submitButtonText}
+            {isSaving || saveProductMutation.isPending ? 'Saving...' : submitButtonText}
           </Button>
         </div>
       </form>
