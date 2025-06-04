@@ -185,18 +185,19 @@ const MarketScheduleDetail = () => {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate(user?.role === 'vendor' ? '/vendor/dashboard' : '/admin/dashboard')}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{schedule.name}</h1>
-              <p className="text-gray-600">Market schedule details</p>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex flex-col gap-4">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(user?.role === 'vendor' ? '/vendor/dashboard' : '/admin/dashboard')}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{schedule.name}</h1>
+                <p className="text-gray-600">Market schedule details</p>
+              </div>
             </div>
             <div className="flex gap-2">
               {/* Vendor Subscription Controls */}
