@@ -103,11 +103,11 @@ const AddProducts = () => {
           <div className="flex justify-between items-center mb-6">
             <Button
               variant="outline"
-              onClick={() => navigate('/vendor/manage-products')}
+              onClick={() => navigate('/vendor/dashboard')}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Shop
+              Back to Dashboard
             </Button>
             <div className="flex gap-2">
               <Button
