@@ -21,16 +21,17 @@ import {
   TrendingUp, 
   DollarSign,
   Package,
-  Store
+  Store,
+  Plus
 } from 'lucide-react'
 import { mockUsers, mockVendors } from '@/data/mockData'
-import MarketScheduleManager from '@/components/admin/MarketScheduleManager'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
+import MarketScheduleManager from '@/components/admin/MarketScheduleManager'
 
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
   const navigate = useNavigate()
-  const { schedules } = useMarketSchedule()
+  const { schedules, addSchedule } = useMarketSchedule()
   const [orders, setOrders] = useState([])
   const [vendors, setVendors] = useState([])
   const [customers, setCustomers] = useState([])
@@ -63,6 +64,11 @@ const AdminDashboard = () => {
   const handleMarketScheduleClick = (schedule) => {
     console.log("Navigating to schedule detail:", schedule.id)
     navigate(`/admin/market-schedule/${schedule.id}`)
+  }
+
+  const handleAddSchedule = () => {
+    // Navigate to schedule creation page or open modal
+    console.log("Add new schedule")
   }
 
   if (!user || !isAdmin) {
