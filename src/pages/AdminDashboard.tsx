@@ -26,7 +26,17 @@ import {
 } from 'lucide-react'
 import { mockUsers, mockVendors } from '@/data/mockData'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
-import MarketScheduleManager from '@/components/admin/MarketScheduleManager'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import { Calendar as CalendarIcon, RefreshCw } from 'lucide-react'
 
 const AdminDashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -35,6 +45,20 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState([])
   const [vendors, setVendors] = useState([])
   const [customers, setCustomers] = useState([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    marketDate: undefined as Date | undefined,
+    startTime: '',
+    endTime: '',
+    onlineStartTime: '',
+    onlineEndTime: '',
+    onlineStartDate: undefined as Date | undefined,
+    onlineEndDate: undefined as Date | undefined,
+    address: '',
+    description: '',
+    isRecurring: false
+  })
 
   useEffect(() => {
     // Load data from localStorage
@@ -69,6 +93,46 @@ const AdminDashboard = () => {
   const handleAddSchedule = () => {
     // Navigate to schedule creation page or open modal
     console.log("Add new schedule")
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!formData.name || !formData.marketDate || !formData.startTime || !formData.endTime || !formData.onlineStartTime || !formData.onlineEndTime || !formData.onlineStartDate || !formData.onlineEndDate || !formData.address) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+
+    addSchedule({
+      name: formData.name,
+      marketDate: formData.marketDate,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      onlineStartTime: formData.onlineStartTime,
+      onlineEndTime: formData.onlineEndTime,
+      onlineStartDate: formData.onlineStartDate,
+      onlineEndDate: formData.onlineEndDate,
+      address: formData.address,
+      description: formData.description,
+      isActive: true,
+      isRecurring: formData.isRecurring
+    })
+
+    setFormData({
+      name: '',
+      marketDate: undefined,
+      startTime: '',
+      endTime: '',
+      onlineStartTime: '',
+      onlineEndTime: '',
+      onlineStartDate: undefined,
+      onlineEndDate: undefined,
+      address: '',
+      description: '',
+      isRecurring: false
+    })
+    setIsDialogOpen(false)
+    toast.success('Market schedule added successfully')
   }
 
   if (!user || !isAdmin) {
@@ -294,7 +358,195 @@ const AdminDashboard = () => {
               {/* Market Schedules Table */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Market Schedules</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Market Schedules</CardTitle>
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Schedule
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Add Market Schedule</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                          <div>
+                            <Label htmlFor="name">Schedule Name *</Label>
+                            <Input
+                              id="name"
+                              value={formData.name}
+                              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                              placeholder="e.g., Weekly Farmers Market"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="address">Address *</Label>
+                            <Input
+                              id="address"
+                              value={formData.address}
+                              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                              placeholder="e.g., 123 Main Street, Downtown Plaza"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label>Market Date *</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !formData.marketDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {formData.marketDate ? format(formData.marketDate, "PPP") : "Pick a date"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={formData.marketDate}
+                                  onSelect={(date) => setFormData(prev => ({ ...prev, marketDate: date }))}
+                                  initialFocus
+                                  className="pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label htmlFor="startTime">Start Time *</Label>
+                              <Input
+                                id="startTime"
+                                type="time"
+                                value={formData.startTime}
+                                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="endTime">End Time *</Label>
+                              <Input
+                                id="endTime"
+                                type="time"
+                                value={formData.endTime}
+                                onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <Label>Online Shop Date Range *</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label className="text-xs">Start Date</Label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full justify-start text-left font-normal text-xs",
+                                        !formData.onlineStartDate && "text-muted-foreground"
+                                      )}
+                                    >
+                                      <CalendarIcon className="mr-1 h-3 w-3" />
+                                      {formData.onlineStartDate ? format(formData.onlineStartDate, "MMM d") : "Start"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={formData.onlineStartDate}
+                                      onSelect={(date) => setFormData(prev => ({ ...prev, onlineStartDate: date }))}
+                                      initialFocus
+                                      className="pointer-events-auto"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                              <div>
+                                <Label className="text-xs">End Date</Label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full justify-start text-left font-normal text-xs",
+                                        !formData.onlineEndDate && "text-muted-foreground"
+                                      )}
+                                    >
+                                      <CalendarIcon className="mr-1 h-3 w-3" />
+                                      {formData.onlineEndDate ? format(formData.onlineEndDate, "MMM d") : "End"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={formData.onlineEndDate}
+                                      onSelect={(date) => setFormData(prev => ({ ...prev, onlineEndDate: date }))}
+                                      initialFocus
+                                      className="pointer-events-auto"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label htmlFor="onlineStartTime">Start Time *</Label>
+                              <Input
+                                id="onlineStartTime"
+                                type="time"
+                                value={formData.onlineStartTime}
+                                onChange={(e) => setFormData(prev => ({ ...prev, onlineStartTime: e.target.value }))}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="onlineEndTime">End Time *</Label>
+                              <Input
+                                id="onlineEndTime"
+                                type="time"
+                                value={formData.onlineEndTime}
+                                onChange={(e) => setFormData(prev => ({ ...prev, onlineEndTime: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              id="description"
+                              value={formData.description}
+                              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                              placeholder="Market description..."
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="isRecurring"
+                              checked={formData.isRecurring}
+                              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRecurring: !!checked }))}
+                            />
+                            <Label htmlFor="isRecurring" className="flex items-center gap-2">
+                              <RefreshCw className="h-4 w-4" />
+                              Recurring Schedule
+                            </Label>
+                          </div>
+
+                          <Button type="submit" className="w-full">Add Schedule</Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {schedules.length === 0 ? (
@@ -306,6 +558,7 @@ const AdminDashboard = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Schedule Name</TableHead>
+                          <TableHead>Address</TableHead>
                           <TableHead>Market Date</TableHead>
                           <TableHead>Market Hours</TableHead>
                           <TableHead>Shop Hours</TableHead>
@@ -320,6 +573,7 @@ const AdminDashboard = () => {
                             onClick={() => handleMarketScheduleClick(schedule)}
                           >
                             <TableCell className="font-medium">{schedule.name}</TableCell>
+                            <TableCell>{schedule.address}</TableCell>
                             <TableCell>{schedule.marketDate.toLocaleDateString()}</TableCell>
                             <TableCell>
                               {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
