@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -47,7 +46,6 @@ const ProductForm = ({
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -90,25 +88,23 @@ const ProductForm = ({
         toast.success('Product created successfully')
         onSuccess(variables)
       }
-      setIsSaving(false)
     },
     onError: (error) => {
       console.error('Error saving product:', error)
       toast.error(`Error: ${error.message}`)
-      setIsSaving(false)
     },
   })
 
   const onSubmit = (values: ProductFormValues) => {
-    console.log('Form submitted, isSaving:', isSaving, 'isPending:', saveProductMutation.isPending)
+    console.log('Form submitted, isPending:', saveProductMutation.isPending)
     
-    // Prevent double submission
-    if (isSaving || saveProductMutation.isPending) {
-      console.log('Preventing double submission')
+    // Prevent double submission - only check isPending status
+    if (saveProductMutation.isPending) {
+      console.log('Preventing double submission - mutation already pending')
       return
     }
 
-    setIsSaving(true)
+    console.log('Submitting product form with values:', values)
     saveProductMutation.mutate(values)
   }
 
@@ -292,9 +288,9 @@ const ProductForm = ({
           </Button>
           <Button
             type="submit"
-            disabled={isSaving || saveProductMutation.isPending}
+            disabled={saveProductMutation.isPending}
           >
-            {isSaving || saveProductMutation.isPending ? 'Saving...' : submitButtonText}
+            {saveProductMutation.isPending ? 'Saving...' : submitButtonText}
           </Button>
         </div>
       </form>
