@@ -45,8 +45,9 @@ const Shop = () => {
         <div className="container mx-auto px-4 py-8">
           <ShopAvailabilityBanner />
           
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-64 lg:flex-shrink-0">
+          <div className="flex flex-col lg:flex-row gap-8 relative">
+            {/* Filters Sidebar */}
+            <aside className="lg:w-64 lg:flex-shrink-0">
               <ShopFilters
                 filterVisible={filterVisible}
                 setFilterVisible={setFilterVisible}
@@ -60,14 +61,16 @@ const Shop = () => {
                 setVendorFilter={setVendorFilter}
                 vendors={vendors}
               />
-            </div>
-            <div className="flex-1">
+            </aside>
+            
+            {/* Main Content */}
+            <main className="flex-1 min-w-0">
               <ProductGrid 
                 products={filteredProducts} 
                 vendors={vendors}
                 isLoading={false}
               />
-            </div>
+            </main>
           </div>
         </div>
       </main>

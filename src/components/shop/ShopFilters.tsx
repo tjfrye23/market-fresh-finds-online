@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
 import {
@@ -87,28 +88,31 @@ const ShopFilters = ({
       {/* Mobile filter button */}
       <button
         onClick={toggleFilter}
-        className="mb-4 bg-market-gray px-4 py-2 rounded-md flex items-center md:hidden"
+        className="mb-4 bg-market-gray px-4 py-2 rounded-md flex items-center lg:hidden"
       >
         <Filter className="h-4 w-4 mr-2" />
         Filters
       </button>
       
       {/* Mobile overlay */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 z-40 md:hidden ${filterVisible ? 'block' : 'hidden'}`} 
-        onClick={toggleFilter}
-      />
+      {filterVisible && (
+        <div 
+          className="fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 z-40 lg:hidden" 
+          onClick={toggleFilter}
+        />
+      )}
       
       {/* Filters panel */}
       <div className={`
-        fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 
-        md:static md:w-64 md:transform-none md:z-auto md:h-auto md:flex-shrink-0
-        ${filterVisible ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 md:block
+        ${/* Mobile styles */}
+        fixed top-0 left-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 lg:hidden
+        ${filterVisible ? 'translate-x-0' : '-translate-x-full'}
+        ${/* Desktop styles */}
+        lg:static lg:w-full lg:transform-none lg:z-auto lg:h-auto lg:block lg:translate-x-0
       `}>
-        <div className="bg-white shadow-md rounded-lg p-6 h-full md:h-auto overflow-y-auto">
+        <div className="bg-white shadow-md rounded-lg p-6 h-full lg:h-auto overflow-y-auto">
           {/* Mobile header */}
-          <div className="flex justify-between items-center mb-4 md:hidden">
+          <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="font-semibold text-xl">Filters</h2>
             <button onClick={toggleFilter} className="text-gray-500 hover:text-gray-700">
               ✕
@@ -116,7 +120,7 @@ const ShopFilters = ({
           </div>
           
           {/* Desktop header */}
-          <h2 className="font-semibold text-xl mb-4 hidden md:block">Filters</h2>
+          <h2 className="font-semibold text-xl mb-4 hidden lg:block">Filters</h2>
           
           <Accordion type="multiple" defaultValue={["categories", "vendor", "features", "price"]} className="w-full">
             <AccordionItem value="categories">
