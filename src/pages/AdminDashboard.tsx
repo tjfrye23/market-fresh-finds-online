@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -295,7 +296,7 @@ const AdminDashboard = () => {
               {/* Market Schedules Table */}
               <Card>
                 <CardHeader>
-                  <CardTitle>All Market Schedules</CardTitle>
+                  <CardTitle>Market Schedules</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {schedules.length === 0 ? (
