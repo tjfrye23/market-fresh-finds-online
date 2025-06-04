@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Save, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Save, ArrowRight, Phone, Mail } from 'lucide-react'
 import { getVendorOrders } from '@/services/vendorService'
 import { Order } from '@/services/orderService'
 import { toast } from 'sonner'
@@ -83,6 +82,23 @@ const OrderDetail = () => {
       }
     }
   }, [user, orderId, isAdmin])
+
+  const handleContactCustomer = () => {
+    if (!order?.customerInfo) return
+    
+    const { email, phone, firstName, lastName } = order.customerInfo
+    const subject = `Regarding your order ${order.orderNumber}`
+    const body = `Hi ${firstName},\n\nI hope this message finds you well. I'm reaching out regarding your recent order ${order.orderNumber}.\n\nBest regards`
+    
+    // Create mailto link
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.open(mailtoLink, '_blank')
+  }
+
+  const handleCallCustomer = () => {
+    if (!order?.customerInfo?.phone) return
+    window.open(`tel:${order.customerInfo.phone}`, '_self')
+  }
 
   const handleStatusUpdate = async () => {
     if (!order || !orderId) return
@@ -234,7 +250,29 @@ const OrderDetail = () => {
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Customer Information</CardTitle>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleCallCustomer}
+                    className="flex items-center gap-2"
+                  >
+                    <Phone className="h-4 w-4" />
+                    Call
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleContactCustomer}
+                    className="flex items-center gap-2"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
