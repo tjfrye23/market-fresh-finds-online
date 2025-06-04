@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -45,7 +44,7 @@ const AddProducts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendorProducts'] })
       toast.success(`${products.length} products successfully added`)
-      navigate('/vendor/manage-products')
+      navigate('/vendor/dashboard')
     },
     onError: (error) => {
       console.error('Error saving products:', error)
