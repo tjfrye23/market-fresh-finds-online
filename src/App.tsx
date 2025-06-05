@@ -23,6 +23,7 @@ import Favorites from './pages/Favorites'
 import Vendors from './pages/Vendors'
 import VendorDetail from './pages/VendorDetail'
 import VendorDetails from './pages/VendorDetails'
+import Markets from './pages/Markets'
 import About from './pages/About'
 import UserProfile from './pages/UserProfile'
 import CustomerDetails from './pages/CustomerDetails'
@@ -65,6 +66,7 @@ function App() {
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/vendors" element={<Vendors />} />
                     <Route path="/vendor/:id" element={<VendorDetail />} />
+                    <Route path="/markets" element={<Markets />} />
                     <Route path="/about" element={<About />} />
 
                     {/* Protected routes */}

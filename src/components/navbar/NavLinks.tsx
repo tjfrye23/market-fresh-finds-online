@@ -12,6 +12,7 @@ import {
   Package,
   BarChart3,
   Heart,
+  MapPin,
 } from 'lucide-react'
 import { useFavorites } from '@/contexts/FavoritesContext'
 import { Badge } from '@/components/ui/badge'
@@ -79,21 +80,30 @@ const NavLinks = ({
         </Link>
 
         <Link
-          to="/about"
-          className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
-          onClick={onClose}
-        >
-          <Book className="mr-2 h-5 w-5" />
-          <span>About Us</span>
-        </Link>
-
-        <Link
           to="/vendors"
           className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
           onClick={onClose}
         >
           <Users className="mr-2 h-5 w-5" />
           <span>Our Vendors</span>
+        </Link>
+
+        <Link
+          to="/markets"
+          className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+          onClick={onClose}
+        >
+          <MapPin className="mr-2 h-5 w-5" />
+          <span>Our Markets</span>
+        </Link>
+
+        <Link
+          to="/about"
+          className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-market-green-dark hover:bg-gray-50"
+          onClick={onClose}
+        >
+          <Book className="mr-2 h-5 w-5" />
+          <span>About Us</span>
         </Link>
 
         {isLoggedIn && (
