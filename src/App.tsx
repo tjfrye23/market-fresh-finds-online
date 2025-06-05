@@ -90,6 +90,7 @@ function App() {
 
                     {/* Admin routes */}
                     <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                    <Route path="/admin/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
                     <Route path="/admin/vendor/:id" element={<ProtectedRoute><AdminVendorDetails /></ProtectedRoute>} />
                     <Route path="/admin/market-schedule/:id" element={<ProtectedRoute><MarketScheduleDetail /></ProtectedRoute>} />
 
