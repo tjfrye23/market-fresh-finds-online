@@ -20,24 +20,21 @@ const About = () => {
               <div>
                 <h2 className="section-title">Our Story</h2>
                 <p className="text-gray-700 mb-4">
-                  Market Fresh was founded in 2010 with a simple mission: to
-                  connect local farmers with community members seeking fresh,
-                  sustainably grown food. What started as a small weekend market
-                  with just five farmers has grown into a vibrant hub for local
-                  agriculture and artisanal food products.
+                  Market Fresh was founded in 2015 with a simple mission: to
+                  make ordering from local farmers and vendors at our local 
+                  farmers markets easier.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  As third-generation farmers ourselves, we understand the
-                  challenges that small-scale agricultural producers face in
-                  today's market. We created this platform to ensure fair prices
-                  for farmers while providing customers with the freshest, most
-                  nutritious food possible.
+                  As farmers market frequenters, we understand that it can
+                  be cumbersome to browse multiple websites to place orders
+                  from different vendors. We created this platform to provide
+                  one location to place an order from all of our vendors at
+                  the local market.
                 </p>
                 <p className="text-gray-700">
-                  Over the years, we've expanded our offerings to include not
-                  just fruits and vegetables, but also dairy, eggs, baked goods,
-                  preserves, and other artisanal products—all sourced from
-                  within 100 miles of our community.
+                  We are constantly expanding the vendors we support and are
+                  always looking to improve our platform for both our customers
+                  and our vendors.
                 </p>
               </div>
               <div className="rounded-lg overflow-hidden shadow-xl">
