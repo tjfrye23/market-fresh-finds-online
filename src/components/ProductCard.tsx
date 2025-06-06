@@ -103,13 +103,13 @@ const ProductCard = ({
         </div>
 
         {/* Product Title */}
-        <h3 className="text-gray-800 font-medium text-base mb-3 leading-tight hover:text-market-green transition-colors">
+        <h3 className="text-gray-800 font-medium text-base mb-3 leading-tight hover:text-market-green transition-colors text-left">
           {name}
         </h3>
 
         {/* Farm Name */}
         {farmName && (
-          <p className="text-gray-500 text-sm mb-2">
+          <p className="text-gray-500 text-sm mb-2 text-left">
             from{' '}
             {vendorId ? (
               <Link
