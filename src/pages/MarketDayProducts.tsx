@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
@@ -300,9 +299,12 @@ const MarketDayProducts = () => {
                               onCheckedChange={(checked) => {
                                 if (!isAdditionalPackage) {
                                   if (pkg) {
-                                    handlePrepackagedChange(packageId, !!checked)
+                                    handlePrepackagedChange(pkg.packageId, !!checked)
                                   } else {
-                                    addNewPackageSize(product.id)
+                                    // Only add new package if user is checking the box
+                                    if (checked) {
+                                      addNewPackageSize(product.id)
+                                    }
                                   }
                                 }
                               }}
