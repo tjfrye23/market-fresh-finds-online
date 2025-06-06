@@ -62,23 +62,7 @@ const ProductGrid = ({ products, vendors, isLoading, selectedMarketDay }: Produc
   }
 
   return (
-    <div>
-      {selectedMarketDay && (
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <h3 className="text-lg font-medium text-green-800 mb-1">
-            Products for {selectedMarketDay.scheduleName}
-          </h3>
-          <p className="text-green-700 text-sm">
-            {selectedMarketDay.marketDate.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })} • {activeProducts.length} product{activeProducts.length !== 1 ? 's' : ''} available
-          </p>
-        </div>
-      )}
-      
+    <div>    
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {activeProducts.map((product) => {
           const productWithVendor = getProductWithVendorInfo(product)
