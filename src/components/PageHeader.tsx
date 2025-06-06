@@ -25,7 +25,7 @@ const PageHeader = ({
         {overlay && (
           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         )}
-        <div className="container mx-auto px-4 h-full flex flex-col justify-center items-start text-left relative z-10">
+        <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center text-center relative z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4">
             {title}
           </h1>
