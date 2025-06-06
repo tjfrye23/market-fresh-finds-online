@@ -111,7 +111,7 @@ const VendorDetail = () => {
                     </CardDescription>
                   </div>
 
-                  <div className="mt-4 md:mt-0 flex items-center">
+                  {/* <div className="mt-4 md:mt-0 flex items-center">
                     <div className="flex items-center text-yellow-500 mr-2">
                       <Star className="h-5 w-5 fill-current" />
                       <Star className="h-5 w-5 fill-current" />
@@ -120,7 +120,7 @@ const VendorDetail = () => {
                       <Star className="h-5 w-5 fill-current" />
                     </div>
                     <span className="text-gray-600">(5.0)</span>
-                  </div>
+                  </div> */}
                 </div>
               </CardHeader>
 
