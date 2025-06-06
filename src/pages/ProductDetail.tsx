@@ -1,3 +1,4 @@
+
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -218,7 +219,7 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
               {/* Image Gallery */}
@@ -271,17 +272,17 @@ const ProductDetail = () => {
               {/* Product Information */}
               <div className="space-y-6">
                 {/* Category */}
-                <button className="text-sm font-medium text-gray-600 uppercase tracking-wide hover:text-gray-800 transition-colors duration-200">
+                <button className="text-sm font-medium text-gray-600 uppercase tracking-wide hover:text-gray-800 transition-colors duration-200 text-left">
                   {displayProduct.category}
                 </button>
 
                 {/* Product Title */}
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight text-left">
                   {displayProduct.name}
                 </h1>
 
                 {/* Product Tags */}
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 justify-start">
                   {displayProduct.organic && (
                     <Badge className="bg-market-green text-white">
                       <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -311,13 +312,13 @@ const ProductDetail = () => {
                 )}
 
                 {/* Price */}
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900 text-left">
                   ${displayProduct.price.toFixed(2)}/{displayProduct.unit}
                 </div>
 
                 {/* Store Information */}
                 {selectedMarketDayData && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                     <div className="text-gray-700">
                       Pickup at <span className="font-bold text-gray-900">Charlotte Regional Farmer's Market</span> on{' '}
                       <span className="font-bold text-gray-900">
@@ -329,7 +330,7 @@ const ProductDetail = () => {
                 )}
 
                 {/* Stock Status */}
-                <div className="mb-4">
+                <div className="mb-4 text-left">
                   <p className="text-sm text-gray-600">
                     {displayProduct.stock > 0 ? (
                       <span className="text-green-600">
@@ -347,19 +348,19 @@ const ProductDetail = () => {
                     {/* Package Options Selector */}
                     {availablePackages.length > 0 && (
                       <div className="space-y-1">
-                        <label className="block text-xs font-medium text-gray-700">Package Options</label>
+                        <label className="block text-xs font-medium text-gray-700 text-left">Package Options</label>
                         <div className="relative">
                           <select 
                             value={selectedPackage?.packageId || ''}
                             onChange={(e) => handlePackageChange(e.target.value)}
-                            className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-center text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-left text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                           >
                             {availablePackages.map((pkg) => (
                               <option key={pkg.packageId} value={pkg.packageId || ''}>
                                 {pkg.prepackaged && pkg.packageSize 
                                   ? `${pkg.packageSize} ${pkg.productUnit} package`
                                   : `Bulk ${pkg.productUnit}`
-                                } - ${pkg.quantity} available
+                                } - {pkg.quantity} available
                               </option>
                             ))}
                           </select>
@@ -374,12 +375,12 @@ const ProductDetail = () => {
 
                     {/* Quantity Selector */}
                     <div className="space-y-1">
-                      <label className="block text-xs font-medium text-gray-700">Quantity</label>
+                      <label className="block text-xs font-medium text-gray-700 text-left">Quantity</label>
                       <div className="relative">
                         <select 
                           value={quantity}
                           onChange={(e) => setQuantity(parseInt(e.target.value))}
-                          className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-center text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-left text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                         >
                           {quantityOptions.map((option) => (
                             <option key={option} value={option}>
@@ -418,16 +419,16 @@ const ProductDetail = () => {
 
                 {/* Product Description */}
                 {displayProduct.description && (
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+                  <div className="space-y-3 text-left">
+                    <h3 className="text-lg font-semibold text-gray-900 text-left">Description</h3>
                     <div className="space-y-2">
-                      <p className="text-gray-700 leading-relaxed">
+                      <p className="text-gray-700 leading-relaxed text-left">
                         {showFullDescription ? displayProduct.description : truncatedDescription}
                       </p>
                       {displayProduct.description.length > truncatedDescription.length && (
                         <button 
                           onClick={() => setShowFullDescription(!showFullDescription)}
-                          className="text-green-600 hover:text-green-700 font-medium text-sm underline"
+                          className="text-green-600 hover:text-green-700 font-medium text-sm underline text-left"
                         >
                           {showFullDescription ? 'Show less' : 'More'}
                         </button>
