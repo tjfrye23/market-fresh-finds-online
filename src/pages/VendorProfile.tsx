@@ -509,12 +509,12 @@ const VendorProfile = () => {
                       <span>Specialty: {profile.specialty || 'Fresh Produce'}</span>
                     </div>
 
-                    {/* Website and Social Media Links */}
-                    {(profile.website || profile.facebook || profile.instagram || profile.twitter) && (
-                      <div className="mb-6">
-                        <h3 className="font-semibold text-lg text-market-green-dark mb-3">
-                          Connect with {profile.vendor_name || 'Us'}
-                        </h3>
+                    {/* Website and Social Media Links - Always show this section */}
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-lg text-market-green-dark mb-3">
+                        Connect with {profile.vendor_name || 'Us'}
+                      </h3>
+                      {(profile.website || profile.facebook || profile.instagram || profile.twitter) ? (
                         <div className="flex flex-wrap gap-3">
                           {profile.website && (
                             <a
@@ -568,8 +568,12 @@ const VendorProfile = () => {
                             </a>
                           )}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-gray-600">
+                          No website or social media links added yet. Click "Edit Profile" to add them.
+                        </p>
+                      )}
+                    </div>
 
                     <div className="mb-6">
                       <h3 className="font-semibold text-lg text-market-green-dark mb-2">
