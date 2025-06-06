@@ -1,16 +1,38 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
-import PageHeader from '@/components/PageHeader'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ImageUploader from '@/components/ImageUploader'
-import { Loader2, Edit, Save, X, CheckCircle, Clock, AlertTriangle, Globe, Facebook, Instagram, Twitter, ExternalLink } from 'lucide-react'
+import { 
+  Loader2, 
+  Edit, 
+  Save, 
+  X, 
+  CheckCircle, 
+  Clock, 
+  AlertTriangle, 
+  Globe, 
+  Facebook, 
+  Instagram, 
+  Twitter, 
+  ExternalLink,
+  ArrowLeft,
+  MapPin,
+  Store
+} from 'lucide-react'
 import { getVendorByUserId, saveVendorProfile, updateVendorStatus } from '@/services/mockServices'
 import { MockVendorProfile } from '@/data/mockData'
 
@@ -34,6 +56,10 @@ const VendorProfile = () => {
     status: 'pending'
   })
   const [isNewProfile, setIsNewProfile] = useState(true)
+
+  // Default image if none provided
+  const defaultImage =
+    'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
 
   useEffect(() => {
     if (!user) {
@@ -197,10 +223,12 @@ const VendorProfile = () => {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-market-green" />
-          <span className="ml-2">Loading vendor profile...</span>
-        </div>
+        <main className="flex-grow flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center p-12">
+            <Loader2 className="h-12 w-12 animate-spin text-market-green mb-4" />
+            <p className="text-lg">Loading vendor profile...</p>
+          </div>
+        </main>
         <Footer />
       </div>
     )
@@ -209,357 +237,357 @@ const VendorProfile = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
+
       <main className="flex-grow">
-        <PageHeader
-          title={
-            isNewProfile
-              ? 'Create Your Vendor Profile'
-              : 'Manage Your Vendor Profile'
-          }
-          description="Share information about your farm and products with our customers"
-        />
+        {/* Back to Dashboard Button */}
+        <div className="px-4 py-4">
+          <Link to="/vendor/dashboard">
+            <Button variant="outline" className="mb-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
+
+        {/* Hero Image Section */}
+        <div className="h-64 md:h-96 w-full relative">
+          <img
+            src={profile.image_url || defaultImage}
+            alt={profile.vendor_name || 'Vendor'}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black opacity-30"></div>
+        </div>
 
         <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-            {/* Status Banner */}
-            {!isNewProfile && (
-              <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${getStatusColor(profile.status || 'pending')}`}>
-                {getStatusIcon(profile.status || 'pending')}
-                <div>
-                  <p className="font-medium">
-                    Profile Status: {profile.status === 'active' ? 'Active' : profile.status === 'pending' ? 'Pending Review' : 'Rejected'}
-                  </p>
-                  <p className="text-sm">
-                    {profile.status === 'active' && 'Your profile is approved and products are visible to customers.'}
-                    {profile.status === 'pending' && 'Your profile is under admin review. Products will be visible once approved.'}
-                    {profile.status === 'rejected' && 'Your profile was rejected. Please contact support for more information.'}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Admin Actions */}
-            {user?.role === 'admin' && !isNewProfile && profile.status === 'pending' && (
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h3 className="font-medium text-blue-800 mb-3">Admin Actions</h3>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleStatusUpdate('active')}
-                    className="bg-green-600 hover:bg-green-700"
-                    size="sm"
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Approve Vendor
-                  </Button>
-                  <Button
-                    onClick={() => handleStatusUpdate('rejected')}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Reject Vendor
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {isNewProfile || isEditing ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
-                  <Label htmlFor="vendor_name" className="text-base">
-                    Farm/Business Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="vendor_name"
-                    name="vendor_name"
-                    value={profile.vendor_name || ''}
-                    onChange={handleChange}
-                    placeholder="Your farm or business name"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label htmlFor="owner_name" className="text-base">
-                    Owner Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="owner_name"
-                    name="owner_name"
-                    value={profile.owner_name || ''}
-                    onChange={handleChange}
-                    placeholder="Your full name"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label htmlFor="location" className="text-base">
-                    Location
-                  </Label>
-                  <Input
-                    id="location"
-                    name="location"
-                    value={profile.location || ''}
-                    onChange={handleChange}
-                    placeholder="City, State"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label htmlFor="specialty" className="text-base">
-                    Specialty
-                  </Label>
-                  <Input
-                    id="specialty"
-                    name="specialty"
-                    value={profile.specialty || ''}
-                    onChange={handleChange}
-                    placeholder="E.g., Organic Vegetables, Artisanal Cheeses, etc."
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label htmlFor="description" className="text-base">
-                    About Your Farm/Business
-                  </Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    value={profile.description || ''}
-                    onChange={handleChange}
-                    placeholder="Tell customers about your farm, your growing practices, your story..."
-                    rows={5}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label className="text-base">Farm/Business Image</Label>
-                  <ImageUploader
-                    existingImageUrl={profile.image_url}
-                    onImageUploaded={handleImageUploaded}
-                    onImageRemoved={handleImageRemoved}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-market-green-dark">Online Presence</h3>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      name="website"
-                      type="url"
-                      value={profile.website || ''}
-                      onChange={handleChange}
-                      placeholder="https://yourwebsite.com"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="facebook">Facebook</Label>
-                    <Input
-                      id="facebook"
-                      name="facebook"
-                      value={profile.facebook || ''}
-                      onChange={handleChange}
-                      placeholder="facebook.com/yourpage or @yourpage"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram</Label>
-                    <Input
-                      id="instagram"
-                      name="instagram"
-                      value={profile.instagram || ''}
-                      onChange={handleChange}
-                      placeholder="instagram.com/yourpage or @yourpage"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="twitter">Twitter/X</Label>
-                    <Input
-                      id="twitter"
-                      name="twitter"
-                      value={profile.twitter || ''}
-                      onChange={handleChange}
-                      placeholder="twitter.com/yourpage or @yourpage"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 flex space-x-4">
-                  <Button
-                    variant="outline"
-                    onClick={
-                      isNewProfile
-                        ? () => navigate('/vendor/dashboard')
-                        : cancelEditing
-                    }
-                    type="button"
-                    className="w-1/2"
-                  >
-                    {isNewProfile ? (
-                      'Cancel'
-                    ) : (
-                      <>
-                        <X className="mr-2" />
-                        Cancel Editing
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-market-green hover:bg-market-green-dark w-1/2"
-                    disabled={saving}
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2" />
-                        {isNewProfile ? 'Create Profile' : 'Save Changes'}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            ) : (
-              // View mode display
-              <div className="space-y-8">
-                <div className="flex justify-between items-start">
+          <div className="max-w-4xl mx-auto -mt-16 relative z-10">
+            <Card className="shadow-xl">
+              <CardHeader className="pb-2">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                   <div>
-                    <h2 className="text-2xl font-bold text-market-green-dark">
-                      {profile.vendor_name}
-                    </h2>
-                    <p className="text-lg text-gray-700">
-                      Owned by {profile.owner_name}
-                    </p>
-                    {profile.location && (
-                      <p className="text-gray-600 mt-1">{profile.location}</p>
-                    )}
+                    <CardTitle className="text-3xl font-display text-market-green-dark">
+                      {profile.vendor_name || 'Your Farm/Business'}
+                    </CardTitle>
+                    <CardDescription className="text-xl mt-1">
+                      Owned by {profile.owner_name || 'You'}
+                    </CardDescription>
                   </div>
-                  <Button
-                    onClick={startEditing}
-                    className="bg-market-green hover:bg-market-green-dark"
-                  >
-                    <Edit className="mr-2" />
-                    Edit Profile
-                  </Button>
+
+                  {!isNewProfile && !isEditing && (
+                    <Button
+                      onClick={startEditing}
+                      className="mt-4 md:mt-0 bg-market-green hover:bg-market-green-dark"
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit Profile
+                    </Button>
+                  )}
                 </div>
+              </CardHeader>
 
-                {profile.image_url && (
-                  <div className="rounded-lg overflow-hidden shadow-md h-64 w-full">
-                    <img
-                      src={profile.image_url}
-                      alt={profile.vendor_name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-
-                {profile.specialty && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-market-green-dark">
-                      Specialty
-                    </h3>
-                    <p className="text-gray-700">{profile.specialty}</p>
-                  </div>
-                )}
-
-                {profile.description && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-market-green-dark">
-                      About Us
-                    </h3>
-                    <p className="text-gray-700 whitespace-pre-line">
-                      {profile.description}
-                    </p>
-                  </div>
-                )}
-
-                {/* Website and Social Media Links */}
-                {(profile.website || profile.facebook || profile.instagram || profile.twitter) && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-market-green-dark mb-3">
-                      Connect with Us
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {profile.website && (
-                        <a
-                          href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 hover:text-gray-900"
-                        >
-                          <Globe className="h-4 w-4" />
-                          <span>Website</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                      
-                      {profile.facebook && (
-                        <a
-                          href={formatSocialUrl('facebook', profile.facebook)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700 hover:text-blue-900"
-                        >
-                          <Facebook className="h-4 w-4" />
-                          <span>Facebook</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                      
-                      {profile.instagram && (
-                        <a
-                          href={formatSocialUrl('instagram', profile.instagram)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors text-pink-700 hover:text-pink-900"
-                        >
-                          <Instagram className="h-4 w-4" />
-                          <span>Instagram</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                      
-                      {profile.twitter && (
-                        <a
-                          href={formatSocialUrl('twitter', profile.twitter)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors text-sky-700 hover:text-sky-900"
-                        >
-                          <Twitter className="h-4 w-4" />
-                          <span>Twitter</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
+              <CardContent className="pt-2">
+                {/* Status Banner */}
+                {!isNewProfile && (
+                  <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${getStatusColor(profile.status || 'pending')}`}>
+                    {getStatusIcon(profile.status || 'pending')}
+                    <div>
+                      <p className="font-medium">
+                        Profile Status: {profile.status === 'active' ? 'Active' : profile.status === 'pending' ? 'Pending Review' : 'Rejected'}
+                      </p>
+                      <p className="text-sm">
+                        {profile.status === 'active' && 'Your profile is approved and products are visible to customers.'}
+                        {profile.status === 'pending' && 'Your profile is under admin review. Products will be visible once approved.'}
+                        {profile.status === 'rejected' && 'Your profile was rejected. Please contact support for more information.'}
+                      </p>
                     </div>
                   </div>
                 )}
 
-                <div className="pt-6">
-                  <Button
-                    onClick={() => navigate('/vendor/dashboard')}
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                  >
-                    Back to Dashboard
-                  </Button>
-                </div>
-              </div>
-            )}
+                {/* Admin Actions */}
+                {user?.role === 'admin' && !isNewProfile && profile.status === 'pending' && (
+                  <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 className="font-medium text-blue-800 mb-3">Admin Actions</h3>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleStatusUpdate('active')}
+                        className="bg-green-600 hover:bg-green-700"
+                        size="sm"
+                      >
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Approve Vendor
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusUpdate('rejected')}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        <AlertTriangle className="mr-2 h-4 w-4" />
+                        Reject Vendor
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {isNewProfile || isEditing ? (
+                  /* Edit Form */
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-4">
+                      <Label htmlFor="vendor_name" className="text-base">
+                        Farm/Business Name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="vendor_name"
+                        name="vendor_name"
+                        value={profile.vendor_name || ''}
+                        onChange={handleChange}
+                        placeholder="Your farm or business name"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label htmlFor="owner_name" className="text-base">
+                        Owner Name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="owner_name"
+                        name="owner_name"
+                        value={profile.owner_name || ''}
+                        onChange={handleChange}
+                        placeholder="Your full name"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label htmlFor="location" className="text-base">
+                        Location
+                      </Label>
+                      <Input
+                        id="location"
+                        name="location"
+                        value={profile.location || ''}
+                        onChange={handleChange}
+                        placeholder="City, State"
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label htmlFor="specialty" className="text-base">
+                        Specialty
+                      </Label>
+                      <Input
+                        id="specialty"
+                        name="specialty"
+                        value={profile.specialty || ''}
+                        onChange={handleChange}
+                        placeholder="E.g., Organic Vegetables, Artisanal Cheeses, etc."
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label htmlFor="description" className="text-base">
+                        About Your Farm/Business
+                      </Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        value={profile.description || ''}
+                        onChange={handleChange}
+                        placeholder="Tell customers about your farm, your growing practices, your story..."
+                        rows={5}
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="text-base">Farm/Business Image</Label>
+                      <ImageUploader
+                        existingImageUrl={profile.image_url}
+                        onImageUploaded={handleImageUploaded}
+                        onImageRemoved={handleImageRemoved}
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-market-green-dark">Online Presence</h3>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="website">Website</Label>
+                        <Input
+                          id="website"
+                          name="website"
+                          type="url"
+                          value={profile.website || ''}
+                          onChange={handleChange}
+                          placeholder="https://yourwebsite.com"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="facebook">Facebook</Label>
+                        <Input
+                          id="facebook"
+                          name="facebook"
+                          value={profile.facebook || ''}
+                          onChange={handleChange}
+                          placeholder="facebook.com/yourpage or @yourpage"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="instagram">Instagram</Label>
+                        <Input
+                          id="instagram"
+                          name="instagram"
+                          value={profile.instagram || ''}
+                          onChange={handleChange}
+                          placeholder="instagram.com/yourpage or @yourpage"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="twitter">Twitter/X</Label>
+                        <Input
+                          id="twitter"
+                          name="twitter"
+                          value={profile.twitter || ''}
+                          onChange={handleChange}
+                          placeholder="twitter.com/yourpage or @yourpage"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex space-x-4">
+                      <Button
+                        variant="outline"
+                        onClick={
+                          isNewProfile
+                            ? () => navigate('/vendor/dashboard')
+                            : cancelEditing
+                        }
+                        type="button"
+                        className="w-1/2"
+                      >
+                        {isNewProfile ? (
+                          'Cancel'
+                        ) : (
+                          <>
+                            <X className="mr-2" />
+                            Cancel Editing
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="bg-market-green hover:bg-market-green-dark w-1/2"
+                        disabled={saving}
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="mr-2" />
+                            {isNewProfile ? 'Create Profile' : 'Save Changes'}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  /* View Mode Display - matching VendorDetail layout */
+                  <div>
+                    <div className="flex items-center text-gray-600 mb-4">
+                      <MapPin className="h-5 w-5 text-market-green mr-2" />
+                      <span>{profile.location || 'California'}</span>
+                    </div>
+
+                    <div className="flex items-center text-gray-600 mb-6">
+                      <Store className="h-5 w-5 text-market-green mr-2" />
+                      <span>Specialty: {profile.specialty || 'Fresh Produce'}</span>
+                    </div>
+
+                    {/* Website and Social Media Links */}
+                    {(profile.website || profile.facebook || profile.instagram || profile.twitter) && (
+                      <div className="mb-6">
+                        <h3 className="font-semibold text-lg text-market-green-dark mb-3">
+                          Connect with {profile.vendor_name || 'Us'}
+                        </h3>
+                        <div className="flex flex-wrap gap-3">
+                          {profile.website && (
+                            <a
+                              href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 hover:text-gray-900"
+                            >
+                              <Globe className="h-4 w-4" />
+                              <span>Website</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                          
+                          {profile.facebook && (
+                            <a
+                              href={formatSocialUrl('facebook', profile.facebook)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700 hover:text-blue-900"
+                            >
+                              <Facebook className="h-4 w-4" />
+                              <span>Facebook</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                          
+                          {profile.instagram && (
+                            <a
+                              href={formatSocialUrl('instagram', profile.instagram)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors text-pink-700 hover:text-pink-900"
+                            >
+                              <Instagram className="h-4 w-4" />
+                              <span>Instagram</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                          
+                          {profile.twitter && (
+                            <a
+                              href={formatSocialUrl('twitter', profile.twitter)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors text-sky-700 hover:text-sky-900"
+                            >
+                              <Twitter className="h-4 w-4" />
+                              <span>Twitter</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-lg text-market-green-dark mb-2">
+                        About {profile.vendor_name || 'Us'}
+                      </h3>
+                      <p className="text-gray-700">
+                        {profile.description ||
+                          `${profile.vendor_name || 'This farm'} is committed to sustainable farming practices and bringing the freshest produce to your table. ${profile.owner_name || 'We'} take pride in growing the highest quality crops.`}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   )
