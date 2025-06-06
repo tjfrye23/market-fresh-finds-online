@@ -116,7 +116,7 @@ const Shop = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        <PageHeader title="Fresh Market" />
+        <PageHeader title="Market" />
         <div className="container mx-auto px-4 py-8">
           <ShopAvailabilityBanner />
           
