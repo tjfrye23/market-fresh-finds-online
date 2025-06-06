@@ -247,7 +247,7 @@ const MarketDayProducts = () => {
                       const { product, package: pkg, isMainRow } = row
                       const packageId = pkg?.packageId || `temp-${product.id}`
                       const isAdditionalPackage = !isMainRow && pkg
-                      const isPrepackaged = pkg ? pkg.prepackaged : false
+                      const isPrepackaged = pkg?.prepackaged || false
                         
                       return (
                         <TableRow key={`${product.id}-${index}`}>

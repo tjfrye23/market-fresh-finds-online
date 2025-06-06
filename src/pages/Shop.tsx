@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
@@ -59,49 +58,47 @@ const Shop = () => {
     }
   }, [selectedMarketDay])
 
-  // Load products for the selected market day - treat each package as a separate product
+  // Load products for the selected market day - aggregate by product but keep packages separate for detail view
   useEffect(() => {
     if (selectedMarketDay) {
       const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
       if (storedProducts) {
         const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
         
-        // Filter out products with zero quantity and convert each package to a separate product
-        const availableProducts = marketDayProductsData
+        // Group by productId and aggregate quantities for display
+        const productMap = new Map()
+        
+        marketDayProductsData
           .filter(mdp => mdp.quantity > 0)
-          .map(mdp => {
-            // Find the original product to get additional details
-            const originalProduct = mockProducts.find(p => p.id === mdp.productId)
-            if (!originalProduct) return null
-            
-            // Create a unique product for each package configuration
-            const uniqueId = mdp.packageId || `${mdp.productId}-${mdp.packageSize || 'bulk'}`
-            
-            return {
-              id: uniqueId,
-              name: mdp.prepackaged && mdp.packageSize 
-                ? `${mdp.productName} (${mdp.packageSize} ${mdp.productUnit})`
-                : mdp.productName,
-              price: mdp.productPrice,
-              unit: mdp.productUnit,
-              image: mdp.productImage || originalProduct.image,
-              category: originalProduct.category || 'Other',
-              organic: originalProduct.organic || false,
-              local: originalProduct.local || false,
-              user_id: originalProduct.user_id || '',
-              description: originalProduct.description,
-              stock: mdp.quantity,
-              created_at: originalProduct.created_at || new Date().toISOString(),
-              updated_at: originalProduct.updated_at || new Date().toISOString(),
-              // Add package info for display
-              packageSize: mdp.packageSize,
-              prepackaged: mdp.prepackaged,
-              originalProductId: mdp.productId
+          .forEach(mdp => {
+            if (productMap.has(mdp.productId)) {
+              // Add to existing product's total stock
+              const existing = productMap.get(mdp.productId)
+              existing.stock += mdp.quantity
+            } else {
+              // Find the original product to get additional details
+              const originalProduct = mockProducts.find(p => p.id === mdp.productId)
+              if (originalProduct) {
+                productMap.set(mdp.productId, {
+                  id: mdp.productId,
+                  name: mdp.productName,
+                  price: mdp.productPrice,
+                  unit: mdp.productUnit,
+                  image: mdp.productImage || originalProduct.image,
+                  category: originalProduct.category || 'Other',
+                  organic: originalProduct.organic || false,
+                  local: originalProduct.local || false,
+                  user_id: originalProduct.user_id || '',
+                  description: originalProduct.description,
+                  stock: mdp.quantity,
+                  created_at: originalProduct.created_at || new Date().toISOString(),
+                  updated_at: originalProduct.updated_at || new Date().toISOString(),
+                })
+              }
             }
           })
-          .filter(Boolean)
         
-        setMarketDayProducts(availableProducts)
+        setMarketDayProducts(Array.from(productMap.values()))
       } else {
         setMarketDayProducts([])
       }
