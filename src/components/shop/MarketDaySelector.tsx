@@ -79,8 +79,88 @@ const MarketDaySelector = ({
         <Calendar className="h-5 w-5 text-green-600" />
         <h2 className="text-lg font-semibold">Select Market Day</h2>
       </div>
+
+      {if (marketDays.length === 0) {
+        <div className="text-center py-4">
+          <p className="text-gray-500">No upcoming market days scheduled.</p>
+        </div>
+      } else if (availableMarketDays.length === 0) {
+        <div className="text-center py-4">
+        <Clock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+        <p className="text-gray-500 mb-2">No market days available for online ordering right now.</p>
+        <div className="space-y-2 text-sm text-gray-400">
+          {marketDays.map((marketDay) => (
+            <div key={marketDay.id} className="p-2 bg-gray-50 rounded">
+              <p className="font-medium">{formatMarketDay(marketDay)}</p>
+              <p>{getAvailabilityMessage(marketDay)}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      } else {
+        <div className="space-y-4">
+          <Select value={selectedMarketDay} onValueChange={onSelectMarketDay}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choose a market day to shop for..." />
+            </SelectTrigger>
+            <SelectContent>
+              {availableMarketDays.map((marketDay) => (
+                <SelectItem key={marketDay.id} value={marketDay.id}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{formatMarketDay(marketDay)}</span>
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {getMarketDayDetails(marketDay)}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          {selectedMarketDay && (
+            <div className="mt-4 p-4 bg-green-50 rounded-md border border-green-200">
+              {(() => {
+                const selected = marketDays.find(day => day.id === selectedMarketDay)
+                if (!selected) return null
+                
+                return (
+                  <div>
+                    <p className="text-green-800 font-medium">
+                      Shopping for: {formatMarketDay(selected)}
+                    </p>
+                    <p className="text-green-700 text-sm mt-1">
+                      {getMarketDayDetails(selected)}
+                    </p>
+                  </div>
+                )
+              })()}
+            </div>
+          )}
+          
+          {/* Show unavailable market days as informational */}
+          {marketDays.length > availableMarketDays.length && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                Upcoming Market Days
+              </h4>
+              <div className="space-y-2 text-sm">
+                {marketDays
+                  .filter(day => !isMarketDayAvailable(day))
+                  .map((marketDay) => (
+                    <div key={marketDay.id} className="text-gray-500">
+                      <p className="font-medium">{formatMarketDay(marketDay)}</p>
+                      <p className="text-xs">{getAvailabilityMessage(marketDay)}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      }}
       
-      {marketDays.length === 0 ? (
+      /* {marketDays.length === 0 ? (
         <div className="text-center py-4">
           <p className="text-gray-500">No upcoming market days scheduled.</p>
         </div>
@@ -158,7 +238,7 @@ const MarketDaySelector = ({
             </div>
           )}
         </div>
-      )}
+      )} */
     </div>
   )
 }
