@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
@@ -294,7 +295,7 @@ const MarketDayProducts = () => {
                           </TableCell>
                           <TableCell>
                             <Checkbox
-                              checked={isAdditionalPackage ? true : (pkg?.prepackaged || false)}
+                              checked={isAdditionalPackage ? true : Boolean(pkg?.prepackaged)}
                               disabled={isAdditionalPackage}
                               onCheckedChange={(checked) => {
                                 if (!isAdditionalPackage) {
