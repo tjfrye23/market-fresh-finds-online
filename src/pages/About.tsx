@@ -153,15 +153,6 @@ const About = () => {
               <a href="#" className="btn-primary">
                 Become a Vendor
               </a>
-              <a href="#" className="btn-secondary">
-                Volunteer Opportunities
-              </a>
-              <a
-                href="#"
-                className="bg-white text-market-green-dark hover:bg-gray-100 px-6 py-3 rounded-md font-medium transition-colors"
-              >
-                Join Our CSA Program
-              </a>
             </div>
           </section>
         </div>
