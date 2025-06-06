@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -226,6 +227,9 @@ const VendorDashboard = () => {
             Manage Shop Profile
           </Button>
         </div>
+
+        {/* Profile Status Banner */}
+        <ProfileStatusBanner userId={user.id} />
 
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
