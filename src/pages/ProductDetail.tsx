@@ -347,7 +347,7 @@ const ProductDetail = () => {
                                 {pkg.prepackaged && pkg.packageSize 
                                   ? `${pkg.packageSize} ${pkg.productUnit} package`
                                   : `Bulk ${pkg.productUnit}`
-                                } - {pkg.quantity} available
+                                } - ${(pkg.productPrice * quantity).toFixed(2)}
                               </option>
                             ))}
                           </select>
