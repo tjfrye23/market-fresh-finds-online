@@ -1,4 +1,3 @@
-
 import React from 'react'
 import {
   Select,
@@ -7,6 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Calendar, MapPin, Clock } from 'lucide-react'
 import { MarketDay } from '@/contexts/MarketScheduleContext'
 
@@ -118,24 +123,32 @@ const MarketDaySelector = ({
             </SelectContent>
           </Select>
           
-          {/* Show unavailable market days as informational */}
+          {/* Show unavailable market days as accordion */}
           {marketDays.length > availableMarketDays.length && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-              <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                Upcoming Market Days
-              </h4>
-              <div className="space-y-2 text-sm">
-                {marketDays
-                  .filter(day => !isMarketDayAvailable(day))
-                  .map((marketDay) => (
-                    <div key={marketDay.id} className="text-gray-500">
-                      <p className="font-medium">{formatMarketDay(marketDay)}</p>
-                      <p className="text-xs">{getAvailabilityMessage(marketDay)}</p>
-                    </div>
-                  ))}
-              </div>
-            </div>
+            <Accordion type="single" collapsible className="mt-4">
+              <AccordionItem value="upcoming-markets" className="border border-gray-200 rounded-md">
+                <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Upcoming Market Days
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="space-y-2 text-sm">
+                    {marketDays
+                      .filter(day => !isMarketDayAvailable(day))
+                      .map((marketDay) => (
+                        <div key={marketDay.id} className="text-gray-500">
+                          <p className="font-medium">{formatMarketDay(marketDay)}</p>
+                          <p className="text-xs">{getAvailabilityMessage(marketDay)}</p>
+                        </div>
+                      ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           )}
         </div>
       )}
