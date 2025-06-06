@@ -1,3 +1,4 @@
+
 import { useParams, Link } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -17,6 +18,7 @@ import {
   Store,
   MessageCircle,
   ShoppingBag,
+  ArrowLeft,
 } from 'lucide-react'
 import { useVendorDetails } from '@/hooks/useVendorDetails'
 
@@ -76,6 +78,16 @@ const VendorDetail = () => {
       <Navbar />
 
       <main className="flex-grow">
+        {/* Back to Vendors Button */}
+        <div className="container mx-auto px-4 py-4">
+          <Link to="/vendors">
+            <Button variant="outline" className="mb-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Vendors
+            </Button>
+          </Link>
+        </div>
+
         <div className="h-64 md:h-96 w-full relative">
           <img
             src={vendor.image_url || defaultImage}
