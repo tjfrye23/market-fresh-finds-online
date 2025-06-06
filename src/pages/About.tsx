@@ -1,3 +1,4 @@
+
 import PageHeader from '@/components/PageHeader'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -47,7 +48,7 @@ const About = () => {
             </div>
           </section>
 
-          <section className="mb-16">
+          {/* <section className="mb-16">
             <h2 className="section-title text-center mb-12">Our Values</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -104,9 +105,9 @@ const About = () => {
                 </p>
               </div>
             </div>
-          </section>
+          </section> */}
 
-          <section className="mb-16">
+          {/* <section className="mb-16">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="order-2 md:order-1 rounded-lg overflow-hidden shadow-xl">
                 <img
@@ -137,7 +138,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-          </section>
+          </section> */}
 
           <section className="mb-16 bg-market-green-light/10 p-8 rounded-lg">
             <h2 className="section-title text-center mb-8">
