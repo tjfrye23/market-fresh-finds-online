@@ -21,8 +21,6 @@ import {
 } from '@/components/ui/table'
 import { 
   ArrowLeft,
-  Plus,
-  Minus,
   Save
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -190,7 +188,6 @@ const MarketDayProducts = () => {
                       <TableHead>Features</TableHead>
                       <TableHead>Package Size</TableHead>
                       <TableHead>Stock</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -232,47 +229,25 @@ const MarketDayProducts = () => {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Input
-                              type="text"
-                              value={packageSize}
-                              onChange={(e) => handlePackageSizeChange(product.id, e.target.value)}
-                              className="w-20 text-center"
-                              placeholder="1"
-                            />
-                          </TableCell>
-                          <TableCell>
                             <div className="flex items-center gap-2">
                               <Input
-                                type="number"
-                                value={quantity}
-                                onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
+                                type="text"
+                                value={packageSize}
+                                onChange={(e) => handlePackageSizeChange(product.id, e.target.value)}
                                 className="w-20 text-center"
-                                min="0"
+                                placeholder="1"
                               />
                               <span className="text-sm text-gray-500">{product.unit}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleQuantityChange(product.id, quantity - 1)}
-                                disabled={quantity === 0}
-                                className="h-8 w-8"
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleQuantityChange(product.id, quantity + 1)}
-                                className="h-8 w-8"
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            <Input
+                              type="number"
+                              value={quantity}
+                              onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
+                              className="w-20 text-center"
+                              min="0"
+                            />
                           </TableCell>
                         </TableRow>
                       )
