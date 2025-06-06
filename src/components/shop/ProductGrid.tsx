@@ -23,7 +23,8 @@ const ProductGrid = ({ products, vendors, isLoading, selectedMarketDay }: Produc
     return {
       ...product,
       farmName: vendor?.vendor_name,
-      vendorStatus: vendor?.status
+      vendorStatus: vendor?.status,
+      vendorId: vendor?.id
     }
   }
 
@@ -95,6 +96,7 @@ const ProductGrid = ({ products, vendors, isLoading, selectedMarketDay }: Produc
               organic={product.organic || false}
               local={product.local || false}
               farmName={productWithVendor.farmName}
+              vendorId={productWithVendor.vendorId}
             />
           )
         })}
