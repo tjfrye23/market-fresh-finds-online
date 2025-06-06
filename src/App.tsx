@@ -22,7 +22,6 @@ import OrderDetail from './pages/OrderDetail'
 import Favorites from './pages/Favorites'
 import Vendors from './pages/Vendors'
 import VendorDetail from './pages/VendorDetail'
-import VendorDetails from './pages/VendorDetails'
 import Markets from './pages/Markets'
 import About from './pages/About'
 import UserProfile from './pages/UserProfile'
@@ -88,7 +87,6 @@ function App() {
                     <Route path="/vendor/market-day/:marketDayId" element={<VendorProtectedRoute><MarketDayDetail /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-day/:marketDayId/products" element={<VendorProtectedRoute><MarketDayProducts /></VendorProtectedRoute>} />
                     <Route path="/vendor/market-schedule/:id" element={<VendorProtectedRoute><MarketScheduleDetail /></VendorProtectedRoute>} />
-                    <Route path="/vendor-details/:id" element={<VendorDetails />} />
 
                     {/* Admin routes */}
                     <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
