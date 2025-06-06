@@ -35,7 +35,6 @@ const Favorites = () => {
       <main className="flex-grow">
         <div className="page-container py-8">
           <div className="flex items-center mb-8">
-            <Heart className="h-8 w-8 text-red-500 mr-3" />
             <h1 className="text-3xl font-bold text-gray-900">My Favorites</h1>
           </div>
 
