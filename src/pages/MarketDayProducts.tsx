@@ -11,6 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { 
   ArrowLeft,
   Plus,
@@ -26,6 +34,7 @@ interface MarketDayProduct {
   productUnit: string
   productImage?: string
   quantity: number
+  packageSize: string
 }
 
 const MarketDayProducts = () => {
@@ -91,15 +100,31 @@ const MarketDayProducts = () => {
           productPrice: product.price,
           productUnit: product.unit,
           productImage: product.image,
-          quantity: newQuantity
+          quantity: newQuantity,
+          packageSize: '1'
         }]
       }
     })
   }
 
+  const handlePackageSizeChange = (productId: string, packageSize: string) => {
+    setMarketDayProducts(prev => 
+      prev.map(p => 
+        p.productId === productId 
+          ? { ...p, packageSize }
+          : p
+      )
+    )
+  }
+
   const getProductQuantity = (productId: string): number => {
     const product = marketDayProducts.find(p => p.productId === productId)
     return product?.quantity || 0
+  }
+
+  const getProductPackageSize = (productId: string): string => {
+    const product = marketDayProducts.find(p => p.productId === productId)
+    return product?.packageSize || '1'
   }
 
   const handleSave = () => {
@@ -156,68 +181,104 @@ const MarketDayProducts = () => {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {vendorProducts.map((product) => {
-                  const quantity = getProductQuantity(product.id)
-                  return (
-                    <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        {product.image ? (
-                          <img 
-                            src={product.image} 
-                            alt={product.name}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                            <span className="text-gray-400 text-xs">No Image</span>
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="font-medium text-left">{product.name}</h3>
-                          <p className="text-gray-600 text-left">${product.price.toFixed(2)} per {product.unit}</p>
-                          <div className="flex gap-2 mt-1">
-                            {product.organic && (
-                              <Badge variant="secondary" className="text-xs">Organic</Badge>
-                            )}
-                            {product.local && (
-                              <Badge variant="outline" className="text-xs">Local</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleQuantityChange(product.id, quantity - 1)}
-                          disabled={quantity === 0}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        
-                        <Input
-                          type="number"
-                          value={quantity}
-                          onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
-                          className="w-20 text-center"
-                          min="0"
-                        />
-                        
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleQuantityChange(product.id, quantity + 1)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                        
-                        <span className="text-sm text-gray-500 min-w-16 text-left">{product.unit}</span>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Features</TableHead>
+                      <TableHead>Package Size</TableHead>
+                      <TableHead>Stock</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {vendorProducts.map((product) => {
+                      const quantity = getProductQuantity(product.id)
+                      const packageSize = getProductPackageSize(product.id)
+                      return (
+                        <TableRow key={product.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              {product.image ? (
+                                <img 
+                                  src={product.image} 
+                                  alt={product.name}
+                                  className="w-12 h-12 object-cover rounded"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                  <span className="text-gray-400 text-xs">No Image</span>
+                                </div>
+                              )}
+                              <div>
+                                <h3 className="font-medium text-left">{product.name}</h3>
+                                <p className="text-gray-600 text-left text-sm">per {product.unit}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium">${product.price.toFixed(2)}</span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1 flex-wrap">
+                              {product.organic && (
+                                <Badge variant="secondary" className="text-xs">Organic</Badge>
+                              )}
+                              {product.local && (
+                                <Badge variant="outline" className="text-xs">Local</Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="text"
+                              value={packageSize}
+                              onChange={(e) => handlePackageSizeChange(product.id, e.target.value)}
+                              className="w-20 text-center"
+                              placeholder="1"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                value={quantity}
+                                onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
+                                className="w-20 text-center"
+                                min="0"
+                              />
+                              <span className="text-sm text-gray-500">{product.unit}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleQuantityChange(product.id, quantity - 1)}
+                                disabled={quantity === 0}
+                                className="h-8 w-8"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleQuantityChange(product.id, quantity + 1)}
+                                className="h-8 w-8"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
               </div>
             )}
           </CardContent>
@@ -233,7 +294,12 @@ const MarketDayProducts = () => {
                 {marketDayProducts.map((product) => (
                   <div key={product.productId} className="flex justify-between items-center py-2 border-b last:border-b-0">
                     <span className="text-left">{product.productName}</span>
-                    <span className="text-gray-600">{product.quantity} {product.productUnit}</span>
+                    <div className="text-right text-gray-600">
+                      <span>{product.quantity} {product.productUnit}</span>
+                      {product.packageSize !== '1' && (
+                        <span className="ml-2 text-sm">(Package: {product.packageSize})</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
