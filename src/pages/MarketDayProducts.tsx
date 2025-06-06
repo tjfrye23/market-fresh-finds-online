@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
@@ -248,6 +249,7 @@ const MarketDayProducts = () => {
                       const { product, package: pkg, isMainRow } = row
                       const packageId = pkg?.packageId || `temp-${product.id}`
                       const isAdditionalPackage = !isMainRow && pkg
+                      const isPrepackaged = pkg ? pkg.prepackaged : false
                         
                       return (
                         <TableRow key={`${product.id}-${index}`}>
@@ -295,7 +297,7 @@ const MarketDayProducts = () => {
                           </TableCell>
                           <TableCell>
                             <Checkbox
-                              checked={Boolean(pkg?.prepackaged)}
+                              checked={isPrepackaged}
                               disabled={isAdditionalPackage}
                               onCheckedChange={(checked) => {
                                 if (!isAdditionalPackage) {
@@ -325,7 +327,7 @@ const MarketDayProducts = () => {
                                 }}
                                 className="w-20 text-center"
                                 placeholder=""
-                                disabled={isAdditionalPackage ? false : !pkg?.prepackaged}
+                                disabled={isAdditionalPackage ? false : !isPrepackaged}
                               />
                               <span className="text-sm text-gray-500">{product.unit}</span>
                             </div>
@@ -404,3 +406,4 @@ const MarketDayProducts = () => {
 }
 
 export default MarketDayProducts
+
