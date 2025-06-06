@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
@@ -137,11 +136,15 @@ const MarketDayProducts = () => {
       productImage: product.image,
       quantity: 0,
       packageSize: '',
-      prepackaged: false,
+      prepackaged: true,
       packageId: generatePackageId()
     }
 
     setMarketDayProducts(prev => [...prev, newPackage])
+  }
+
+  const deleteAdditionalPackage = (packageId: string) => {
+    setMarketDayProducts(prev => prev.filter(p => p.packageId !== packageId))
   }
 
   const getProductPackages = (productId: string): MarketDayProduct[] => {
@@ -243,7 +246,8 @@ const MarketDayProducts = () => {
                     {getProductRows().map((row, index) => {
                       const { product, package: pkg, isMainRow } = row
                       const packageId = pkg?.packageId || `temp-${product.id}`
-                      
+                      const isAdditionalPackage = !isMainRow && pkg
+                        
                       return (
                         <TableRow key={`${product.id}-${index}`}>
                           <TableCell>
@@ -290,12 +294,15 @@ const MarketDayProducts = () => {
                           </TableCell>
                           <TableCell>
                             <Checkbox
-                              checked={pkg?.prepackaged || false}
+                              checked={isAdditionalPackage ? true : (pkg?.prepackaged || false)}
+                              disabled={isAdditionalPackage}
                               onCheckedChange={(checked) => {
-                                if (pkg) {
-                                  handlePrepackagedChange(packageId, !!checked)
-                                } else {
-                                  addNewPackageSize(product.id)
+                                if (!isAdditionalPackage) {
+                                  if (pkg) {
+                                    handlePrepackagedChange(packageId, !!checked)
+                                  } else {
+                                    addNewPackageSize(product.id)
+                                  }
                                 }
                               }}
                             />
@@ -314,7 +321,7 @@ const MarketDayProducts = () => {
                                 }}
                                 className="w-20 text-center"
                                 placeholder=""
-                                disabled={!pkg?.prepackaged}
+                                disabled={isAdditionalPackage ? false : !pkg?.prepackaged}
                               />
                               <span className="text-sm text-gray-500">{product.unit}</span>
                             </div>
@@ -342,9 +349,15 @@ const MarketDayProducts = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => addNewPackageSize(product.id)}>
-                                  Add new package size
-                                </DropdownMenuItem>
+                                {isAdditionalPackage ? (
+                                  <DropdownMenuItem onClick={() => deleteAdditionalPackage(packageId)}>
+                                    Delete additional package
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem onClick={() => addNewPackageSize(product.id)}>
+                                    Add new package size
+                                  </DropdownMenuItem>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
