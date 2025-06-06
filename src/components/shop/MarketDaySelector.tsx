@@ -118,26 +118,6 @@ const MarketDaySelector = ({
             </SelectContent>
           </Select>
           
-          {selectedMarketDay && (
-            <div className="mt-4 p-4 bg-green-50 rounded-md border border-green-200">
-              {(() => {
-                const selected = marketDays.find(day => day.id === selectedMarketDay)
-                if (!selected) return null
-                
-                return (
-                  <div>
-                    <p className="text-green-800 font-medium">
-                      Shopping for: {formatMarketDay(selected)}
-                    </p>
-                    <p className="text-green-700 text-sm mt-1">
-                      {getMarketDayDetails(selected)}
-                    </p>
-                  </div>
-                )
-              })()}
-            </div>
-          )}
-          
           {/* Show unavailable market days as informational */}
           {marketDays.length > availableMarketDays.length && (
             <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
