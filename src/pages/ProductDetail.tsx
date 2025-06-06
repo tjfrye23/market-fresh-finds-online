@@ -1,3 +1,4 @@
+
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -5,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useCart } from '@/contexts/CartContext'
@@ -20,6 +22,9 @@ interface MarketDayProduct {
   productUnit: string
   productImage?: string
   quantity: number
+  packageSize: string
+  prepackaged: boolean
+  packageId?: string
 }
 
 const ProductDetail = () => {
@@ -29,7 +34,8 @@ const ProductDetail = () => {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
   const { getUpcomingMarketDays } = useMarketSchedule()
   const [quantity, setQuantity] = useState(1)
-  const [marketDayProduct, setMarketDayProduct] = useState<any>(null)
+  const [availablePackages, setAvailablePackages] = useState<MarketDayProduct[]>([])
+  const [selectedPackage, setSelectedPackage] = useState<MarketDayProduct | null>(null)
   const [selectedMarketDay, setSelectedMarketDay] = useState<string>('')
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
@@ -53,41 +59,53 @@ const ProductDetail = () => {
     }
   }, [])
 
-  // Load market day specific product data
+  // Load market day specific product packages
   useEffect(() => {
     if (selectedMarketDay && id) {
       const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
       if (storedProducts) {
         const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
-        const foundProduct = marketDayProductsData.find(mdp => mdp.productId === id)
+        const productPackages = marketDayProductsData.filter(mdp => mdp.productId === id)
         
-        if (foundProduct && product) {
-          // Merge market day data with original product data
-          setMarketDayProduct({
-            ...product,
-            price: foundProduct.productPrice,
-            stock: foundProduct.quantity,
-            image: foundProduct.productImage || product.image
-          })
+        setAvailablePackages(productPackages)
+        
+        // Select the first available package by default
+        if (productPackages.length > 0) {
+          setSelectedPackage(productPackages[0])
         } else {
-          setMarketDayProduct(null)
+          setSelectedPackage(null)
         }
       } else {
-        setMarketDayProduct(null)
+        setAvailablePackages([])
+        setSelectedPackage(null)
       }
     }
-  }, [selectedMarketDay, id, product])
+  }, [selectedMarketDay, id])
 
   const marketDays = getUpcomingMarketDays()
   const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
 
-  // Use market day product if available, otherwise fall back to regular product
-  const displayProduct = marketDayProduct || product
-  const isMarketDaySpecific = !!marketDayProduct
+  // Use selected package data if available, otherwise fall back to regular product
+  const displayProduct = selectedPackage ? {
+    ...product,
+    price: selectedPackage.productPrice,
+    stock: selectedPackage.quantity,
+    image: selectedPackage.productImage || product?.image
+  } : product
+
+  const isMarketDaySpecific = !!selectedPackage
 
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity >= 1 && newQuantity <= (displayProduct?.stock || 0)) {
       setQuantity(newQuantity)
+    }
+  }
+
+  const handlePackageChange = (packageId: string) => {
+    const pkg = availablePackages.find(p => p.packageId === packageId)
+    if (pkg) {
+      setSelectedPackage(pkg)
+      setQuantity(1) // Reset quantity when changing package
     }
   }
 
@@ -231,12 +249,37 @@ const ProductDetail = () => {
                 ${displayProduct.price.toFixed(2)} per {displayProduct.unit}
               </p>
 
+              {/* Package Selection */}
+              {availablePackages.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="font-medium text-gray-900 mb-2">Package Options</h3>
+                  <Select value={selectedPackage?.packageId || ''} onValueChange={handlePackageChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select package size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availablePackages.map((pkg) => (
+                        <SelectItem key={pkg.packageId} value={pkg.packageId || ''}>
+                          {pkg.prepackaged && pkg.packageSize 
+                            ? `${pkg.packageSize} ${pkg.productUnit} package (${pkg.quantity} available)`
+                            : `Bulk ${pkg.productUnit} (${pkg.quantity} available)`
+                          }
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="mb-4">
                 <p className="text-sm text-gray-600">
                   {isMarketDaySpecific ? (
                     displayProduct.stock > 0 ? (
                       <span className="text-green-600">
                         {displayProduct.stock} {displayProduct.unit}(s) available for this market day
+                        {selectedPackage?.prepackaged && selectedPackage?.packageSize && (
+                          <span className="ml-2">({selectedPackage.packageSize} {displayProduct.unit} packages)</span>
+                        )}
                       </span>
                     ) : (
                       <span className="text-red-600">Not available for this market day</span>
