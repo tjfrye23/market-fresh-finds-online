@@ -246,7 +246,7 @@ const MarketDayProducts = () => {
                     {getProductRows().map((row, index) => {
                       const { product, package: pkg, isMainRow } = row
                       const packageId = pkg?.packageId || `temp-${product.id}`
-                      const isAdditionalPackage = !isMainRow && pkg
+                      const isAdditionalPackage = !isMainRow && Boolean(pkg)
                       const isPrepackaged = pkg?.prepackaged || false
                         
                       return (
