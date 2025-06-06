@@ -24,7 +24,7 @@ const VendorCard = ({
 
   return (
     <Link 
-      to={`/vendors/${id}`} 
+      to={`/vendor/${id}`} 
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 block"
     >
       <div className="relative overflow-hidden h-72">
