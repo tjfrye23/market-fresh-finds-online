@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom'
 import {
   Home,
@@ -129,24 +128,14 @@ const NavLinks = ({
         )}
 
         {isVendor && (
-          <>
-            <Link
-              to="/vendor/dashboard"
-              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"
-              onClick={onClose}
-            >
-              <BarChart3 className="mr-2 h-5 w-5" />
-              <span>Vendor Dashboard</span>
-            </Link>
-            <Link
-              to="/vendor/profile"
-              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"
-              onClick={onClose}
-            >
-              <Settings className="mr-2 h-5 w-5" />
-              <span>Manage Shop Profile</span>
-            </Link>
-          </>
+          <Link
+            to="/vendor/dashboard"
+            className="flex items-center px-3 py-2 rounded-md text-base font-medium text-market-green-dark hover:text-market-green-dark hover:bg-gray-50"
+            onClick={onClose}
+          >
+            <BarChart3 className="mr-2 h-5 w-5" />
+            <span>Vendor Dashboard</span>
+          </Link>
         )}
       </div>
 
