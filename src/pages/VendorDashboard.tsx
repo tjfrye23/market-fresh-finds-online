@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -31,7 +30,8 @@ import {
   MoreHorizontal,
   Edit,
   Save,
-  PlusCircle
+  PlusCircle,
+  User
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -211,9 +211,19 @@ const VendorDashboard = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8 text-left">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 text-left">Vendor Dashboard</h1>
-          <p className="text-gray-600 text-left">Manage your orders and track your performance</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div className="text-left">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-left">Vendor Dashboard</h1>
+            <p className="text-gray-600 text-left">Manage your orders and track your performance</p>
+          </div>
+          <Button
+            onClick={() => navigate('/vendor/profile')}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <User className="h-4 w-4" />
+            Manage Shop Profile
+          </Button>
         </div>
 
         {/* Metrics Cards */}
