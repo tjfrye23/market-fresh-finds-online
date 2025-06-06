@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Package, Calendar, DollarSign } from 'lucide-react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { getUserOrders, Order } from '@/services/orderService'
 
 const getStatusColor = (status: string) => {
@@ -93,9 +93,24 @@ const Orders = () => {
                           {order.items.map((item, index) => (
                             <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
                               <div className="flex-grow text-left">
-                                <p className="font-medium text-left">{item.name}</p>
+                                <Link 
+                                  to={`/product/${item.id || '1'}`}
+                                  className="font-medium text-left hover:text-market-green transition-colors cursor-pointer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {item.name}
+                                </Link>
                                 {item.farmName && (
-                                  <p className="text-sm text-gray-500 text-left">from {item.farmName}</p>
+                                  <p className="text-sm text-gray-500 text-left">
+                                    from{' '}
+                                    <Link
+                                      to={`/vendor/${item.vendorId || '1'}`}
+                                      className="text-market-green hover:text-market-green-dark transition-colors cursor-pointer underline"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {item.farmName}
+                                    </Link>
+                                  </p>
                                 )}
                               </div>
                               <div className="text-right">

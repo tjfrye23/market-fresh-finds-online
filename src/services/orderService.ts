@@ -6,10 +6,12 @@ export interface Order {
   status: 'processing' | 'processed'
   total: number
   items: Array<{
+    id?: string
     name: string
     quantity: number
     price: number
     farmName?: string
+    vendorId?: string
   }>
   customerInfo: {
     firstName: string
