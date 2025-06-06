@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom'
 
 interface VendorCardProps {
@@ -22,7 +23,10 @@ const VendorCard = ({
     'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <Link 
+      to={`/vendors/${id}`} 
+      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 block"
+    >
       <div className="relative overflow-hidden h-72">
         <img
           src={image_url || defaultImage}
@@ -39,11 +43,11 @@ const VendorCard = ({
         <p className="text-gray-500 mb-4">
           Specialty: {specialty || 'Fresh Produce'}
         </p>
-        <Link to={`/vendors/${id}`} className="inline-block btn-primary">
-          Meet {owner_name.split(' ')[0]}
-        </Link>
+        <div className="text-market-green hover:text-market-green-dark transition-colors font-medium">
+          Meet {owner_name.split(' ')[0]} →
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
