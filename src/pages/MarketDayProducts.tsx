@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
   TableBody,
@@ -33,6 +34,7 @@ interface MarketDayProduct {
   productImage?: string
   quantity: number
   packageSize: string
+  prepackaged: boolean
 }
 
 const MarketDayProducts = () => {
@@ -99,7 +101,8 @@ const MarketDayProducts = () => {
           productUnit: product.unit,
           productImage: product.image,
           quantity: newQuantity,
-          packageSize: '1'
+          packageSize: '1',
+          prepackaged: false
         }]
       }
     })
@@ -115,6 +118,16 @@ const MarketDayProducts = () => {
     )
   }
 
+  const handlePrepackagedChange = (productId: string, prepackaged: boolean) => {
+    setMarketDayProducts(prev => 
+      prev.map(p => 
+        p.productId === productId 
+          ? { ...p, prepackaged, packageSize: prepackaged ? p.packageSize : '1' }
+          : p
+      )
+    )
+  }
+
   const getProductQuantity = (productId: string): number => {
     const product = marketDayProducts.find(p => p.productId === productId)
     return product?.quantity || 0
@@ -123,6 +136,11 @@ const MarketDayProducts = () => {
   const getProductPackageSize = (productId: string): string => {
     const product = marketDayProducts.find(p => p.productId === productId)
     return product?.packageSize || '1'
+  }
+
+  const getProductPrepackaged = (productId: string): boolean => {
+    const product = marketDayProducts.find(p => p.productId === productId)
+    return product?.prepackaged || false
   }
 
   const handleSave = () => {
@@ -186,6 +204,7 @@ const MarketDayProducts = () => {
                       <TableHead>Product</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Features</TableHead>
+                      <TableHead>Prepackaged</TableHead>
                       <TableHead>Package Size</TableHead>
                       <TableHead>Stock</TableHead>
                     </TableRow>
@@ -194,6 +213,7 @@ const MarketDayProducts = () => {
                     {vendorProducts.map((product) => {
                       const quantity = getProductQuantity(product.id)
                       const packageSize = getProductPackageSize(product.id)
+                      const prepackaged = getProductPrepackaged(product.id)
                       return (
                         <TableRow key={product.id}>
                           <TableCell>
@@ -229,6 +249,12 @@ const MarketDayProducts = () => {
                             </div>
                           </TableCell>
                           <TableCell>
+                            <Checkbox
+                              checked={prepackaged}
+                              onCheckedChange={(checked) => handlePrepackagedChange(product.id, !!checked)}
+                            />
+                          </TableCell>
+                          <TableCell>
                             <div className="flex items-center gap-2">
                               <Input
                                 type="text"
@@ -236,6 +262,7 @@ const MarketDayProducts = () => {
                                 onChange={(e) => handlePackageSizeChange(product.id, e.target.value)}
                                 className="w-20 text-center"
                                 placeholder="1"
+                                disabled={!prepackaged}
                               />
                               <span className="text-sm text-gray-500">{product.unit}</span>
                             </div>
@@ -271,7 +298,7 @@ const MarketDayProducts = () => {
                     <span className="text-left">{product.productName}</span>
                     <div className="text-right text-gray-600">
                       <span>{product.quantity} {product.productUnit}</span>
-                      {product.packageSize !== '1' && (
+                      {product.prepackaged && product.packageSize !== '1' && (
                         <span className="ml-2 text-sm">(Package: {product.packageSize})</span>
                       )}
                     </div>
