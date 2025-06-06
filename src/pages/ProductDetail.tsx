@@ -1,4 +1,3 @@
-
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -37,6 +36,8 @@ const ProductDetail = () => {
   const [availablePackages, setAvailablePackages] = useState<MarketDayProduct[]>([])
   const [selectedPackage, setSelectedPackage] = useState<MarketDayProduct | null>(null)
   const [selectedMarketDay, setSelectedMarketDay] = useState<string>('')
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [showFullDescription, setShowFullDescription] = useState(false)
 
   const { data: products = [], isLoading: productsLoading } = useQuery({
     queryKey: ['products'],
@@ -145,6 +146,20 @@ const ProductDetail = () => {
     }
   }
 
+  // Create product images array for gallery
+  const productImages = [
+    displayProduct?.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+    // Add placeholder variations for gallery
+    displayProduct?.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80',
+    displayProduct?.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80'
+  ]
+
+  const quantityOptions = Array.from({ length: Math.min(10, displayProduct?.stock || 10) }, (_, i) => i + 1)
+
+  const truncatedDescription = displayProduct?.description 
+    ? displayProduct.description.split('. ').slice(0, 2).join('. ') + '.'
+    : ''
+
   if (productsLoading) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -203,181 +218,224 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Product Image */}
-            <div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
-              <img
-                src={displayProduct.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80'}
-                alt={displayProduct.name}
-                className="w-full h-full object-cover"
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4 h-10 w-10 bg-white/80 hover:bg-white/90 backdrop-blur-sm"
-                onClick={handleFavoriteToggle}
-              >
-                <Heart
-                  className={`h-5 w-5 ${
-                    isFavorite(displayProduct.id)
-                      ? 'fill-red-500 text-red-500'
-                      : 'text-gray-600 hover:text-red-500'
-                  }`}
-                />
-              </Button>
-            </div>
-
-            {/* Product Info */}
-            <div className="flex flex-col">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {displayProduct.organic && (
-                  <Badge className="bg-market-green text-white">
-                    <Leaf className="mr-1 h-3 w-3" />
-                    Organic
-                  </Badge>
-                )}
-                {displayProduct.local && (
-                  <Badge className="bg-market-yellow text-market-brown-dark">
-                    <MapPin className="mr-1 h-3 w-3" />
-                    Local
-                  </Badge>
-                )}
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Image Gallery */}
+              <div className="space-y-4">
+                {/* Main Image */}
+                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                  <img 
+                    src={productImages[selectedImage]} 
+                    alt={displayProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-4 right-4 h-10 w-10 bg-white/80 hover:bg-white/90 backdrop-blur-sm"
+                    onClick={handleFavoriteToggle}
+                  >
+                    <Heart
+                      className={`h-5 w-5 ${
+                        isFavorite(displayProduct.id)
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-600 hover:text-red-500'
+                      }`}
+                    />
+                  </Button>
+                </div>
+                
+                {/* Thumbnail Gallery */}
+                <div className="flex space-x-2">
+                  {productImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(index)}
+                      className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                        selectedImage === index 
+                          ? 'border-green-600 ring-2 ring-green-200' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <img 
+                        src={image} 
+                        alt={`Product view ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{displayProduct.name}</h1>
-              <p className="text-xl text-market-green-dark font-semibold mb-4">
-                ${displayProduct.price.toFixed(2)} per {displayProduct.unit}
-              </p>
+              {/* Product Information */}
+              <div className="space-y-6">
+                {/* Category */}
+                <button className="text-sm font-medium text-gray-600 uppercase tracking-wide hover:text-gray-800 transition-colors duration-200">
+                  {displayProduct.category}
+                </button>
 
-              {/* Package Selection */}
-              {availablePackages.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="font-medium text-gray-900 mb-2">Package Options</h3>
-                  <Select value={selectedPackage?.packageId || ''} onValueChange={handlePackageChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select package size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availablePackages.map((pkg) => (
-                        <SelectItem key={pkg.packageId} value={pkg.packageId || ''}>
-                          {pkg.prepackaged && pkg.packageSize 
-                            ? `${pkg.packageSize} ${pkg.productUnit} package (${pkg.quantity} available)`
-                            : `Bulk ${pkg.productUnit} (${pkg.quantity} available)`
-                          }
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Product Title */}
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+                  {displayProduct.name}
+                </h1>
+
+                {/* Product Tags */}
+                <div className="flex space-x-2">
+                  {displayProduct.organic && (
+                    <Badge className="bg-market-green text-white">
+                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Organic
+                    </Badge>
+                  )}
+                  {displayProduct.local && (
+                    <Badge className="bg-orange-400 text-white">
+                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                      Local
+                    </Badge>
+                  )}
                 </div>
-              )}
 
-              <div className="mb-4">
-                <p className="text-sm text-gray-600">
-                  {isMarketDaySpecific ? (
-                    displayProduct.stock > 0 ? (
+                {/* Vendor Name */}
+                {vendor && (
+                  <Link 
+                    to={`/vendors/${vendor.id}`}
+                    className="text-lg font-medium text-green-600 hover:text-green-700 transition-colors duration-200 text-left block"
+                  >
+                    {vendor.vendor_name}
+                  </Link>
+                )}
+
+                {/* Price */}
+                <div className="text-2xl font-bold text-gray-900">
+                  ${displayProduct.price.toFixed(2)}/{displayProduct.unit}
+                </div>
+
+                {/* Store Information */}
+                {selectedMarketDayData && (
+                  <div className="space-y-2">
+                    <div className="text-gray-700">
+                      Pickup at <span className="font-bold text-gray-900">Charlotte Regional Farmer's Market</span> on{' '}
+                      <span className="font-bold text-gray-900">
+                        {selectedMarketDayData.marketDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                      </span> between{' '}
+                      <span className="font-bold text-gray-900">9AM-4PM</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Stock Status */}
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600">
+                    {displayProduct.stock > 0 ? (
                       <span className="text-green-600">
-                        {displayProduct.stock} {displayProduct.unit}(s) available for this market day
-                        {selectedPackage?.prepackaged && selectedPackage?.packageSize && (
-                          <span className="ml-2">({selectedPackage.packageSize} {displayProduct.unit} packages)</span>
-                        )}
+                        {displayProduct.stock} {displayProduct.unit}(s) available
                       </span>
                     ) : (
-                      <span className="text-red-600">Not available for this market day</span>
-                    )
-                  ) : (
-                    <span className="text-amber-600">
-                      No specific quantity set for selected market day
-                    </span>
-                  )}
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-2">Category</h3>
-                <Badge variant="outline" className="capitalize">
-                  {displayProduct.category}
-                </Badge>
-              </div>
-
-              {displayProduct.description && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-600 leading-relaxed">{displayProduct.description}</p>
-                </div>
-              )}
-
-              {vendor && (
-                <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <Award className="mr-2 h-4 w-4" />
-                    From {vendor.vendor_name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Owner: {vendor.owner_name}
+                      <span className="text-red-600">Not available</span>
+                    )}
                   </p>
-                  {vendor.location && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      Location: {vendor.location}
-                    </p>
-                  )}
-                  {vendor.specialty && (
-                    <p className="text-sm text-gray-600">
-                      Specialty: {vendor.specialty}
-                    </p>
-                  )}
                 </div>
-              )}
 
-              {/* Quantity Selector */}
-              {displayProduct.stock > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">Quantity</h3>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleQuantityChange(quantity - 1)}
-                      disabled={quantity <= 1}
+                {/* Pricing and Add to Cart Section */}
+                {displayProduct.stock > 0 && (
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                    {/* Package Options Selector */}
+                    {availablePackages.length > 0 && (
+                      <div className="space-y-1">
+                        <label className="block text-xs font-medium text-gray-700">Package Options</label>
+                        <div className="relative">
+                          <select 
+                            value={selectedPackage?.packageId || ''}
+                            onChange={(e) => handlePackageChange(e.target.value)}
+                            className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-center text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          >
+                            {availablePackages.map((pkg) => (
+                              <option key={pkg.packageId} value={pkg.packageId || ''}>
+                                {pkg.prepackaged && pkg.packageSize 
+                                  ? `${pkg.packageSize} ${pkg.productUnit} package`
+                                  : `Bulk ${pkg.productUnit}`
+                                } - ${pkg.quantity} available
+                              </option>
+                            ))}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Quantity Selector */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-medium text-gray-700">Quantity</label>
+                      <div className="relative">
+                        <select 
+                          value={quantity}
+                          onChange={(e) => setQuantity(parseInt(e.target.value))}
+                          className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-center text-sm font-medium appearance-none cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                          {quantityOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Total Price Display */}
+                    <div className="pt-2 border-t border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-700">Total:</span>
+                        <span className="text-xl font-bold text-gray-900">
+                          ${(displayProduct.price * quantity).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button 
+                      onClick={handleAddToCart}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 text-base"
                     >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <Input
-                      type="number"
-                      value={quantity}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value)
-                        if (!isNaN(value)) {
-                          handleQuantityChange(value)
-                        }
-                      }}
-                      className="w-20 text-center"
-                      min="1"
-                      max={displayProduct.stock}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleQuantityChange(quantity + 1)}
-                      disabled={quantity >= displayProduct.stock}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm text-gray-500 ml-2">
-                      (Max: {displayProduct.stock})
-                    </span>
+                      <ShoppingCart className="inline mr-2 h-5 w-5" />
+                      Add to Cart
+                    </button>
                   </div>
-                </div>
-              )}
+                )}
 
-              <Button 
-                size="lg" 
-                className="bg-market-green hover:bg-market-green-dark text-white w-full sm:w-auto"
-                onClick={handleAddToCart}
-                disabled={!displayProduct.stock || displayProduct.stock === 0}
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                {displayProduct.stock > 0 ? `Add ${quantity} to Cart` : 'Not Available'}
-              </Button>
+                {/* Product Description */}
+                {displayProduct.description && (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+                    <div className="space-y-2">
+                      <p className="text-gray-700 leading-relaxed">
+                        {showFullDescription ? displayProduct.description : truncatedDescription}
+                      </p>
+                      {displayProduct.description.length > truncatedDescription.length && (
+                        <button 
+                          onClick={() => setShowFullDescription(!showFullDescription)}
+                          className="text-green-600 hover:text-green-700 font-medium text-sm underline"
+                        >
+                          {showFullDescription ? 'Show less' : 'More'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
