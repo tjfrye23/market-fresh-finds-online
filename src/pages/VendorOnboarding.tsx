@@ -13,6 +13,10 @@ const VendorOnboarding = () => {
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [farmName, setFarmName] = useState('')
+  const [website, setWebsite] = useState('')
+  const [facebook, setFacebook] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [twitter, setTwitter] = useState('')
   const [loading, setLoading] = useState(false)
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -110,6 +114,51 @@ const VendorOnboarding = () => {
               placeholder="Create a strong password"
               required
             />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-market-green-dark">Online Presence (Optional)</h3>
+            
+            <div className="space-y-2">
+              <Label htmlFor="website">Website</Label>
+              <Input
+                id="website"
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://yourwebsite.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="facebook">Facebook</Label>
+              <Input
+                id="facebook"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                placeholder="facebook.com/yourpage or @yourpage"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="instagram">Instagram</Label>
+              <Input
+                id="instagram"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="instagram.com/yourpage or @yourpage"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="twitter">Twitter/X</Label>
+              <Input
+                id="twitter"
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
+                placeholder="twitter.com/yourpage or @yourpage"
+              />
+            </div>
           </div>
 
           <div className="pt-4 flex space-x-4">

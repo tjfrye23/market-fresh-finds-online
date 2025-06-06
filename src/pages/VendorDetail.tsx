@@ -19,6 +19,11 @@ import {
   MessageCircle,
   ShoppingBag,
   ArrowLeft,
+  Globe,
+  Facebook,
+  Instagram,
+  Twitter,
+  ExternalLink,
 } from 'lucide-react'
 import { useVendorDetails } from '@/hooks/useVendorDetails'
 
@@ -31,6 +36,28 @@ const VendorDetail = () => {
   // Default image if none provided
   const defaultImage =
     'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+
+  // Helper function to format social media URLs
+  const formatSocialUrl = (platform: string, handle: string) => {
+    if (!handle) return ''
+    
+    // If it's already a full URL, return as is
+    if (handle.startsWith('http')) return handle
+    
+    // Remove @ symbol if present
+    const cleanHandle = handle.replace('@', '')
+    
+    switch (platform) {
+      case 'facebook':
+        return `https://facebook.com/${cleanHandle}`
+      case 'instagram':
+        return `https://instagram.com/${cleanHandle}`
+      case 'twitter':
+        return `https://twitter.com/${cleanHandle}`
+      default:
+        return handle
+    }
+  }
 
   // Loading state
   if (vendorLoading) {
@@ -134,6 +161,68 @@ const VendorDetail = () => {
                   <Store className="h-5 w-5 text-market-green mr-2" />
                   <span>Specialty: {vendor.specialty || 'Fresh Produce'}</span>
                 </div>
+
+                {/* Website and Social Media Links */}
+                {(vendor.website || vendor.facebook || vendor.instagram || vendor.twitter) && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-lg text-market-green-dark mb-3">
+                      Connect with {vendor.vendor_name}
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {vendor.website && (
+                        <a
+                          href={vendor.website.startsWith('http') ? vendor.website : `https://${vendor.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 hover:text-gray-900"
+                        >
+                          <Globe className="h-4 w-4" />
+                          <span>Website</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {vendor.facebook && (
+                        <a
+                          href={formatSocialUrl('facebook', vendor.facebook)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700 hover:text-blue-900"
+                        >
+                          <Facebook className="h-4 w-4" />
+                          <span>Facebook</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {vendor.instagram && (
+                        <a
+                          href={formatSocialUrl('instagram', vendor.instagram)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors text-pink-700 hover:text-pink-900"
+                        >
+                          <Instagram className="h-4 w-4" />
+                          <span>Instagram</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {vendor.twitter && (
+                        <a
+                          href={formatSocialUrl('twitter', vendor.twitter)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors text-sky-700 hover:text-sky-900"
+                        >
+                          <Twitter className="h-4 w-4" />
+                          <span>Twitter</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg text-market-green-dark mb-2">

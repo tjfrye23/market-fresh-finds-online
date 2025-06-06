@@ -10,7 +10,7 @@ import PageHeader from '@/components/PageHeader'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ImageUploader from '@/components/ImageUploader'
-import { Loader2, Edit, Save, X, CheckCircle, Clock, AlertTriangle } from 'lucide-react'
+import { Loader2, Edit, Save, X, CheckCircle, Clock, AlertTriangle, Globe, Facebook, Instagram, Twitter, ExternalLink } from 'lucide-react'
 import { getVendorByUserId, saveVendorProfile, updateVendorStatus } from '@/services/mockServices'
 import { MockVendorProfile } from '@/data/mockData'
 
@@ -27,6 +27,10 @@ const VendorProfile = () => {
     specialty: '',
     description: '',
     image_url: null,
+    website: '',
+    facebook: '',
+    instagram: '',
+    twitter: '',
     status: 'pending'
   })
   const [isNewProfile, setIsNewProfile] = useState(true)
@@ -164,6 +168,28 @@ const VendorProfile = () => {
         return 'bg-red-100 text-red-800 border-red-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
+    }
+  }
+
+  // Helper function to format social media URLs
+  const formatSocialUrl = (platform: string, handle: string) => {
+    if (!handle) return ''
+    
+    // If it's already a full URL, return as is
+    if (handle.startsWith('http')) return handle
+    
+    // Remove @ symbol if present
+    const cleanHandle = handle.replace('@', '')
+    
+    switch (platform) {
+      case 'facebook':
+        return `https://facebook.com/${cleanHandle}`
+      case 'instagram':
+        return `https://instagram.com/${cleanHandle}`
+      case 'twitter':
+        return `https://twitter.com/${cleanHandle}`
+      default:
+        return handle
     }
   }
 
@@ -316,6 +342,55 @@ const VendorProfile = () => {
                   />
                 </div>
 
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-market-green-dark">Online Presence</h3>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="website">Website</Label>
+                    <Input
+                      id="website"
+                      name="website"
+                      type="url"
+                      value={profile.website || ''}
+                      onChange={handleChange}
+                      placeholder="https://yourwebsite.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="facebook">Facebook</Label>
+                    <Input
+                      id="facebook"
+                      name="facebook"
+                      value={profile.facebook || ''}
+                      onChange={handleChange}
+                      placeholder="facebook.com/yourpage or @yourpage"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="instagram">Instagram</Label>
+                    <Input
+                      id="instagram"
+                      name="instagram"
+                      value={profile.instagram || ''}
+                      onChange={handleChange}
+                      placeholder="instagram.com/yourpage or @yourpage"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="twitter">Twitter/X</Label>
+                    <Input
+                      id="twitter"
+                      name="twitter"
+                      value={profile.twitter || ''}
+                      onChange={handleChange}
+                      placeholder="twitter.com/yourpage or @yourpage"
+                    />
+                  </div>
+                </div>
+
                 <div className="pt-4 flex space-x-4">
                   <Button
                     variant="outline"
@@ -406,6 +481,68 @@ const VendorProfile = () => {
                     <p className="text-gray-700 whitespace-pre-line">
                       {profile.description}
                     </p>
+                  </div>
+                )}
+
+                {/* Website and Social Media Links */}
+                {(profile.website || profile.facebook || profile.instagram || profile.twitter) && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-market-green-dark mb-3">
+                      Connect with Us
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {profile.website && (
+                        <a
+                          href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 hover:text-gray-900"
+                        >
+                          <Globe className="h-4 w-4" />
+                          <span>Website</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {profile.facebook && (
+                        <a
+                          href={formatSocialUrl('facebook', profile.facebook)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700 hover:text-blue-900"
+                        >
+                          <Facebook className="h-4 w-4" />
+                          <span>Facebook</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {profile.instagram && (
+                        <a
+                          href={formatSocialUrl('instagram', profile.instagram)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors text-pink-700 hover:text-pink-900"
+                        >
+                          <Instagram className="h-4 w-4" />
+                          <span>Instagram</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      
+                      {profile.twitter && (
+                        <a
+                          href={formatSocialUrl('twitter', profile.twitter)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors text-sky-700 hover:text-sky-900"
+                        >
+                          <Twitter className="h-4 w-4" />
+                          <span>Twitter</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
 
