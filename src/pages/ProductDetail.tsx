@@ -316,19 +316,6 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {/* Stock Status */}
-                <div className="mb-4 text-left">
-                  <p className="text-sm text-gray-600">
-                    {displayProduct.stock > 0 ? (
-                      <span className="text-green-600">
-                        {displayProduct.stock} {displayProduct.unit}(s) available
-                      </span>
-                    ) : (
-                      <span className="text-red-600">Not available</span>
-                    )}
-                  </p>
-                </div>
-
                 {/* Pricing and Add to Cart Section */}
                 {displayProduct.stock > 0 && (
                   <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
