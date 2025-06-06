@@ -1,3 +1,4 @@
+
 import React from 'react'
 import {
   Select,
@@ -80,11 +81,6 @@ const MarketDaySelector = ({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="flex items-center gap-2 mb-4">
-        <Calendar className="h-5 w-5 text-green-600" />
-        <h2 className="text-lg font-semibold">Select Market Day</h2>
-      </div>
-      
       {marketDays.length === 0 ? (
         <div className="text-center py-4">
           <p className="text-gray-500">No upcoming market days scheduled.</p>
@@ -104,24 +100,32 @@ const MarketDaySelector = ({
         </div>
       ) : (
         <div className="space-y-4">
-          <Select value={selectedMarketDay} onValueChange={onSelectMarketDay}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose a market day to shop for..." />
-            </SelectTrigger>
-            <SelectContent>
-              {availableMarketDays.map((marketDay) => (
-                <SelectItem key={marketDay.id} value={marketDay.id}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{formatMarketDay(marketDay)}</span>
-                    <span className="text-sm text-gray-500 flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {getMarketDayDetails(marketDay)}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-green-600" />
+              <h2 className="text-lg font-semibold whitespace-nowrap">Select Market Day</h2>
+            </div>
+            <div className="flex-1">
+              <Select value={selectedMarketDay} onValueChange={onSelectMarketDay}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a market day to shop for..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableMarketDays.map((marketDay) => (
+                    <SelectItem key={marketDay.id} value={marketDay.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{formatMarketDay(marketDay)}</span>
+                        <span className="text-sm text-gray-500 flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {getMarketDayDetails(marketDay)}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           
           {/* Show unavailable market days as accordion */}
           {marketDays.length > availableMarketDays.length && (
