@@ -1,4 +1,3 @@
-
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, MapPin, Leaf, Award, Minus, Plus, Heart } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -198,26 +197,12 @@ const ProductDetail = () => {
       <Navbar />
       <main className="flex-grow">
         <div className="page-container py-8">
-          <Link to="/shop" className="inline-flex items-center text-market-green hover:text-market-green-dark mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shop
-          </Link>
-
-          {selectedMarketDayData && (
-            <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-              <h3 className="text-lg font-medium text-green-800 mb-1">
-                Viewing for {selectedMarketDayData.scheduleName}
-              </h3>
-              <p className="text-green-700 text-sm">
-                {selectedMarketDayData.marketDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
-            </div>
-          )}
+          <div className="text-left">
+            <Link to="/shop" className="inline-flex items-center text-market-green hover:text-market-green-dark mb-6">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Shop
+            </Link>
+          </div>
 
           <div className="max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -272,9 +257,11 @@ const ProductDetail = () => {
               {/* Product Information */}
               <div className="space-y-6">
                 {/* Category */}
-                <button className="text-sm font-medium text-gray-600 uppercase tracking-wide hover:text-gray-800 transition-colors duration-200 text-left">
-                  {displayProduct.category}
-                </button>
+                <div className="text-left">
+                  <button className="text-sm font-medium text-gray-600 uppercase tracking-wide hover:text-gray-800 transition-colors duration-200 text-left">
+                    {displayProduct.category}
+                  </button>
+                </div>
 
                 {/* Product Title */}
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight text-left">
