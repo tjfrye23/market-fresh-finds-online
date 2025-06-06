@@ -275,36 +275,17 @@ const VendorProfile = () => {
           <div className="max-w-4xl mx-auto -mt-16 relative z-10">
             <Card className="shadow-xl">
               <CardHeader className="pb-2">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                  <div>
-                    <CardTitle className="text-3xl font-display text-market-green-dark">
-                      {profile.vendor_name || 'Your Farm/Business'}
-                    </CardTitle>
-                    <CardDescription className="text-xl mt-1">
-                      Owned by {profile.owner_name || 'You'}
-                    </CardDescription>
-                  </div>
+                <div className="text-center">
+                  <CardTitle className="text-3xl font-display text-market-green-dark">
+                    {profile.vendor_name || 'Your Farm/Business'}
+                  </CardTitle>
+                  <CardDescription className="text-xl mt-1">
+                    Owned by {profile.owner_name || 'You'}
+                  </CardDescription>
                 </div>
               </CardHeader>
 
               <CardContent className="pt-2">
-                {/* Status Banner */}
-                {!isNewProfile && (
-                  <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${getStatusColor(profile.status || 'pending')}`}>
-                    {getStatusIcon(profile.status || 'pending')}
-                    <div>
-                      <p className="font-medium">
-                        Profile Status: {profile.status === 'active' ? 'Active' : profile.status === 'pending' ? 'Pending Review' : 'Rejected'}
-                      </p>
-                      <p className="text-sm">
-                        {profile.status === 'active' && 'Your profile is approved and products are visible to customers.'}
-                        {profile.status === 'pending' && 'Your profile is under admin review. Products will be visible once approved.'}
-                        {profile.status === 'rejected' && 'Your profile was rejected. Please contact support for more information.'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
                 {/* Admin Actions */}
                 {user?.role === 'admin' && !isNewProfile && profile.status === 'pending' && (
                   <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -331,7 +312,6 @@ const VendorProfile = () => {
                 )}
 
                 {isNewProfile || isEditing ? (
-                  /* Edit Form */
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
                       <Label htmlFor="vendor_name" className="text-base">
@@ -499,7 +479,6 @@ const VendorProfile = () => {
                     </div>
                   </form>
                 ) : (
-                  /* View Mode Display - matching VendorDetail layout */
                   <div>
                     <div className="flex items-center text-gray-600 mb-4">
                       <MapPin className="h-5 w-5 text-market-green mr-2" />
