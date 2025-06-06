@@ -79,7 +79,7 @@ const VendorDetail = () => {
 
       <main className="flex-grow">
         {/* Back to Vendors Button */}
-        <div className="container mx-auto px-4 py-4">
+        <div className="px-4 py-4">
           <Link to="/vendors">
             <Button variant="outline" className="mb-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
