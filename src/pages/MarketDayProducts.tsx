@@ -13,6 +13,12 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
   Table,
   TableBody,
   TableCell,
@@ -22,7 +28,8 @@ import {
 } from '@/components/ui/table'
 import { 
   ArrowLeft,
-  Save
+  Save,
+  MoreHorizontal
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -35,6 +42,7 @@ interface MarketDayProduct {
   quantity: number
   packageSize: string
   prepackaged: boolean
+  packageId?: string // unique ID for each package size row
 }
 
 const MarketDayProducts = () => {
@@ -74,79 +82,100 @@ const MarketDayProducts = () => {
     )
   }
 
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
+  const generatePackageId = () => `pkg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
+  const handleQuantityChange = (packageId: string, newQuantity: number) => {
     if (newQuantity < 0) return
 
     setMarketDayProducts(prev => {
-      const existing = prev.find(p => p.productId === productId)
-      const product = vendorProducts.find(p => p.id === productId)
-      
-      if (!product) return prev
-
       if (newQuantity === 0) {
-        return prev.filter(p => p.productId !== productId)
+        return prev.filter(p => p.packageId !== packageId)
       }
 
+      const existing = prev.find(p => p.packageId === packageId)
       if (existing) {
         return prev.map(p => 
-          p.productId === productId 
+          p.packageId === packageId 
             ? { ...p, quantity: newQuantity }
             : p
         )
-      } else {
-        return [...prev, {
-          productId: product.id,
-          productName: product.name,
-          productPrice: product.price,
-          productUnit: product.unit,
-          productImage: product.image,
-          quantity: newQuantity,
-          packageSize: '1',
-          prepackaged: false
-        }]
       }
+
+      return prev
     })
   }
 
-  const handlePackageSizeChange = (productId: string, packageSize: string) => {
+  const handlePackageSizeChange = (packageId: string, packageSize: string) => {
     setMarketDayProducts(prev => 
       prev.map(p => 
-        p.productId === productId 
+        p.packageId === packageId 
           ? { ...p, packageSize }
           : p
       )
     )
   }
 
-  const handlePrepackagedChange = (productId: string, prepackaged: boolean) => {
+  const handlePrepackagedChange = (packageId: string, prepackaged: boolean) => {
     setMarketDayProducts(prev => 
       prev.map(p => 
-        p.productId === productId 
-          ? { ...p, prepackaged, packageSize: prepackaged ? p.packageSize : '1' }
+        p.packageId === packageId 
+          ? { ...p, prepackaged, packageSize: prepackaged ? p.packageSize : '' }
           : p
       )
     )
   }
 
-  const getProductQuantity = (productId: string): number => {
-    const product = marketDayProducts.find(p => p.productId === productId)
-    return product?.quantity || 0
+  const addNewPackageSize = (productId: string) => {
+    const product = vendorProducts.find(p => p.id === productId)
+    if (!product) return
+
+    const newPackage: MarketDayProduct = {
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      productUnit: product.unit,
+      productImage: product.image,
+      quantity: 0,
+      packageSize: '',
+      prepackaged: false,
+      packageId: generatePackageId()
+    }
+
+    setMarketDayProducts(prev => [...prev, newPackage])
   }
 
-  const getProductPackageSize = (productId: string): string => {
-    const product = marketDayProducts.find(p => p.productId === productId)
-    return product?.packageSize || '1'
-  }
-
-  const getProductPrepackaged = (productId: string): boolean => {
-    const product = marketDayProducts.find(p => p.productId === productId)
-    return product?.prepackaged || false
+  const getProductPackages = (productId: string): MarketDayProduct[] => {
+    return marketDayProducts.filter(p => p.productId === productId)
   }
 
   const handleSave = () => {
     localStorage.setItem(`market_day_products_${marketDayId}`, JSON.stringify(marketDayProducts))
     toast.success('Products saved for this market day')
     navigate(`/vendor/market-day/${marketDayId}`)
+  }
+
+  // Group products for display
+  const getProductRows = () => {
+    const rows: Array<{ product: any; package?: MarketDayProduct; isMainRow: boolean }> = []
+    
+    vendorProducts.forEach(product => {
+      const packages = getProductPackages(product.id)
+      
+      if (packages.length === 0) {
+        // Show product with empty package row
+        rows.push({ product, isMainRow: true })
+      } else {
+        // Show product with first package
+        rows.push({ product, package: packages[0], isMainRow: true })
+        
+        // Show additional packages
+        packages.slice(1).forEach(pkg => {
+          rows.push({ product, package: pkg, isMainRow: false })
+        })
+      }
+    })
+    
+    return rows
   }
 
   return (
@@ -207,62 +236,85 @@ const MarketDayProducts = () => {
                       <TableHead>Prepackaged</TableHead>
                       <TableHead>Package Size</TableHead>
                       <TableHead>Stock</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {vendorProducts.map((product) => {
-                      const quantity = getProductQuantity(product.id)
-                      const packageSize = getProductPackageSize(product.id)
-                      const prepackaged = getProductPrepackaged(product.id)
+                    {getProductRows().map((row, index) => {
+                      const { product, package: pkg, isMainRow } = row
+                      const packageId = pkg?.packageId || `temp-${product.id}`
+                      
                       return (
-                        <TableRow key={product.id}>
+                        <TableRow key={`${product.id}-${index}`}>
                           <TableCell>
-                            <div className="flex items-center gap-3">
-                              {product.image ? (
-                                <img 
-                                  src={product.image} 
-                                  alt={product.name}
-                                  className="w-12 h-12 object-cover rounded"
-                                />
-                              ) : (
-                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                                  <span className="text-gray-400 text-xs">No Image</span>
+                            {isMainRow ? (
+                              <div className="flex items-center gap-3">
+                                {product.image ? (
+                                  <img 
+                                    src={product.image} 
+                                    alt={product.name}
+                                    className="w-12 h-12 object-cover rounded"
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    <span className="text-gray-400 text-xs">No Image</span>
+                                  </div>
+                                )}
+                                <div>
+                                  <h3 className="font-medium text-left">{product.name}</h3>
+                                  <p className="text-gray-600 text-left text-sm">per {product.unit}</p>
                                 </div>
-                              )}
-                              <div>
-                                <h3 className="font-medium text-left">{product.name}</h3>
-                                <p className="text-gray-600 text-left text-sm">per {product.unit}</p>
                               </div>
-                            </div>
+                            ) : (
+                              <div className="pl-15">
+                                <span className="text-gray-400 text-sm">Additional package</span>
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>
-                            <span className="font-medium">${product.price.toFixed(2)}</span>
+                            {isMainRow && (
+                              <span className="font-medium">${product.price.toFixed(2)}</span>
+                            )}
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-1 flex-wrap">
-                              {product.organic && (
-                                <Badge variant="secondary" className="text-xs">Organic</Badge>
-                              )}
-                              {product.local && (
-                                <Badge variant="outline" className="text-xs">Local</Badge>
-                              )}
-                            </div>
+                            {isMainRow && (
+                              <div className="flex gap-1 flex-wrap">
+                                {product.organic && (
+                                  <Badge variant="secondary" className="text-xs">Organic</Badge>
+                                )}
+                                {product.local && (
+                                  <Badge variant="outline" className="text-xs">Local</Badge>
+                                )}
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>
                             <Checkbox
-                              checked={prepackaged}
-                              onCheckedChange={(checked) => handlePrepackagedChange(product.id, !!checked)}
+                              checked={pkg?.prepackaged || false}
+                              onCheckedChange={(checked) => {
+                                if (pkg) {
+                                  handlePrepackagedChange(packageId, !!checked)
+                                } else {
+                                  addNewPackageSize(product.id)
+                                }
+                              }}
                             />
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Input
                                 type="text"
-                                value={packageSize}
-                                onChange={(e) => handlePackageSizeChange(product.id, e.target.value)}
+                                value={pkg?.packageSize || ''}
+                                onChange={(e) => {
+                                  if (pkg) {
+                                    handlePackageSizeChange(packageId, e.target.value)
+                                  } else {
+                                    addNewPackageSize(product.id)
+                                  }
+                                }}
                                 className="w-20 text-center"
-                                placeholder="1"
-                                disabled={!prepackaged}
+                                placeholder=""
+                                disabled={!pkg?.prepackaged}
                               />
                               <span className="text-sm text-gray-500">{product.unit}</span>
                             </div>
@@ -270,11 +322,31 @@ const MarketDayProducts = () => {
                           <TableCell>
                             <Input
                               type="number"
-                              value={quantity}
-                              onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 0)}
+                              value={pkg?.quantity || 0}
+                              onChange={(e) => {
+                                if (pkg) {
+                                  handleQuantityChange(packageId, parseInt(e.target.value) || 0)
+                                } else {
+                                  addNewPackageSize(product.id)
+                                }
+                              }}
                               className="w-20 text-center"
                               min="0"
                             />
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => addNewPackageSize(product.id)}>
+                                  Add new package size
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       )
@@ -294,11 +366,11 @@ const MarketDayProducts = () => {
             <CardContent>
               <div className="space-y-2">
                 {marketDayProducts.map((product) => (
-                  <div key={product.productId} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <div key={product.packageId} className="flex justify-between items-center py-2 border-b last:border-b-0">
                     <span className="text-left">{product.productName}</span>
                     <div className="text-right text-gray-600">
                       <span>{product.quantity} {product.productUnit}</span>
-                      {product.prepackaged && product.packageSize !== '1' && (
+                      {product.prepackaged && product.packageSize && (
                         <span className="ml-2 text-sm">(Package: {product.packageSize})</span>
                       )}
                     </div>
