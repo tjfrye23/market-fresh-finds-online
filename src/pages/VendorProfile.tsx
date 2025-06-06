@@ -239,14 +239,26 @@ const VendorProfile = () => {
       <Navbar />
 
       <main className="flex-grow">
-        {/* Back to Dashboard Button */}
+        {/* Back to Dashboard and Edit Profile Buttons */}
         <div className="px-4 py-4">
-          <Link to="/vendor/dashboard">
-            <Button variant="outline" className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
+          <div className="flex justify-between items-center mb-4">
+            <Link to="/vendor/dashboard">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Dashboard
+              </Button>
+            </Link>
+            
+            {!isNewProfile && !isEditing && (
+              <Button
+                onClick={startEditing}
+                className="bg-market-green hover:bg-market-green-dark"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Profile
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Hero Image Section */}
@@ -272,16 +284,6 @@ const VendorProfile = () => {
                       Owned by {profile.owner_name || 'You'}
                     </CardDescription>
                   </div>
-
-                  {!isNewProfile && !isEditing && (
-                    <Button
-                      onClick={startEditing}
-                      className="mt-4 md:mt-0 bg-market-green hover:bg-market-green-dark"
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit Profile
-                    </Button>
-                  )}
                 </div>
               </CardHeader>
 
