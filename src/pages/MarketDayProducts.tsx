@@ -273,7 +273,7 @@ const MarketDayProducts = () => {
                           </TableCell>
                           <TableCell>
                             {isMainRow && (
-                              <span className="font-medium">${product.price.toFixed(2)}</span>
+                              <span className="font-medium">${product.price.toFixed(2)} per {product.unit}</span>
                             )}
                           </TableCell>
                           <TableCell>
