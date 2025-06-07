@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -8,7 +7,6 @@ import {
   Truck,
 } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
-import CategoryCard from '@/components/CategoryCard'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useEffect, useState } from 'react'
@@ -206,20 +204,6 @@ const Index = () => {
                 ))}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Shop By Category Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="section-title text-center mb-12">
-              Shop By Category
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {categories.map((category, index) => (
-                <CategoryCard key={index} {...category} />
-              ))}
-            </div>
           </div>
         </section>
 
