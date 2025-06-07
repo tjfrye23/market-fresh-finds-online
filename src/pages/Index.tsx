@@ -207,68 +207,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Market Features Section */}
-        <section className="py-16 bg-market-brown-light/20">
-          <div className="container mx-auto px-4">
-            <h2 className="section-title text-center mb-12">
-              Why Shop With Us
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <LeafyGreen className="text-market-green h-8 w-8" />
-                </div>
-                <h3 className="font-display text-xl font-semibold mb-2">
-                  Fresh & Organic
-                </h3>
-                <p className="text-gray-600">
-                  Locally sourced produce harvested at peak freshness for
-                  maximum flavor and nutrition.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="text-market-green h-8 w-8" />
-                </div>
-                <h3 className="font-display text-xl font-semibold mb-2">
-                  Support Local
-                </h3>
-                <p className="text-gray-600">
-                  Every purchase directly supports local farmers and strengthens
-                  our community.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CalendarDays className="text-market-green h-8 w-8" />
-                </div>
-                <h3 className="font-display text-xl font-semibold mb-2">
-                  Seasonal Variety
-                </h3>
-                <p className="text-gray-600">
-                  Experience the best of each season with our rotating selection
-                  of seasonal goods.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="bg-market-green-light/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Truck className="text-market-green h-8 w-8" />
-                </div>
-                <h3 className="font-display text-xl font-semibold mb-2">
-                  Convenient Delivery
-                </h3>
-                <p className="text-gray-600">
-                  Can't make it to the market? We offer local delivery for your
-                  convenience.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Newsletter Section */}
         <section className="py-16 bg-market-green text-white">
           <div className="container mx-auto px-4 text-center">
