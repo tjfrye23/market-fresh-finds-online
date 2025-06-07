@@ -60,6 +60,7 @@ const Cart = () => {
       return {
         price: marketDayProduct.productPrice,
         maxQuantity: marketDayProduct.quantity,
+        unit: marketDayProduct.productUnit,
         image: marketDayProduct.productImage || item.image
       }
     }
@@ -69,6 +70,7 @@ const Cart = () => {
     return {
       price: item.price,
       maxQuantity: originalProduct?.stock || 0,
+      unit: item.unit,
       image: item.image
     }
   }
@@ -131,10 +133,10 @@ const Cart = () => {
                       <p className="text-gray-500 text-sm">from {item.farmName}</p>
                     )}
                     <p className="text-market-green-dark font-bold">
-                      ${marketDayData.price.toFixed(2)} per {item.unit}
+                      ${marketDayData.price.toFixed(2)} per {marketDayData.unit}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {marketDayData.maxQuantity} available for this market day
+                      Package: {marketDayData.unit}
                     </p>
                   </div>
                   
