@@ -1,4 +1,3 @@
-
 export interface MockUser {
   id: string
   email: string
@@ -78,6 +77,7 @@ export interface MockMarketDay {
   description: string
   status: 'scheduled' | 'active' | 'completed' | 'cancelled'
   created_at: string
+  products: string[] // Array of product IDs associated with this market day
 }
 
 export const mockVendors: MockVendorProfile[] = [
@@ -316,7 +316,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '123 Main Street, Downtown Plaza',
     description: 'Weekly farmers market in the heart of downtown featuring local vendors, fresh produce, and artisanal goods.',
     status: 'active',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: ['1', '2', '3', '4'] // All four mock products are available for this market day
   },
   {
     id: 'market-day-2',
@@ -332,7 +333,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '123 Main Street, Downtown Plaza',
     description: 'Weekly farmers market in the heart of downtown featuring local vendors, fresh produce, and artisanal goods.',
     status: 'scheduled',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: []
   },
   {
     id: 'market-day-3',
@@ -348,7 +350,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '456 River Road, Riverside Park',
     description: 'Family-friendly market by the river with live music, food trucks, and the best local produce.',
     status: 'scheduled',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: []
   },
   {
     id: 'market-day-4',
@@ -364,7 +367,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '456 River Road, Riverside Park',
     description: 'Family-friendly market by the river with live music, food trucks, and the best local produce.',
     status: 'scheduled',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: []
   },
   {
     id: 'market-day-5',
@@ -380,7 +384,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '789 Oak Avenue, Community Center',
     description: 'Smaller midweek market perfect for picking up fresh ingredients and specialty items.',
     status: 'scheduled',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: []
   },
   {
     id: 'market-day-6',
@@ -396,7 +401,8 @@ export const mockMarketDays: MockMarketDay[] = [
     address: '789 Oak Avenue, Community Center',
     description: 'Smaller midweek market perfect for picking up fresh ingredients and specialty items.',
     status: 'scheduled',
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: '2024-01-01T00:00:00Z',
+    products: []
   }
 ]
 
