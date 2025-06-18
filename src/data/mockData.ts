@@ -44,6 +44,42 @@ export interface MockProduct {
   updated_at: string
 }
 
+export interface MockMarketSchedule {
+  id: string
+  name: string
+  marketDate: Date
+  startTime: string
+  endTime: string
+  onlineStartTime: string
+  onlineEndTime: string
+  onlineStartDate: Date
+  onlineEndDate: Date
+  address: string
+  description: string
+  isActive: boolean
+  isRecurring: boolean
+  status: 'active' | 'scheduled' | 'cancelled'
+  created_at: string
+  updated_at: string
+}
+
+export interface MockMarketDay {
+  id: string
+  scheduleId: string
+  scheduleName: string
+  marketDate: Date
+  startTime: string
+  endTime: string
+  onlineStartTime: string
+  onlineEndTime: string
+  onlineStartDate: Date
+  onlineEndDate: Date
+  address: string
+  description: string
+  status: 'scheduled' | 'active' | 'completed' | 'cancelled'
+  created_at: string
+}
+
 export const mockVendors: MockVendorProfile[] = [
   {
     id: '1',
@@ -197,6 +233,169 @@ export const mockUsers: MockUser[] = [
     app_metadata: {},
     user_metadata: {},
     aud: 'authenticated',
+    created_at: '2024-01-01T00:00:00Z'
+  }
+]
+
+// Helper function to get date X days from now
+const getDaysFromNow = (days: number): Date => {
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  return date
+}
+
+export const mockMarketSchedules: MockMarketSchedule[] = [
+  {
+    id: 'schedule-1',
+    name: 'Saturday Downtown Market',
+    marketDate: getDaysFromNow(3), // This Saturday
+    startTime: '08:00',
+    endTime: '14:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '06:00',
+    onlineStartDate: getDaysFromNow(0), // Today
+    onlineEndDate: getDaysFromNow(3), // Until market day
+    address: '123 Main Street, Downtown Plaza',
+    description: 'Weekly farmers market in the heart of downtown featuring local vendors, fresh produce, and artisanal goods.',
+    isActive: true,
+    isRecurring: true,
+    status: 'active',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'schedule-2',
+    name: 'Sunday Riverside Market',
+    marketDate: getDaysFromNow(10), // Next Sunday
+    startTime: '09:00',
+    endTime: '15:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '07:00',
+    onlineStartDate: getDaysFromNow(7), // A week from now
+    onlineEndDate: getDaysFromNow(10), // Until market day
+    address: '456 River Road, Riverside Park',
+    description: 'Family-friendly market by the river with live music, food trucks, and the best local produce.',
+    isActive: true,
+    isRecurring: true,
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'schedule-3',
+    name: 'Wednesday Midweek Market',
+    marketDate: getDaysFromNow(17), // Two Wednesdays from now
+    startTime: '10:00',
+    endTime: '16:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '08:00',
+    onlineStartDate: getDaysFromNow(14), // Two weeks from now
+    onlineEndDate: getDaysFromNow(17), // Until market day
+    address: '789 Oak Avenue, Community Center',
+    description: 'Smaller midweek market perfect for picking up fresh ingredients and specialty items.',
+    isActive: true,
+    isRecurring: true,
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  }
+]
+
+export const mockMarketDays: MockMarketDay[] = [
+  {
+    id: 'market-day-1',
+    scheduleId: 'schedule-1',
+    scheduleName: 'Saturday Downtown Market',
+    marketDate: getDaysFromNow(3),
+    startTime: '08:00',
+    endTime: '14:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '06:00',
+    onlineStartDate: getDaysFromNow(0),
+    onlineEndDate: getDaysFromNow(3),
+    address: '123 Main Street, Downtown Plaza',
+    description: 'Weekly farmers market in the heart of downtown featuring local vendors, fresh produce, and artisanal goods.',
+    status: 'active',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'market-day-2',
+    scheduleId: 'schedule-1',
+    scheduleName: 'Saturday Downtown Market',
+    marketDate: getDaysFromNow(10),
+    startTime: '08:00',
+    endTime: '14:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '06:00',
+    onlineStartDate: getDaysFromNow(7),
+    onlineEndDate: getDaysFromNow(10),
+    address: '123 Main Street, Downtown Plaza',
+    description: 'Weekly farmers market in the heart of downtown featuring local vendors, fresh produce, and artisanal goods.',
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'market-day-3',
+    scheduleId: 'schedule-2',
+    scheduleName: 'Sunday Riverside Market',
+    marketDate: getDaysFromNow(11),
+    startTime: '09:00',
+    endTime: '15:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '07:00',
+    onlineStartDate: getDaysFromNow(8),
+    onlineEndDate: getDaysFromNow(11),
+    address: '456 River Road, Riverside Park',
+    description: 'Family-friendly market by the river with live music, food trucks, and the best local produce.',
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'market-day-4',
+    scheduleId: 'schedule-2',
+    scheduleName: 'Sunday Riverside Market',
+    marketDate: getDaysFromNow(18),
+    startTime: '09:00',
+    endTime: '15:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '07:00',
+    onlineStartDate: getDaysFromNow(15),
+    onlineEndDate: getDaysFromNow(18),
+    address: '456 River Road, Riverside Park',
+    description: 'Family-friendly market by the river with live music, food trucks, and the best local produce.',
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'market-day-5',
+    scheduleId: 'schedule-3',
+    scheduleName: 'Wednesday Midweek Market',
+    marketDate: getDaysFromNow(19),
+    startTime: '10:00',
+    endTime: '16:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '08:00',
+    onlineStartDate: getDaysFromNow(16),
+    onlineEndDate: getDaysFromNow(19),
+    address: '789 Oak Avenue, Community Center',
+    description: 'Smaller midweek market perfect for picking up fresh ingredients and specialty items.',
+    status: 'scheduled',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'market-day-6',
+    scheduleId: 'schedule-3',
+    scheduleName: 'Wednesday Midweek Market',
+    marketDate: getDaysFromNow(26),
+    startTime: '10:00',
+    endTime: '16:00',
+    onlineStartTime: '00:00',
+    onlineEndTime: '08:00',
+    onlineStartDate: getDaysFromNow(23),
+    onlineEndDate: getDaysFromNow(26),
+    address: '789 Oak Avenue, Community Center',
+    description: 'Smaller midweek market perfect for picking up fresh ingredients and specialty items.',
+    status: 'scheduled',
     created_at: '2024-01-01T00:00:00Z'
   }
 ]
