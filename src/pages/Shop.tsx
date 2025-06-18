@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
@@ -6,7 +7,7 @@ import PageHeader from '@/components/PageHeader'
 import ProductGrid from '@/components/shop/ProductGrid'
 import ShopFilters from '@/components/shop/ShopFilters'
 import MarketDaySelector from '@/components/shop/MarketDaySelector'
-import { mockProducts, mockVendors } from '@/data/mockData'
+import { mockProducts, mockVendors, mockMarketDays } from '@/data/mockData'
 import { useMarketSchedule } from '@/contexts/MarketScheduleContext'
 import ShopAvailabilityBanner from '@/components/ShopAvailabilityBanner'
 import { useShopFilters } from '@/hooks/useShopFilters'
@@ -58,49 +59,61 @@ const Shop = () => {
     }
   }, [selectedMarketDay])
 
-  // Load products for the selected market day - aggregate by product but keep packages separate for detail view
+  // Load products for the selected market day
   useEffect(() => {
     if (selectedMarketDay) {
-      const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
-      if (storedProducts) {
-        const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
-        
-        // Group by productId and aggregate quantities for display
-        const productMap = new Map()
-        
-        marketDayProductsData
-          .filter(mdp => mdp.quantity > 0)
-          .forEach(mdp => {
-            if (productMap.has(mdp.productId)) {
-              // Add to existing product's total stock
-              const existing = productMap.get(mdp.productId)
-              existing.stock += mdp.quantity
-            } else {
-              // Find the original product to get additional details
-              const originalProduct = mockProducts.find(p => p.id === mdp.productId)
-              if (originalProduct) {
-                productMap.set(mdp.productId, {
-                  id: mdp.productId,
-                  name: mdp.productName,
-                  price: mdp.productPrice,
-                  unit: mdp.productUnit,
-                  image: mdp.productImage || originalProduct.image,
-                  category: originalProduct.category || 'Other',
-                  organic: originalProduct.organic || false,
-                  local: originalProduct.local || false,
-                  user_id: originalProduct.user_id || '',
-                  description: originalProduct.description,
-                  stock: mdp.quantity,
-                  created_at: originalProduct.created_at || new Date().toISOString(),
-                  updated_at: originalProduct.updated_at || new Date().toISOString(),
-                })
-              }
-            }
-          })
-        
-        setMarketDayProducts(Array.from(productMap.values()))
+      // Find the selected market day
+      const marketDay = mockMarketDays.find(day => day.id === selectedMarketDay)
+      
+      if (marketDay && marketDay.products.length > 0) {
+        // Filter products to only show those associated with this market day
+        const associatedProducts = mockProducts.filter(product => 
+          marketDay.products.includes(product.id)
+        )
+        setMarketDayProducts(associatedProducts)
       } else {
-        setMarketDayProducts([])
+        // Check localStorage for market day products (fallback for existing data)
+        const storedProducts = localStorage.getItem(`market_day_products_${selectedMarketDay}`)
+        if (storedProducts) {
+          const marketDayProductsData: MarketDayProduct[] = JSON.parse(storedProducts)
+          
+          // Group by productId and aggregate quantities for display
+          const productMap = new Map()
+          
+          marketDayProductsData
+            .filter(mdp => mdp.quantity > 0)
+            .forEach(mdp => {
+              if (productMap.has(mdp.productId)) {
+                // Add to existing product's total stock
+                const existing = productMap.get(mdp.productId)
+                existing.stock += mdp.quantity
+              } else {
+                // Find the original product to get additional details
+                const originalProduct = mockProducts.find(p => p.id === mdp.productId)
+                if (originalProduct) {
+                  productMap.set(mdp.productId, {
+                    id: mdp.productId,
+                    name: mdp.productName,
+                    price: mdp.productPrice,
+                    unit: mdp.productUnit,
+                    image: mdp.productImage || originalProduct.image,
+                    category: originalProduct.category || 'Other',
+                    organic: originalProduct.organic || false,
+                    local: originalProduct.local || false,
+                    user_id: originalProduct.user_id || '',
+                    description: originalProduct.description,
+                    stock: mdp.quantity,
+                    created_at: originalProduct.created_at || new Date().toISOString(),
+                    updated_at: originalProduct.updated_at || new Date().toISOString(),
+                  })
+                }
+              }
+            })
+          
+          setMarketDayProducts(Array.from(productMap.values()))
+        } else {
+          setMarketDayProducts([])
+        }
       }
     } else {
       setMarketDayProducts([])
