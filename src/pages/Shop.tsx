@@ -31,7 +31,7 @@ const Shop = () => {
   const [filterVisible, setFilterVisible] = useState(false)
   const [selectedMarketDay, setSelectedMarketDay] = useState<string>('')
   const [marketDayProducts, setMarketDayProducts] = useState<any[]>([])
-  const { isShopOpen, getUpcomingMarketDays } = useMarketSchedule()
+  const { isShopOpen } = useMarketSchedule()
   
   const {
     categoryFilter,
@@ -120,7 +120,24 @@ const Shop = () => {
     }
   }, [selectedMarketDay])
 
-  const marketDays = getUpcomingMarketDays()
+  // Use mock market days instead of context
+  const marketDays = mockMarketDays.map(day => ({
+    id: day.id,
+    scheduleId: day.scheduleId,
+    scheduleName: day.scheduleName,
+    marketDate: day.marketDate,
+    startTime: day.startTime,
+    endTime: day.endTime,
+    onlineStartTime: day.onlineStartTime,
+    onlineEndTime: day.onlineEndTime,
+    onlineStartDate: day.onlineStartDate,
+    onlineEndDate: day.onlineEndDate,
+    address: day.address,
+    description: day.description,
+    status: day.status,
+    createdAt: day.created_at
+  }))
+
   const selectedMarketDayData = marketDays.find(day => day.id === selectedMarketDay)
 
   const filteredProducts = getFilteredAndSortedProducts(marketDayProducts)
